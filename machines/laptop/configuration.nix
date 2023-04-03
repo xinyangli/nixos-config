@@ -149,6 +149,7 @@
     # ==== Development ==== #
     # VCS
     git
+    git-crypt
   
     jetbrains.jdk # patch jetbrain runtime java
     jetbrains.clion
