@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, nixos-cn, nur-xddxdd, ... }:
 
 {
   imports =
@@ -150,7 +150,7 @@
     # VCS
     git
     git-crypt
-  
+
     jetbrains.jdk # patch jetbrain runtime java
     jetbrains.clion
     jetbrains.pycharm-professional
@@ -204,6 +204,8 @@
     # IM
     tdesktop
     qq
+    nur-xddxdd.packages.${system}.wechat-uos-bin
+    # nixos-cn.legacyPackages.${system}.wechat-uos
 
     # Mail
     thunderbird
@@ -305,7 +307,7 @@
   # hardware.nvidia.open = true;
   hardware.nvidia.prime = {
     offload.enable = true;
-    #    offload.enableOffloadCmd = true;
+    offload.enableOffloadCmd = true;
     nvidiaBusId = "PCI:1:0:0";
     amdgpuBusId = "PCI:4:0:0";
   };
