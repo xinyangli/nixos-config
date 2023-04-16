@@ -15,6 +15,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
     nixos-cn = {
       url = "github:nixos-cn/flakes";
       # Use the same nixpkgs
@@ -25,7 +27,8 @@
   };
 
 
-  outputs = { self, nixpkgs, nur, home-manager, sops-nix, nixos-cn, ... }@inputs:
+  outputs = { self, ... }@inputs:
+    with inputs;
     let
       mkHome = user: host: home-manager.nixosModules.home-manager {
         extraSpecialArgs = { inherit inputs; };
@@ -45,5 +48,27 @@
         ];
         specialArgs = inputs;
       };
+      nixosConfigurations.rpi4 = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          machines/rpi4/configuration.nix
+          nixos-hardware.nixosModules.raspberry-pi-4
+        ];
+      };
+
+      images.rpi4 = (nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
+          machines/rpi4/configuration.nix
+          nixos-hardware.nixosModules.raspberry-pi-4
+          {
+            nixpkgs.config.allowUnsupportedSystem = true;
+            nixpkgs.hostPlatform.system = "aarch64-linux";
+            nixpkgs.buildPlatform.system = "x86_64-linux";
+            # ... extra configs as above
+          }
+        ];
+      }).config.system.build.sdImage;
     };
 }
