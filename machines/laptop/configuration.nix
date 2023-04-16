@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, nixos-cn, nur-xddxdd, ... }:
+{ config, pkgs, nixos-cn, nur, nur-xddxdd, ... }:
 
 {
   imports =
@@ -44,7 +44,6 @@
   i18n.inputMethod = {
     enabled = "fcitx5";
     fcitx5.addons = with pkgs; [ fcitx5-rime ];
-    fcitx5.enableRimeData = true;
   };
 
   i18n.extraLocaleSettings = {
@@ -204,7 +203,7 @@
     # IM
     tdesktop
     qq
-    nur-xddxdd.packages.${system}.wechat-uos-bin
+    nur-xddxdd.packages."x86_64-linux".wechat-uos-bin
     # nixos-cn.legacyPackages.${system}.wechat-uos
 
     # Mail
@@ -295,6 +294,7 @@
 
   # Enable Tailscale
   services.tailscale.enable = true;
+  services.tailscale.useRoutingFeatures = "both";
 
   # Setup Nvidia driver
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -346,6 +346,11 @@
     podman = {
       enable = true;
       enableNvidia = true;
+    };
+    docker = {
+      enable = true;
+      enableNvidia = true;
+      autoPrune.enable = true;
     };
   };
 }
