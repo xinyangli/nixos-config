@@ -7,6 +7,11 @@ creation_rules:
     - age:
       - *xin
       - *host-laptop
+  - path_regex: machines/laptop/secrets.yaml
+    key_groups:
+    - age:
+      - *xin
+      - *host-laptop
   - path_regex: secrets/common/[^/]+\.yaml$
     kay_groups:
     - age:

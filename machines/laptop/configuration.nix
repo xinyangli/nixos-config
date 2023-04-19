@@ -13,6 +13,7 @@
       ../vscode.nix
       # ../dnscrypt.nix
       ./secret.nix
+      ../sops.nix
     ];
 
   # Bootloader.
@@ -31,6 +32,14 @@
       enable = true;
     };
     resolvconf.useLocalResolver = true;
+  };
+
+  
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    age.keyFile = "/var/lib/sops-nix/keys.txt";
+    age.generateKey = true;
   };
 
   # Setup wireguard
@@ -270,7 +279,7 @@
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedUDPPorts = [ 41641 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
