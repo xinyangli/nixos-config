@@ -1,2 +1,0 @@
-machines/calcite/secret.nix filter=git-crypt diff=git-crypt
-machines/clash.nix filter=git-crypt diff=git-crypt
