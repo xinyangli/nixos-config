@@ -10,10 +10,6 @@
     };
 
     nur.url = "github:nix-community/NUR";
-    nur-xddxdd = {
-      url = "github:xddxdd/nur-packages";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -24,35 +20,52 @@
     };
 
     sops-nix.url = "github:Mic92/sops-nix";
+
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
 
   outputs = { self, ... }@inputs:
     with inputs;
     let
-      mkHome = user: host: home-manager.nixosModules.home-manager {
-        extraSpecialArgs = { inherit inputs; };
-        home-manager.users.${user} = import ./home/${user}/${host};
+      mkHome = user: host: { config, system, ... }: {
+        imports = [
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.xin = import ./home/${user}/${host};
+            home-manager.extraSpecialArgs = { inherit inputs system; };
+          }
+        ];
+      };
+      mkNixos = { system, modules, specialArgs ? {}}: nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs // { inherit inputs system; };
+        modules = [
+          home-manager.nixosModules.home-manager
+          nur.nixosModules.nur
+          sops-nix.nixosModules.sops
+        ] ++ modules;
       };
     in
     {
       nixosModules = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
-      nixosConfigurations.xin-laptop = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.calcite = mkNixos {
         system = "x86_64-linux";
         modules = [
-          machines/laptop/configuration.nix
-          nur.nixosModules.nur
-          sops-nix.nixosModules.sops
+          nixos-hardware.nixosModules.asus-zephyrus-ga401
+          machines/calcite/configuration.nix
+          (mkHome "xin" "calcite")
         ];
-        specialArgs = inputs;
       };
-      nixosConfigurations.rpi4 = nixpkgs.lib.nixosSystem {
+
+      nixosConfigurations.rpi4 = mkNixos {
         system = "aarch64-linux";
         modules = [
-          machines/rpi4/configuration.nix
           nixos-hardware.nixosModules.raspberry-pi-4
+          machines/rpi4/configuration.nix
         ];
       };
 
@@ -66,7 +79,6 @@
             nixpkgs.config.allowUnsupportedSystem = true;
             nixpkgs.hostPlatform.system = "aarch64-linux";
             nixpkgs.buildPlatform.system = "x86_64-linux";
-            # ... extra configs as above
           }
         ];
       }).config.system.build.sdImage;

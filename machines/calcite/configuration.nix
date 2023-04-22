@@ -1,19 +1,13 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, nixos-cn, nur, nur-xddxdd, ... }:
+{ config, pkgs, ... }:
 
 {
   imports =
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ../clash.nix
-      ../vscode.nix
-      # ../dnscrypt.nix
-      ./secret.nix
+      ./network.nix
       ../sops.nix
+      ../clash.nix
     ];
 
   # Bootloader.
@@ -22,25 +16,16 @@
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   # boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" ];
+  boot.supportedFilesystems = [ "ntfs" ];
 
-  networking.hostName = "xin-laptop"; # Define your hostname.
+  networking.hostName = "calcite";
 
-  # Enable networking
-  networking = {
-    nameservers = [ "127.0.0.1" "::1" ];
-    networkmanager = {
-      enable = true;
-    };
-    resolvconf.useLocalResolver = true;
-  };
+  programs.vim.defaultEditor = true;
 
-  
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    age.keyFile = "/var/lib/sops-nix/keys.txt";
-    age.generateKey = true;
-  };
+  # Keep this even if enabled in home manager
+  programs.fish.enable = true;
+  environment.shells = [ pkgs.fish ];
+  users.defaultUserShell = pkgs.fish;
 
   # Setup wireguard
   # Set your time zone.
@@ -48,12 +33,6 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.utf8";
-
-  # Chinese Input Method
-  i18n.inputMethod = {
-    enabled = "fcitx5";
-    fcitx5.addons = with pkgs; [ fcitx5-rime ];
-  };
 
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "zh_CN.utf8";
@@ -115,6 +94,10 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.permittedInsecurePackages = [
+    # For wechat-uos
+    "electron-19.0.7"
+  ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -125,38 +108,16 @@
     wineWowPackages.waylandFull
     faudio
 
-    man-pages
     # ==== CLI tools ==== #
     rust-analyzer
-    leetcode-cli
 
-    tree
-    wget
-    tmux
-    ffmpeg
-    tealdeer
-    neofetch
-    rclone
-    clash
     # tesseract5 # ocr
     ocrmypdf # pdfocr
 
     grc
-    fishPlugins.pisces
-    fishPlugins.bass
-    fishPlugins.done
-
-    hyperfine # benchmarking tool
-    grex # generate regex from example
-    delta # diff viewer
-    zoxide # autojumper
-    du-dust # du + rust
-    alacritty # terminal emulator
-    zellij # modern multiplexer
 
     # ==== Development ==== #
     # VCS
-    git
     git-crypt
 
     jetbrains.jdk # patch jetbrain runtime java
@@ -205,15 +166,13 @@
     vlc
     obs-studio
     spotify
-    netease-cloud-music-gtk
 
     digikam
 
     # IM
     tdesktop
     qq
-    nur-xddxdd.packages."x86_64-linux".wechat-uos-bin
-    # nixos-cn.legacyPackages.${system}.wechat-uos
+    config.nur.repos.xddxdd.wechat-uos
 
     # Mail
     thunderbird
@@ -235,100 +194,30 @@
 
     virt-manager
   ];
-  # use vim for editor
-  programs.vim = {
-    defaultEditor = true;
-  };
-
-  # use fish as default shell
-  environment.shells = [ pkgs.fish ];
-  users.defaultUserShell = pkgs.fish;
-  programs.fish = {
-    enable = true;
-  };
-
-  programs.wireshark = {
-    enable = true;
-    package = pkgs.wireshark-qt;
-  };
-
-  # Add gsconnect, open firewall
-  programs.kdeconnect = {
-    enable = true;
-    package = pkgs.gnomeExtensions.gsconnect;
-  };
 
   programs.steam = {
     enable = true;
-    remotePlay.openFirewall = true;
   };
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
 
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # services.gnome.gnome-remote-desktop.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  networking.firewall.allowedUDPPorts = [ 41641 ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "22.05"; # Did you read the comment?
+  system.stateVersion = "22.05";
 
   # Use mirror for binary cache
   nix.settings.substituters = [
     "https://mirrors.ustc.edu.cn/nix-channels/store"
-    # "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
   ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # MTP support
   services.gvfs.enable = true;
 
-  # Enable Tailscale
-  services.tailscale.enable = true;
-  services.tailscale.useRoutingFeatures = "both";
-
-  # Setup Nvidia driver
-  services.xserver.videoDrivers = [ "nvidia" ];
-  hardware.opengl = {
-    enable = true;
-    # driSupport = true;
-  };
-  hardware.nvidia.modesetting.enable = true;
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
-  # hardware.nvidia.open = true;
-  hardware.nvidia.prime = {
-    offload.enable = true;
-    offload.enableOffloadCmd = true;
-    nvidiaBusId = "PCI:1:0:0";
-    amdgpuBusId = "PCI:4:0:0";
-  };
-
   # Fonts
   fonts = {
     fonts = with pkgs; [
+      (nerdfonts.override { fonts = [ "FiraCode" ]; })
       noto-fonts
       noto-fonts-emoji
       liberation_ttf
-      fira-code
-      fira-code-symbols
       mplus-outline-fonts.githubRelease
       dina-font
       proggyfonts
@@ -345,7 +234,7 @@
       defaultFonts = {
         serif = [ "Noto Serif CJK SC" "Ubuntu" ];
         sansSerif = [ "Noto Sans CJK SC" "Ubuntu" ];
-        monospace = [ "FiraCode" "Ubuntu" ];
+        monospace = [ "FiraCode NerdFont Mono" "Ubuntu" ];
       };
     };
   };

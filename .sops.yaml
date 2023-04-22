@@ -1,19 +1,17 @@
 keys:
-  - &xin age1n359y6qkgzypu0lkcy66pfpneskul35xyhrzz3qumjsmeyp2wsuqq0df49
-  - &host-laptop age179ldmg92wqsspgujc70hujfgttw0ljxkh7g86w8rqzywx0f7psysrk0cfn
+  - &xin age1uw059wcwfvd9xuj0hpqzqpeg7qemecspjrsatg37wc7rs2pumfdsgken0c
+  - &host-laptop age1ytwfqfeez3dqtazyjltn7mznccwx3ua8djhned7n8mxqhw4p6e5s97skfa
 creation_rules:
-  - path_regex: secrets/laptop/[^/]+\.yaml$
+  - path_regex: machines/calcite/secrets.yaml
     key_groups:
     - age:
       - *xin
       - *host-laptop
-  - path_regex: machines/laptop/secrets.yaml
+  - path_regex: machines/secrets.yaml
     key_groups:
     - age:
       - *xin
-      - *host-laptop
-  - path_regex: secrets/common/[^/]+\.yaml$
-    kay_groups:
+  - path_regex: home/xin/secrets.yaml
+    key_groups:
     - age:
       - *xin
-      - *host-laptop   
