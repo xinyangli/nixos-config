@@ -61,20 +61,21 @@
         ];
       };
 
-      nixosConfigurations.rpi4 = mkNixos {
+      nixosConfigurations.raspite = mkNixos {
         system = "aarch64-linux";
         modules = [
           nixos-hardware.nixosModules.raspberry-pi-4
-          machines/rpi4/configuration.nix
+          machines/raspite/configuration.nix
+          (mkHome "xin" "raspite")
         ];
       };
 
-      images.rpi4 = (nixpkgs.lib.nixosSystem {
+      images.raspite = (mkNixos {
         system = "aarch64-linux";
         modules = [
           "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-          machines/rpi4/configuration.nix
           nixos-hardware.nixosModules.raspberry-pi-4
+          machines/raspite/configuration.nix
           {
             nixpkgs.config.allowUnsupportedSystem = true;
             nixpkgs.hostPlatform.system = "aarch64-linux";

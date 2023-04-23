@@ -8,7 +8,8 @@
     dig
     du-dust # du + rust
     zoxide # autojumper
-    man-pages
+    file
+    # man-pages
     tree
     wget
     tmux
