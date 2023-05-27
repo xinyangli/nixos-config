@@ -27,8 +27,8 @@
     address = "lixinyang411@foxmail.com";
   };
 
-  i18n.inputMethod = {
-    enabled = "fcitx5";
-    fcitx5.addons = with pkgs; [ fcitx5-rime ];
-  };
+  home.packages = with pkgs; [
+    thunderbird
+  ];
+
 }

@@ -3,13 +3,15 @@
     ./fish.nix
     ./git.nix
     ./zellij.nix
+    ./vim.nix
   ];
   home.packages = with pkgs; [
     dig
     du-dust # du + rust
     zoxide # autojumper
     file
-    # man-pages
+    man-pages
+    unar
     tree
     wget
     tmux

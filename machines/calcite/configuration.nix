@@ -46,12 +46,18 @@
     LC_TIME = "en_US.utf8";
   };
 
+  i18n.inputMethod = {
+    enabled = "fcitx5";
+    fcitx5.addons = with pkgs; [ fcitx5-rime ];
+  };
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+  services.xserver.windowManager.icewm.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -88,6 +94,9 @@
   services.xserver.displayManager.autoLogin.enable = true;
   services.xserver.displayManager.autoLogin.user = "xin";
 
+  # Smart services
+  services.smartd.enable = true;
+
   # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
@@ -95,6 +104,7 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
+    "openssl-1.1.1t"
     # For wechat-uos
     "electron-19.0.7"
   ];
@@ -116,9 +126,10 @@
 
     grc
 
-    # ==== Development ==== #
-    # VCS
+    sops
     git-crypt
+
+    # ==== Development ==== #
 
     jetbrains.jdk # patch jetbrain runtime java
     jetbrains.clion
@@ -174,9 +185,6 @@
     qq
     config.nur.repos.xddxdd.wechat-uos
 
-    # Mail
-    thunderbird
-
     # Password manager
     keepassxc
 
@@ -189,10 +197,13 @@
     obsidian
     zotero
     wpsoffice
+    onlyoffice-bin
 
     config.nur.repos.linyinfeng.wemeet
 
     virt-manager
+
+    ghidra
   ];
 
   programs.steam = {

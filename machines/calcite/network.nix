@@ -3,11 +3,30 @@
 {
   # Enable networking
   networking = {
-    nameservers = [ "127.0.0.1" "::1" ];
     networkmanager = {
       enable = true;
+      dns = "systemd-resolved";
+      # dns = "none";
+
     };
-    resolvconf.useLocalResolver = true;
+  };
+
+  services.resolved = {
+    enable = true;
+    extraConfig = ''
+    [Resolve]
+    Domains=~. 
+    DNS=114.114.114.114 1.1.1.1
+    DNSOverTLS=opportunistic
+    '';
+  };
+
+  # Configure network proxy if necessary
+  networking.proxy = {
+    allProxy = "socks5://127.0.0.1:7891/";
+    httpProxy = "http://127.0.0.1:7890/";
+    httpsProxy = "http://127.0.0.1:7890/";
+    noProxy = "127.0.0.1,localhost,internal.domain,.coho-tet.ts.net";
   };
 
   # Enable Tailscale
@@ -15,10 +34,13 @@
   # services.tailscale.useRoutingFeatures = "both";
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ ];
   networking.firewall.allowedUDPPorts = [ 41641 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+  networking.firewall.trustedInterfaces = [
+    "tailscale0"
+  ];
 
   programs.steam.remotePlay.openFirewall = true;
 
@@ -34,4 +56,7 @@
   };
 
   # services.gnome.gnome-remote-desktop.enable = true;
+  # services.xrdp.enable = true;
+  # services.xrdp.openFirewall = true;
+  # services.xrdp.defaultWindowManager = icewm;
 }

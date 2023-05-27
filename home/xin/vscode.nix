@@ -5,7 +5,7 @@
     enableUpdateCheck = false;
     enableExtensionUpdateCheck = false;
     mutableExtensionsDir = false;
-    extensions = with inputs.nix-vscode-extensions.extensions.${system}.vscode-marketplace; [
+    extensions = (with inputs.nix-vscode-extensions.extensions.${system}.vscode-marketplace; [
       arrterian.nix-env-selector
 
       bbenoist.nix
@@ -28,11 +28,16 @@
       jnoortheen.nix-ide
       # Latex
       james-yu.latex-workshop
+      # Vue
+      vue.volar
+
+      ms-vscode-remote.remote-ssh-edit
+    ]) ++ (with inputs.nixpkgs.legacyPackages.${system}.vscode-extensions; [
       # Rust
       rust-lang.rust-analyzer
 
-      ms-vscode-remote.remote-ssh-edit
-    ];
+      mkhl.direnv
+    ]);
     userSettings = {
       "workbench.colorTheme" = "Default Dark+";
       "terminal.integrated.sendKeybindingsToShell" = true;
