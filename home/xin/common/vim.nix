@@ -18,6 +18,11 @@
 
     set ignorecase
     set smartcase
+    set list
+    set listchars=tab:→·
+    set tabstop=4
+    set shiftwidth=4
+    set expandtab
 
     set mouse+=a
 
