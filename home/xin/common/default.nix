@@ -20,5 +20,7 @@
     neofetch
     rclone
     clash
+
+    inetutils
   ];
 }

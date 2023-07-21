@@ -104,7 +104,7 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.1.1t"
+    "openssl-1.1.1u"
     # For wechat-uos
     "electron-19.0.7"
   ];
@@ -130,12 +130,6 @@
     git-crypt
 
     # ==== Development ==== #
-
-    jetbrains.jdk # patch jetbrain runtime java
-    jetbrains.clion
-    jetbrains.pycharm-professional
-    jetbrains.idea-ultimate
-    android-studio
 
     # Language server
     clang-tools
@@ -164,6 +158,14 @@
     texlive.combined.scheme-full
 
     # ==== GUI Softwares ==== #
+
+    # IDE
+    jetbrains.jdk # patch jetbrain runtime java
+    jetbrains.clion
+    jetbrains.pycharm-professional
+    jetbrains.idea-ultimate
+    android-studio
+
     # Gnome tweaks
     gnomeExtensions.dash-to-dock
     gnomeExtensions.hide-top-bar
@@ -218,6 +220,14 @@
     "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
   ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.auto-optimise-store = true;
+  nix.settings.access-tokens = [ "github.com=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" ];
+  nix.settings.trusted-users = [ "xin" "root" ];
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
 
   # MTP support
   services.gvfs.enable = true;

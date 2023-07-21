@@ -4,6 +4,10 @@
     settings = {
       shell = {
         program = config.programs.zellij.package + "/bin/zellij";
+        args = [
+          "attach"
+          "-c"
+        ];
       };
       font.size = 10.0;
       window = {

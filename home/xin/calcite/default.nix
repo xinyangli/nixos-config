@@ -29,6 +29,6 @@
 
   home.packages = with pkgs; [
     thunderbird
+    remmina
   ];
-
 }

@@ -28,5 +28,5 @@
 
     colorscheme dracula
     '';
-  };
+};
 }

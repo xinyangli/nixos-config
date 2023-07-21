@@ -1,5 +1,8 @@
 { config, pkgs, inputs, system, ... }:
 {
+  home.packages = with pkgs; [
+    pkgs.wl-clipboard-x11
+  ];
   programs.vscode = {
     enable = true;
     enableUpdateCheck = false;
@@ -32,11 +35,11 @@
       vue.volar
 
       ms-vscode-remote.remote-ssh-edit
-    ]) ++ (with inputs.nixpkgs.legacyPackages.${system}.vscode-extensions; [
+      mushan.vscode-paste-image
+    ]) ++ (with pkgs.vscode-extensions; [
       # Rust
       rust-lang.rust-analyzer
-
-      mkhl.direnv
+      github.copilot
     ]);
     userSettings = {
       "workbench.colorTheme" = "Default Dark+";
@@ -117,17 +120,14 @@
         }
       ];
       "[latex]" = {
-        "editor.formatonpaste" = false;
-        "editor.suggestselection" = "recentlyusedbyprefix";
-        "editor.wordwrap" = "bounded";
-        "editor.wordwrapcolumn" = 100;
-        "editor.unicodehighlight.allowedlocales" = {
-          "_os" = true;
-          "_vscode" = true;
-          "zh-hans" = true;
-          "zh-hant" = true;
-        };
+        "editor.formatOnPaste" = false;
+        "editor.suggestSelection" = "recentlyusedbyprefix";
+        "editor.wordWrap" = "bounded";
+        "editor.wordWrapColumn" = 80;
+        "editor.unicodeHighlight.ambiguousCharacters" = false;
       };
+      # Extension vscode-paste-image
+      "pasteImage.path" = "\${currentFileDir}/.assets";
     };
   };
 }
