@@ -22,6 +22,8 @@
     sops-nix.url = "github:Mic92/sops-nix";
 
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
 
@@ -70,6 +72,7 @@
         ];
       };
 
+
       images.raspite = (mkNixos {
         system = "aarch64-linux";
         modules = [
@@ -83,5 +86,13 @@
           }
         ];
       }).config.system.build.sdImage;
-    };
+    } // 
+      (with flake-utils.lib; (eachSystem defaultSystems (system:
+        let pkgs = import nixpkgs { inherit system; }; in
+      {
+        packages = {
+          homeConfigurations."xin" = import ./home/xin/gold { inherit home-manager pkgs; };
+        };
+      }
+      )));
 }
