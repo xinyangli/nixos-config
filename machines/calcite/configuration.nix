@@ -212,6 +212,7 @@
     enable = true;
   };
 
+
   system.stateVersion = "22.05";
 
   # Use mirror for binary cache
@@ -219,14 +220,19 @@
     "https://mirrors.ustc.edu.cn/nix-channels/store"
     "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
   ];
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.settings.auto-optimise-store = true;
-  nix.settings.access-tokens = [ "github.com=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" ];
-  nix.settings.trusted-users = [ "xin" "root" ];
   nix.gc = {
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 30d";
+  };
+  nix.settings.trusted-users = [ "xin" "root" ];
+  nix.extraOptions = ''
+    !include "${config.sops.secrets.github_public_token.path}"
+  '';
+  sops = {
+    secrets.github_public_token = {
+      owner = "xin";
+    };
   };
 
   # MTP support

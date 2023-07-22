@@ -26,6 +26,9 @@
           echo -n "<🚀lv$SHLVL>"
         end
       end
+      function fish_command_not_found
+        ${pkgs.comma}/bin/comma $argv
+      end
     '';
     functions = {
       gitignore = "curl -sL https://www.gitignore.io/api/$argv";
