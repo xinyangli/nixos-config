@@ -9,5 +9,5 @@ networking = {
     address = "fe80::1";
     interface = "eth0";
   };
-  nameservers = [ "2a00:1098:2b::1" "2a00:1098:2c::1" "2a01:4f9:c010:3f02::1"]
+  nameservers = [ "2a00:1098:2b::1" "2a00:1098:2c::1" "2a01:4f9:c010:3f02::1"];
 };
