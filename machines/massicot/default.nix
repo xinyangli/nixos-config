@@ -7,11 +7,12 @@
   ];
 
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  boot.loader.efi.efiSysMountPoint = "/boot";
   boot.loader.grub = {
     enable = true;
     efiSupport = true;
-  }
+    device = "/dev/sda";
+  };
 
   environment.systemPackages = with pkgs; [
     git
