@@ -9,9 +9,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nur.url = "github:nix-community/NUR";
+    nur = {
+      url = "github:nix-community/NUR";
+    };
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+    };
 
     nixos-cn = {
       url = "github:nixos-cn/flakes";
@@ -19,11 +23,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    conduit.url = "gitlab:famedly/conduit/v0.6.0";
+    conduit.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
 
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+    };
   };
 
 
@@ -67,9 +79,9 @@
         system = "aarch64-linux";
         modules = [
           machines/massicot
-          (mkHome "xin" "gold")
-        ]
-      }
+          (mkHome "xin" "raspite")
+        ];
+      };
 
       nixosConfigurations.raspite = mkNixos {
         system = "aarch64-linux";

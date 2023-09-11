@@ -4,6 +4,7 @@
   imports = [
     ./hardware-configuration.nix
     ./networking.nix
+    ./services.nix
   ];
 
   boot.loader.efi.canTouchEfiVariables = true;
@@ -11,7 +12,6 @@
   boot.loader.grub = {
     enable = true;
     efiSupport = true;
-    device = "/dev/sda";
   };
 
   environment.systemPackages = with pkgs; [
@@ -24,11 +24,13 @@
   
   networking = {
     hostName = "massicot";
-    useDHCP = false;
   };
 
   services.openssh = {
     enable = true;
+    settings = {
+      PasswordAuthentication = false;
+    };
   };
   
   systemd.services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
@@ -39,6 +41,7 @@
     openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPBcSvUQnmMFtpftFKIsDqeyUyZHzRg5ewgn3VEcLnss"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIInPn+7cMbH7zCEPJArU/Ot6oq8NHo8a2rYaCfTp7zgd"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPeNQ43f/ce4VxVPsAaKPPTp8rokQpmwNIsOX7JBZq4A"
     ];
     hashedPassword = "$y$j9T$JOJn97hZndiDamUmmT.iq.$ue7gNZz/b14ur8GhyutOCvFjsv.3rcsHmk7m.WRk6u7";
   };
