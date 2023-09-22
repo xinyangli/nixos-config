@@ -6,8 +6,7 @@
     networkmanager = {
       enable = true;
       dns = "systemd-resolved";
-      # dns = "none";
-
+      # dns = "resolvconf";
     };
   };
 
@@ -16,9 +15,9 @@
     extraConfig = ''
     [Resolve]
     Domains=~. 
-    DNS=114.114.114.114 1.1.1.1
-    DNSOverTLS=opportunistic
+    DNS=127.0.0.1
     '';
+    # DNSOverTLS=opportunistic
   };
 
   # Configure network proxy if necessary

@@ -104,9 +104,9 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.1.1u"
+    "openssl-1.1.1w"
     # For wechat-uos
-    "electron-19.0.7"
+    "electron-19.1.9"
   ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -173,8 +173,6 @@
     gnome.gnome-tweaks
     gthumb
 
-    steam
-
     # Multimedia
     vlc
     obs-studio
@@ -208,11 +206,6 @@
     ghidra
   ];
 
-  programs.steam = {
-    enable = true;
-  };
-
-
   system.stateVersion = "22.05";
 
   # Use mirror for binary cache
@@ -240,7 +233,7 @@
 
   # Fonts
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       (nerdfonts.override { fonts = [ "FiraCode" ]; })
       noto-fonts
       noto-fonts-emoji
@@ -274,7 +267,6 @@
     };
     docker = {
       enable = true;
-      enableNvidia = true;
       autoPrune.enable = true;
     };
   };

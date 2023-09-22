@@ -68,8 +68,8 @@
         modules = [
           machines/massicot
           (mkHome "xin" "gold")
-        ]
-      }
+        ];
+      };
 
       nixosConfigurations.raspite = mkNixos {
         system = "aarch64-linux";

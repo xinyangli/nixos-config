@@ -2,8 +2,12 @@
 {
   sops = {
     defaultSopsFile = ./secrets.yaml;
+    # TODO: How to generate this key when bootstrap?
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    # age.keyFile = "/var/lib/sops-nix/keys.txt";
-    # age.generateKey = true;
+    secrets = {
+      clash_subscription_link = { 
+        owner = "xin";
+      };
+    };
   };
 }

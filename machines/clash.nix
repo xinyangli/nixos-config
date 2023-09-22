@@ -1,10 +1,5 @@
 { config, lib, pkgs, ... }:
 {
-  sops = {
-    secrets.clash_subscription_link = { 
-      owner = "xin";
-    };
-  };
 
   systemd.timers."clash-config-update" = {
     wantedBy = [ "timers.target" ];
