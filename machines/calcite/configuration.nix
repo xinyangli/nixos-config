@@ -7,7 +7,6 @@
       ./hardware-configuration.nix
       ./network.nix
       ../sops.nix
-      ../clash.nix
     ];
 
   # Bootloader.
@@ -191,6 +190,7 @@
     # Browser
     firefox
     chromium
+    brave
     microsoft-edge
 
     # Writting

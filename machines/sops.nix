@@ -8,6 +8,12 @@
       clash_subscription_link = { 
         owner = "xin";
       };
+      singbox_password = {
+        owner = "xin";
+      };
+      singbox_domain = {
+        owner = "xin";
+      };
     };
   };
 }
