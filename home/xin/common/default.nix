@@ -17,6 +17,7 @@
     dig
     du-dust # du + rust
     zoxide # autojumper
+    ripgrep
     file
     man-pages
     unar

@@ -16,6 +16,7 @@
   # boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" ];
   boot.supportedFilesystems = [ "ntfs" ];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"]; 
 
   networking.hostName = "calcite";
 
