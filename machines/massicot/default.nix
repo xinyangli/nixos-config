@@ -32,6 +32,7 @@
       PasswordAuthentication = false;
     };
   };
+  programs.mosh.enable = true;
   
   systemd.services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
   
