@@ -52,13 +52,30 @@ in
     };
   };
 
-  services.gitea = {
+  services.forgejo = {
     enable = true;
-    package = pkgs.forgejo;
     settings = {
       service.DISABLE_REGISTRATION = true;
       server = {
         ROOT_URL = "https://git.xinyang.life/";
+      };
+      repository = {
+        ENABLE_PUSH_CREATE_USER = true;
+      };
+      service = {
+        ENABLE_BASIC_AUTHENTICATION = false;
+      };
+      oauth2 = {
+        ENABLE = false; # Disable forgejo as oauth2 provider
+      };
+      oauth2_client = {
+        ACCOUNT_LINKING = "auto";
+        ENABLE_AUTO_REGISTRATION = true;
+        UPDATE_AVATAR = true;
+        OPENID_CONNECT_SCOPES = "openid profile email";
+      };
+      other = {
+        SHOW_FOOTER_VERSION = false;
       };
     };
   };
@@ -98,6 +115,7 @@ in
     virtualHosts."https://auth.xinyang.life:443".extraConfig = ''
       reverse_proxy https://auth.xinyang.life:${toString kanidm_listen_port} {
           header_up Host {upstream_hostport}
+          header_down Access-Control-Allow-Origin "*"
           transport http {
               tls_server_name ${config.services.kanidm.serverSettings.domain}
           }
