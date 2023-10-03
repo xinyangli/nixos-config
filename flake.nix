@@ -1,8 +1,7 @@
 {
   inputs = {
-    # Pin nixpkgs to a specific commit
     # nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs.url = "path:/home/xin/nixpkgs";
+    nixpkgs.url = "/home/xin/repo/GitHub/xinyangli/nixpkgs";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.05";
 
     home-manager = {
@@ -67,6 +66,25 @@
       nixosModules = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
+      colmena = {
+          meta = {
+              nixpkgs = import nixpkgs {
+                  system = "x86_64-linux";
+              };
+              machinesFile = ./nixbuild.net;
+          };
+
+          massicot = { name, nodes, pkgs, ... }: with inputs; {
+              deployment.targetHost = "***REMOVED***";
+              deployment.targetUser = "root";
+
+              imports = [
+                  { nixpkgs.system = "aarch64-linux"; }
+                  machines/massicot
+              ];
+          };
+      };
+
       nixosConfigurations.calcite = mkNixos {
         system = "x86_64-linux";
         modules = [
@@ -81,6 +99,13 @@
         modules = [
           machines/massicot
           (mkHome "xin" "raspite")
+        ];
+      };
+
+      nixosConfigurations.dolomite = mkNixos {
+        system = "x86_64-linux";
+        modules = [
+          machines/dolomite
         ];
       };
 
