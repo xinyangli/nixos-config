@@ -49,10 +49,27 @@
           sops-nix.nixosModules.sops
         ] ++ modules;
       };
+      evalSecrets = import ./eval_secrets.nix;
     in
     {
       nixosModules = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
+
+      colmena = {
+          meta = {
+              nixpkgs = import nixpkgs {
+                  system = "x86_64-linux";
+              };
+              machinesFile = ./nixbuild.net;
+          };
+
+          massicot = { name, nodes, pkgs, ... }: with inputs; {
+              imports = [
+                  { nixpkgs.system = "aarch64-linux"; }
+                  machines/massicot
+              ];
+          };
+      };
 
       nixosConfigurations.calcite = mkNixos {
         system = "x86_64-linux";
@@ -68,8 +85,8 @@
         modules = [
           machines/massicot
           (mkHome "xin" "gold")
-        ]
-      }
+        ];
+      };
 
       nixosConfigurations.raspite = mkNixos {
         system = "aarch64-linux";

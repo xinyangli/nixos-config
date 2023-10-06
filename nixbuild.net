@@ -1,0 +1,1 @@
+ssh-ng://eu.nixbuild.net aarch64-linux - 100 1 big-parallel,benchmark
