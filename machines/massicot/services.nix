@@ -52,9 +52,8 @@ in
     };
   };
 
-  services.gitea = {
+  services.forgejo = {
     enable = true;
-    package = pkgs.forgejo;
     settings = {
       service.DISABLE_REGISTRATION = true;
       server = {

@@ -45,5 +45,11 @@
     ];
     hashedPassword = "$y$j9T$JOJn97hZndiDamUmmT.iq.$ue7gNZz/b14ur8GhyutOCvFjsv.3rcsHmk7m.WRk6u7";
   };
+
+  security.sudo.extraRules = [
+    { users = [ "xin" ];
+      commands = [ { command = "ALL"; options = [ "NOPASSWD" ]; } ];
+    }
+  ];
   
 }
