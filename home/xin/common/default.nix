@@ -28,7 +28,6 @@
     tealdeer
     neofetch
     rclone
-    clash
 
     inetutils
   ];

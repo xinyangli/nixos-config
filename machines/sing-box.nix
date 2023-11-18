@@ -34,7 +34,7 @@ in
             server = "_dns_doh_mainland";
           }
           {
-            domain_suffix = "tiktokuu.xyz";
+            domain_suffix = server;
             server = "_dns_doh_mainland";
           }
         ];
