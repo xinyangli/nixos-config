@@ -7,7 +7,6 @@
       ./hardware-configuration.nix
       ./network.nix
       ../sops.nix
-      ../clash.nix
     ];
 
   # Bootloader.
