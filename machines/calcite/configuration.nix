@@ -7,7 +7,6 @@
       ./hardware-configuration.nix
       ./network.nix
       ../sops.nix
-      ../clash.nix
     ];
 
   # Bootloader.
@@ -17,6 +16,7 @@
   # boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" ];
   boot.supportedFilesystems = [ "ntfs" ];
+  boot.binfmt.emulatedSystems = ["aarch64-linux"]; 
 
   networking.hostName = "calcite";
 
@@ -104,9 +104,9 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.1.1u"
+    "openssl-1.1.1w"
     # For wechat-uos
-    "electron-19.0.7"
+    "electron-19.1.9"
   ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -173,8 +173,6 @@
     gnome.gnome-tweaks
     gthumb
 
-    steam
-
     # Multimedia
     vlc
     obs-studio
@@ -188,11 +186,12 @@
     config.nur.repos.xddxdd.wechat-uos
 
     # Password manager
-    keepassxc
+    bitwarden
 
     # Browser
     firefox
     chromium
+    brave
     microsoft-edge
 
     # Writting
@@ -208,24 +207,23 @@
     ghidra
   ];
 
-  programs.steam = {
-    enable = true;
-  };
-
-
   system.stateVersion = "22.05";
 
   # Use mirror for binary cache
   nix.settings.substituters = [
+    "https://mirrors.bfsu.edu.cn/nix-channels/store"
     "https://mirrors.ustc.edu.cn/nix-channels/store"
-    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
   ];
   nix.gc = {
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 30d";
   };
-  nix.settings.trusted-users = [ "xin" "root" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    auto-optimise-store = true;
+    trusted-users = [ "xin" "root" ];
+  };
   nix.extraOptions = ''
     !include "${config.sops.secrets.github_public_token.path}"
   '';
@@ -240,7 +238,7 @@
 
   # Fonts
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       (nerdfonts.override { fonts = [ "FiraCode" ]; })
       noto-fonts
       noto-fonts-emoji
@@ -274,7 +272,6 @@
     };
     docker = {
       enable = true;
-      enableNvidia = true;
       autoPrune.enable = true;
     };
   };
