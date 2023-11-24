@@ -101,8 +101,6 @@
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
 
-  services.intune.enable = true;
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
@@ -188,7 +186,7 @@
     config.nur.repos.xddxdd.wechat-uos
 
     # Password manager
-    keepassxc
+    bitwarden
 
     # Browser
     firefox
@@ -213,15 +211,19 @@
 
   # Use mirror for binary cache
   nix.settings.substituters = [
+    "https://mirrors.bfsu.edu.cn/nix-channels/store"
     "https://mirrors.ustc.edu.cn/nix-channels/store"
-    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
   ];
   nix.gc = {
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 30d";
   };
-  nix.settings.trusted-users = [ "xin" "root" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    auto-optimise-store = true;
+    trusted-users = [ "xin" "root" ];
+  };
   nix.extraOptions = ''
     !include "${config.sops.secrets.github_public_token.path}"
   '';
