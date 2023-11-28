@@ -18,6 +18,14 @@
   boot.supportedFilesystems = [ "ntfs" ];
   boot.binfmt.emulatedSystems = ["aarch64-linux"]; 
 
+  security.tpm2 = {
+    enable = true;
+    # expose /run/current-system/sw/lib/libtpm2_pkcs11.so
+    pkcs11.enable = true;
+    # TPM2TOOLS_TCTI and TPM2_PKCS11_TCTI env variables
+    tctiEnvironment.enable = true;
+  };
+
   networking.hostName = "calcite";
 
   programs.vim.defaultEditor = true;
@@ -87,7 +95,7 @@
   users.users.xin = {
     isNormalUser = true;
     description = "xin";
-    extraGroups = [ "networkmanager" "wheel" "wireshark" ];
+    extraGroups = [ "networkmanager" "wheel" "wireshark" "tss" ];
   };
 
   # Enable automatic login for the user.

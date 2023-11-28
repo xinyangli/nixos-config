@@ -48,7 +48,6 @@
         modules = [
           home-manager.nixosModules.home-manager
           nur.nixosModules.nur
-          sops-nix.nixosModules.sops
         ] ++ modules;
       };
       evalSecrets = import ./eval_secrets.nix;
@@ -63,6 +62,9 @@
                   system = "x86_64-linux";
               };
               machinesFile = ./nixbuild.net;
+              specialArgs = {
+                inherit inputs;
+              };
           };
 
           massicot = { name, nodes, pkgs, ... }: with inputs; {
@@ -70,6 +72,17 @@
                   { nixpkgs.system = "aarch64-linux"; }
                   machines/massicot
               ];
+          };
+
+          dolomite = { name, nodes, pkgs, ... }: with inputs; {
+              imports = [
+                  { nixpkgs.system = "x86_64-linux"; }
+                  machines/dolomite
+              ];
+              deployment = {
+                targetHost = "video.namely.icu";
+                buildOnTarget = false;
+              };
           };
       };
 
@@ -99,7 +112,6 @@
         ];
       };
 
-
       images.raspite = (mkNixos {
         system = "aarch64-linux";
         modules = [
@@ -119,6 +131,9 @@
       {
         packages = {
           homeConfigurations."xin" = import ./home/xin/gold { inherit home-manager pkgs; };
+        };
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [ git colmena nix-output-monitor ssh-to-age ];
         };
       }
       )));
