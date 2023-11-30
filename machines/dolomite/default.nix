@@ -38,14 +38,14 @@ in
     };
   };
   networking.firewall.allowedTCPPorts = [ 80 8080 ];
-  networking.firewall.allowedUDPPorts = [ 6311 ];
+  networking.firewall.allowedUDPPorts = [ ] ++ (lib.range 6311 6314);
 
   services.sing-box = {
     enable = true;
     settings = {
       inbounds = [
         {
-          tag = "sg1";
+          tag = "sg0";
           type = "trojan";
           listen = "::";
           listen_port = 8080;
@@ -56,11 +56,11 @@ in
           ];
           tls = singTls;
         }
-        {
-          tag = "sg2";
+      ] ++ lib.forEach (lib.range 6311 6314) (port: {
+          tag = "sg" + toString (port - 6310);
           type = "tuic";
           listen = "::";
-          listen_port = 6311;
+          listen_port = port;
           congestion_control = "bbr";
           users = [
             { name = "proxy";
@@ -69,8 +69,7 @@ in
             }
           ];
           tls = singTls;
-        }
-      ];
+        });
     };
   };
 }

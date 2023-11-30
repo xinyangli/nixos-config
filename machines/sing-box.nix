@@ -110,6 +110,10 @@ in
             outbound = "direct";
           }
           { geoip = "private"; outbound = "direct"; }
+          {
+            domain = sg_server;
+            outbound = "direct";
+          }
           { 
             geosite = "cn";
             geoip = "cn";
@@ -119,9 +123,9 @@ in
         ];
       };
       outbounds = [ 
-        { tag = "selfhost"; type = "urltest"; outbounds = [ "sg1" "sg2" ]; tolerance = 800; url = "http://www.gstatic.com/generate_204"; interval = "1m0s"; }
-        { tag = "sg1"; type = "trojan"; server = sg_server; server_port = 8080; password = sg_password; tls = { enabled = true; server_name = sg_server; utls = { enabled = true; fingerprint = "firefox"; }; }; }
-        { tag = "sg2"; type = "tuic"; congestion_control = "bbr"; server = sg_server; server_port = 6311; uuid = sg_uuid; password = sg_password; tls = { enabled = true; server_name = sg_server; }; }
+        { tag = "selfhost"; type = "urltest"; outbounds = lib.forEach (lib.range 0 4) (id: "sg" + toString id); tolerance = 800; url = "http://www.gstatic.com/generate_204"; interval = "1m0s"; }
+        { tag = "sg0"; type = "trojan"; server = sg_server; server_port = 8080; password = sg_password; tls = { enabled = true; server_name = sg_server; utls = { enabled = true; fingerprint = "firefox"; }; }; }
+        
         { default = "auto"; outbounds = [ "auto" "selfhost" "direct" "block"]; tag = "_proxy_select"; type = "selector"; }
         { interval = "1m0s"; outbounds = [ "香港SS-01" "香港SS-02" "香港SS-03" "香港SS-04" "日本SS-01" "日本SS-02" "日本SS-03" "美国SS-01" "美国SS-02" "美国SS-03" "台湾SS-01" "台湾SS-02" "台湾SS-03" "台湾SS-04" "香港中继1" "香港中继2" "香港中继3" "香港中继4" "香港中继5" "香港中继6" "香港中继7" "香港中继8" "日本中继1" "日本中继2" "日本中继3" "日本中继4" "美国中继1" "美国中继2" "美国中继3" "美国中继4" "美国中继5" "美国中继6" "美国中继7" "美国中继8" "新加坡中继1" "新加坡中继2" "台湾中继1" "台湾中继2" "台湾中继3" "台湾中继4" "台湾中继5" "台湾中继6" "韩国中继1" "韩国中继2" ]; tag = "auto"; tolerance = 300; type = "urltest"; url = "http://www.gstatic.com/generate_204"; }
         { tag = "direct"; type = "direct"; }
@@ -171,7 +175,17 @@ in
         { inherit server uuid; security = "auto"; server_port = 1266; tag = "台湾中继6"; type = "vmess"; }
         { inherit server uuid; security = "auto"; server_port = 1251; tag = "韩国中继1"; type = "vmess"; }
         { inherit server uuid; security = "auto"; server_port = 1252; tag = "韩国中继2"; type = "vmess"; }
-      ];
+      ] ++ lib.forEach (lib.range 6311 6314) (port: {
+        tag = "sg" + toString (port - 6310);
+        type = "tuic";
+        congestion_control = "bbr";
+        server = sg_server;
+        server_port = port;
+        uuid = sg_uuid;
+        password = sg_password;
+        tls = { enabled = true; server_name = sg_server; };
+      });
     };
   };
 }
+

@@ -23,8 +23,8 @@
 
   # Open ports in the firewall.
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ ];
-  networking.firewall.allowedUDPPorts = [ 41641 ];
+  networking.firewall.allowedTCPPorts = [ 3389 ];
+  networking.firewall.allowedUDPPorts = [ 3389 41641 ];
   networking.firewall.trustedInterfaces = [
     "tun0"
     "tailscale0"
