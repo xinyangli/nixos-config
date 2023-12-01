@@ -5,18 +5,19 @@ in
 {
   options = {
     custom.restic = {
+      enable = lib.mkEnableOption "restic";
       repositoryFile = lib.mkOption {
         type = lib.types.str;
         default = "";
       };
-        passwordFile = lib.mkOption {
+      passwordFile = lib.mkOption {
         type = lib.types.str;
         default = "";
       };
     };
   };
   config = {
-    services.restic.backups = {
+    services.restic.backups = lib.mkIf cfg.enable {
       remotebackup = {
         repositoryFile = cfg.repositoryFile;
         passwordFile = cfg.passwordFile;

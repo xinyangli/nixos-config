@@ -7,7 +7,6 @@
       ./hardware-configuration.nix
       ./network.nix
       ../sops.nix
-      ../restic.nix
     ];
 
   # Bootloader.
@@ -247,6 +246,7 @@
       sopsFile = ./secrets.yaml;
     };
   };
+  custom.restic.enable = true;
   custom.restic.repositoryFile = config.sops.secrets.restic_repo_calcite.path;
   custom.restic.passwordFile = config.sops.secrets.restic_repo_calcite_password.path;
 

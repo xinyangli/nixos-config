@@ -46,6 +46,7 @@
         inherit system;
         specialArgs = specialArgs // { inherit inputs system; };
         modules = [
+          self.nixosModules.default
           home-manager.nixosModules.home-manager
           nur.nixosModules.nur
         ] ++ modules;
@@ -53,7 +54,7 @@
       evalSecrets = import ./eval_secrets.nix;
     in
     {
-      nixosModules = import ./modules/nixos;
+      nixosModules.default = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
       colmena = {
