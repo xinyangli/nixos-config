@@ -6,6 +6,9 @@
     # TODO: How to generate this key when bootstrap?
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     secrets = {
+      github_public_token = {
+        owner = "xin";
+      };
       clash_subscription_link = { 
         owner = "root";
       };

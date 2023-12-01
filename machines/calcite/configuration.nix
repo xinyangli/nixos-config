@@ -7,6 +7,7 @@
       ./hardware-configuration.nix
       ./network.nix
       ../sops.nix
+      ../restic.nix
     ];
 
   # Bootloader.
@@ -174,9 +175,9 @@
     android-studio
 
     # Gnome tweaks
-    gnomeExtensions.dash-to-dock
-    gnomeExtensions.tray-icons-reloaded
     gnomeExtensions.paperwm
+    gnomeExtensions.search-light
+    gnomeExtensions.tray-icons-reloaded
     gnome.gnome-tweaks
     gthumb
 
@@ -235,11 +236,20 @@
   nix.extraOptions = ''
     !include "${config.sops.secrets.github_public_token.path}"
   '';
-  sops = {
-    secrets.github_public_token = {
+
+  sops.secrets = {
+    restic_repo_calcite_password = {
       owner = "xin";
+      sopsFile = ./secrets.yaml;
+    };
+    restic_repo_calcite = {
+      owner = "xin";
+      sopsFile = ./secrets.yaml;
     };
   };
+  custom.restic.repositoryFile = config.sops.secrets.restic_repo_calcite.path;
+  custom.restic.passwordFile = config.sops.secrets.restic_repo_calcite_password.path;
+
 
   # MTP support
   services.gvfs.enable = true;
