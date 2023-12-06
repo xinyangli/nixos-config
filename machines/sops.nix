@@ -7,7 +7,7 @@
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     secrets = {
       github_public_token = {
-        owner = "xin";
+        owner = "root";
       };
       clash_subscription_link = { 
         owner = "root";
@@ -19,6 +19,9 @@
         owner = "root";
       };
       singbox_sg_server = {
+         owner = "root";
+      };
+      singbox_jp_server = {
          owner = "root";
       };
       singbox_sg_password = {

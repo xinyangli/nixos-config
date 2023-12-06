@@ -188,7 +188,7 @@
     digikam
 
     # IM
-    cinny-desktop
+    element-desktop
     tdesktop
     qq
     config.nur.repos.xddxdd.wechat-uos

@@ -75,13 +75,24 @@
               ];
           };
 
-          dolomite = { name, nodes, pkgs, ... }: with inputs; {
+          dolomite00 = { name, nodes, pkgs, ... }: with inputs; {
               imports = [
-                  { nixpkgs.system = "x86_64-linux"; }
+                  { nixpkgs.system = "x86_64-linux"; custom.domain = "video.namely.icu"; }
                   machines/dolomite
               ];
               deployment = {
                 targetHost = "video.namely.icu";
+                buildOnTarget = false;
+              };
+          };
+
+          dolomite01 = { name, nodes, pkgs, ... }: with inputs; {
+              imports = [
+                  { nixpkgs.system = "x86_64-linux"; custom.domain = "video01.namely.icu"; }
+                  machines/dolomite
+              ];
+              deployment = {
+                targetHost = "video01.namely.icu";
                 buildOnTarget = false;
               };
           };

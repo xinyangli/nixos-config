@@ -2,7 +2,8 @@ keys:
   - &xin age1uw059wcwfvd9xuj0hpqzqpeg7qemecspjrsatg37wc7rs2pumfdsgken0c
   - &host-calcite age1ytwfqfeez3dqtazyjltn7mznccwx3ua8djhned7n8mxqhw4p6e5s97skfa
   - &host-raspite age1nugzw24upk8pz5lyz2z89qk8se4gpcsg3ypcs58nykncr56sevrsm8qpvj
-  - &host-dolomite age13s6rwd3wjk2x5wkn69tdczhl3l5d7mfmlv90efsv4q67jne43qss9tcakx
+  - &host-dolomite00 age13s6rwd3wjk2x5wkn69tdczhl3l5d7mfmlv90efsv4q67jne43qss9tcakx
+  - &host-dolomite01 age1t5nw2jx4dw67jkf72uxcxt72j7lq3xyj35lvl09f8kala90h2g2s2a5yvj
 creation_rules:
   - path_regex: machines/calcite/secrets.yaml
     key_groups:
@@ -20,7 +21,8 @@ creation_rules:
       - *xin
       - *host-calcite
       - *host-raspite
-      - *host-dolomite
+      - *host-dolomite00
+      - *host-dolomite01
   - path_regex: home/xin/secrets.yaml
     key_groups:
     - age:
