@@ -19,6 +19,14 @@
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+  nix.optimise.automatic = true;
+  nix.settings.auto-optimise-store = true;
+
 
   system.stateVersion = "22.11";
   
@@ -32,7 +40,6 @@
       PasswordAuthentication = false;
     };
   };
-  programs.mosh.enable = true;
   
   systemd.services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
   
