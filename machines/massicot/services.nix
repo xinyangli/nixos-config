@@ -58,6 +58,10 @@ in
       service.DISABLE_REGISTRATION = true;
       server = {
         ROOT_URL = "https://git.xinyang.life/";
+        START_SSH_SERVER = true;
+        BUILTIN_SSH_SERVER_USER = "git";
+        SSH_DOMAIN = "ssh.xinyang.life";
+        SSH_PORT = 2222;
       };
       repository = {
         ENABLE_PUSH_CREATE_USER = true;
@@ -126,6 +130,6 @@ in
 
   };
 
-  networking.firewall.allowedTCPPorts = [ 80 443 8448 ];
+  networking.firewall.allowedTCPPorts = [ 80 443 2222 8448 ];
   networking.firewall.allowedUDPPorts = [ 80 443 8448 ];
 }
