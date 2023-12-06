@@ -10,13 +10,11 @@
   ];
   
   imports = [
-    ../clash.nix
     ../sops.nix
   ];
 
   environment.systemPackages = with pkgs; [
     git
-    clash
   ];
 
   # Use mirror for binary cache

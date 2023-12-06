@@ -19,13 +19,25 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   
-    nur.url = "github:nix-community/NUR";
+    nur = {
+      url = "github:nix-community/NUR";
+    };
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+    };
 
-    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+    };
+
+    conduit.url = "gitlab:famedly/conduit/v0.6.0";
+    conduit.inputs.nixpkgs.follows = "nixpkgs";
   };
 
 
@@ -69,6 +81,9 @@
           };
 
           massicot = { name, nodes, pkgs, ... }: with inputs; {
+              deployment.targetHost = "***REMOVED***";
+              deployment.targetUser = "root";
+
               imports = [
                   { nixpkgs.system = "aarch64-linux"; }
                   machines/massicot
@@ -111,7 +126,13 @@
         system = "aarch64-linux";
         modules = [
           machines/massicot
-          (mkHome "xin" "gold")
+        ];
+      };
+
+      nixosConfigurations.dolomite = mkNixos {
+        system = "x86_64-linux";
+        modules = [
+          machines/dolomite
         ];
       };
 
