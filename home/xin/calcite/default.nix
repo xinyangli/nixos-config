@@ -1,10 +1,13 @@
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 {
   imports = [
     ../common
     ../vscode.nix
     ../alacritty.nix
+    inputs.nix-index-database.hmModules.nix-index
   ];
+
+  programs.nix-index-database.comma.enable = true;
 
   home.username = "xin";
   home.homeDirectory = "/home/xin";

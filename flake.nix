@@ -12,11 +12,13 @@
     nix-vscode-extensions =  {
       url = "github:nix-community/nix-vscode-extensions";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
 
     nixos-cn = {
       url = "github:nixos-cn/flakes";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
   
     nur = {
@@ -36,8 +38,10 @@
       url = "github:numtide/flake-utils";
     };
 
-    conduit.url = "gitlab:famedly/conduit/v0.6.0";
-    conduit.inputs.nixpkgs.follows = "nixpkgs";
+    nix-index-database = {
+      url = "github:Mic92/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
 

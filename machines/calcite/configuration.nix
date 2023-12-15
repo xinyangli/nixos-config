@@ -119,6 +119,7 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     # Filesystem
+    owncloud-client
     nfs-utils
 
     winetricks
@@ -177,6 +178,7 @@
     gnomeExtensions.paperwm
     gnomeExtensions.search-light
     gnomeExtensions.tray-icons-reloaded
+    gnomeExtensions.gsconnect
     gnome.gnome-tweaks
     gthumb
 
@@ -227,6 +229,8 @@
     dates = "weekly";
     options = "--delete-older-than 30d";
   };
+  nix.optimise.automatic = true;
+
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
