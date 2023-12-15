@@ -3,6 +3,23 @@ let
   kanidm_listen_port = 5324;
 in
 {
+  networking.firewall.allowedTCPPorts = [ 80 443 2222 8448 ];
+  networking.firewall.allowedUDPPorts = [ 80 443 8448 ];
+
+  fileSystems = builtins.listToAttrs (map (share: {
+    name = "/mnt/storage/${share}";
+    value = { 
+      device = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
+      fsType = "cifs";
+      options = ["uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path}"];
+    };
+  }) [ "forgejo" "gotosocial" "conduit" ] );
+
+  system.activationScripts = {
+    conduit-media-link.text = ''
+      ln -snf /mnt/storage/conduit/media /var/lib/private/matrix-conduit/media
+    '';
+  };
   security.acme = {
     acceptTerms = true;
     certs."auth.xinyang.life" = {
@@ -47,13 +64,19 @@ in
       oidc-idp-name = "Kanidm";
       oidc-issuer = "https://auth.xinyang.life/oauth2/openid/gts";
       oidc-client-id = "gts";
-      oidc-client-secret = "QkqhD6kWj8QLACa51YyFttTfyGMkFyESPsSKzvGVT8WTs3J5";
       oidc-link-existing = true;
+      storage-local-base-path = "/mnt/storage/gotosocial/storage";
     };
+    environmentFile = config.sops.secrets.gts_env.path;
   };
 
   services.forgejo = {
     enable = true;
+    repositoryRoot = "/mnt/storage/forgejo/repositories";
+    lfs = {
+      enable = true;
+      contentDir = "/mnt/storage/forgejo/lfs";
+    };
     settings = {
       service.DISABLE_REGISTRATION = true;
       server = {
@@ -62,6 +85,8 @@ in
         BUILTIN_SSH_SERVER_USER = "git";
         SSH_DOMAIN = "ssh.xinyang.life";
         SSH_PORT = 2222;
+        LFS_MAX_FILE_SIZE = 10737418240;
+        LANDING_PAGE = "/explore/repos";
       };
       repository = {
         ENABLE_PUSH_CREATE_USER = true;
@@ -125,11 +150,5 @@ in
           }
       }
     '';
-    # 
-    # respond `Hello World`
-
   };
-
-  networking.firewall.allowedTCPPorts = [ 80 443 2222 8448 ];
-  networking.firewall.allowedUDPPorts = [ 80 443 8448 ];
 }

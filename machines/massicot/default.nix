@@ -1,11 +1,25 @@
-{ config, libs, pkgs, ... }:
+{ inputs, config, libs, pkgs, ... }:
 
 {
   imports = [
+    inputs.sops-nix.nixosModules.sops
     ./hardware-configuration.nix
     ./networking.nix
     ./services.nix
   ];
+  
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    secrets = {
+      storage_box_mount = {
+        owner = "root";
+      };
+      gts_env = {
+        owner = "gotosocial";
+      };
+    };
+  };
 
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
@@ -14,7 +28,14 @@
     efiSupport = true;
   };
 
+  fileSystems."/mnt/storage" = {
+    device = "//u380335-sub1.your-storagebox.de/u380335-sub1";
+    fsType = "cifs";
+    options = ["credentials=${config.sops.secrets.storage_box_mount.path}"];
+  };
+
   environment.systemPackages = with pkgs; [
+    cifs-utils
     git
   ];
 
@@ -59,5 +80,6 @@
       commands = [ { command = "ALL"; options = [ "NOPASSWD" ]; } ];
     }
   ];
+
   
 }
