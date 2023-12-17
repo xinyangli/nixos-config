@@ -189,7 +189,6 @@
     gnomeExtensions.paperwm
     gnomeExtensions.search-light
     gnomeExtensions.tray-icons-reloaded
-    gnomeExtensions.gsconnect
     gnome.gnome-tweaks
     gthumb
 

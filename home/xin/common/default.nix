@@ -1,10 +1,5 @@
-{ pkgs, ... }: {
-  imports = [
-    ./fish.nix
-    ./git.nix
-    ./zellij.nix
-    ./vim.nix
-  ];
+{ inputs, pkgs, ... }: {
+  imports = [ ];
 
   home.packages = with pkgs; [
     dig

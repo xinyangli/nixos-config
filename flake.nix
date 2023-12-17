@@ -63,6 +63,7 @@
             home-manager.users.xin = import ./home/${user}/${host};
             home-manager.extraSpecialArgs = { inherit inputs system; };
           }
+          self.homeManagerModules
         ];
       };
       mkNixos = { system, modules, specialArgs ? {}}: nixpkgs.lib.nixosSystem {
