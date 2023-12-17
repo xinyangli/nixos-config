@@ -85,11 +85,12 @@
           };
 
           massicot = { name, nodes, pkgs, ... }: with inputs; {
-              deployment.targetHost = "***REMOVED***";
-              deployment.targetUser = "root";
+              deployment.targetHost = "49.13.13.122";
+              deployment.targetUser = "xin";
 
               imports = [
                   { nixpkgs.system = "aarch64-linux"; }
+                  self.nixosModules.default
                   machines/massicot
               ];
           };

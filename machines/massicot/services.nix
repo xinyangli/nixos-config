@@ -6,6 +6,11 @@ in
   networking.firewall.allowedTCPPorts = [ 80 443 2222 8448 ];
   networking.firewall.allowedUDPPorts = [ 80 443 8448 ];
 
+  custom.vaultwarden = {
+    enable = true;
+    domain = "vaultwarden.xinyang.life";
+  };
+
   fileSystems = builtins.listToAttrs (map (share: {
     name = "/mnt/storage/${share}";
     value = { 

@@ -2,5 +2,6 @@
 {
   imports = [
     ./restic.nix
+    ./vaultwarden.nix
   ];
 }
