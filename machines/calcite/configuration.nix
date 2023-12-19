@@ -71,6 +71,21 @@
     layout = "us";
     xkbVariant = "";
   };
+  # Keyboard mapping on internal keyboard
+  services.keyd = {
+    enable = true;
+    keyboards = {
+      "internal" = {
+        ids = [ "0b05:1866" ];
+        settings = {
+          main = {
+            capslock = "overload(control, esc)";
+            leftcontrol = "capslock";
+          };
+        };
+      };
+    };
+  };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
