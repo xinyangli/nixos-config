@@ -1,33 +1,24 @@
-{ config, pkgs, lib, modulesPath, ... }:
-let
-  cfg = config.custom;
-  sg_password = {
-    _secret = config.sops.secrets.singbox_sg_password.path;
-  };
-  sg_uuid = {
-    _secret = config.sops.secrets.singbox_sg_uuid.path;
-  };
-  singTls = {
-    enabled = true;
-    server_name = cfg.domain;
-    key_path = config.security.acme.certs.${cfg.domain}.directory + "/key.pem";
-    certificate_path = config.security.acme.certs.${cfg.domain}.directory + "/cert.pem";
-  };
-in
+{ inputs, config, pkgs, lib, modulesPath, ... }:
 {
-  options = {
-    custom.domain = lib.mkOption {
-      type = lib.types.str;
-      default = "";
-    };
-  };
-
   imports = [
-    "${modulesPath}/virtualisation/amazon-image.nix"
     ../sops.nix
+    "${modulesPath}/virtualisation/amazon-image.nix"
   ];
 
+
   config = {
+    sops = {
+      secrets = {
+        wg_private_key = {
+          owner = "root";
+          sopsFile = ./secrets + "/${config.networking.hostName}.yaml";
+        };
+        wg_ipv6_local_addr = {
+          owner = "root";
+          sopsFile = ./secrets + "/${config.networking.hostName}.yaml";
+        };
+      };
+    };
     boot.loader.grub.device = lib.mkForce "/dev/nvme0n1";
     boot.kernel.sysctl = {
       "net.core.default_qdisc" = "fq";
@@ -38,7 +29,7 @@ in
 
     security.acme = {
       acceptTerms = true;
-      certs.${cfg.domain} = {
+      certs.${config.deployment.targetHost} = {
         email = "me@namely.icu";
         listenHTTP = ":80";
       };
@@ -46,9 +37,31 @@ in
     networking.firewall.allowedTCPPorts = [ 80 8080 ];
     networking.firewall.allowedUDPPorts = [ ] ++ (lib.range 6311 6314);
 
-    services.sing-box = {
+    services.sing-box = let
+      singTls = {
+        enabled = true;
+        server_name = config.deployment.targetHost;
+        key_path = config.security.acme.certs.${config.deployment.targetHost}.directory + "/key.pem";
+        certificate_path = config.security.acme.certs.${config.deployment.targetHost}.directory + "/cert.pem";
+      };
+      password = {
+        _secret = config.sops.secrets.singbox_password.path;
+      };
+      uuid = {
+        _secret = config.sops.secrets.singbox_uuid.path;
+      };
+    in
+    {
       enable = true;
       settings = {
+        dns = {
+          servers = [
+            {
+              address = "1.1.1.1";
+              detour = "wg-out";
+            }
+          ];
+        };
         inbounds = [
           {
             tag = "sg0";
@@ -57,7 +70,7 @@ in
             listen_port = 8080;
             users = [
               { name = "proxy";
-                password = sg_password;
+                password = password;
               }
             ];
             tls = singTls;
@@ -70,12 +83,53 @@ in
             congestion_control = "bbr";
             users = [
               { name = "proxy";
-                uuid = sg_uuid;
-                password = sg_password;
+                uuid = uuid;
+                password = password;
               }
             ];
             tls = singTls;
           });
+        outbounds = [
+          {
+            type = "wireguard";
+            tag = "wg-out";
+            private_key = {
+              _secret = config.sops.secrets.wg_private_key.path;
+            };
+            local_address = [
+              "172.16.0.2/32"
+              { _secret = config.sops.secrets.wg_ipv6_local_addr.path; }
+            ];
+            peers = [
+              { public_key= "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=";
+                allowed_ips = [ "0.0.0.0/0" "::/0" ];
+                server = "162.159.192.1";
+                server_port = 500;
+              }
+            ];
+          }
+          {
+            type = "direct";
+            tag = "direct";
+          }
+          {
+            type = "dns";
+            tag = "dns-out";
+          }
+        ];
+        route = {
+          rules = [
+            {
+              outbound = "dns-out";
+              protocol = "dns";
+            }
+            {
+              geoip = "cn";
+              geosite = "cn";
+              outbound = "direct";
+            }
+          ];
+        };
       };
     };
   };

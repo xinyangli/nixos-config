@@ -38,6 +38,13 @@
       url = "github:numtide/flake-utils";
     };
 
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs.stable.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
     nix-index-database = {
       url = "github:Mic92/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -73,7 +80,7 @@
       nixosModules.default = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
-      colmena = {
+      colmenaHive = colmena.lib.makeHive {
           meta = {
               nixpkgs = import nixpkgs {
                   system = "x86_64-linux";
@@ -95,60 +102,53 @@
               ];
           };
 
-          dolomite00 = { name, nodes, pkgs, ... }: with inputs; {
+          sgp-00 = { name, nodes, pkgs, ... }: with inputs; {
               imports = [
-                  { nixpkgs.system = "x86_64-linux"; custom.domain = "video.namely.icu"; }
-                  machines/dolomite
+                machines/dolomite
               ];
+              nixpkgs.system = "x86_64-linux";
+              networking.hostName = "sgp-00";
+              system.stateVersion = "23.11";
               deployment = {
                 targetHost = "video.namely.icu";
                 buildOnTarget = false;
+                tags = [ "proxy" ];
               };
           };
 
-          dolomite01 = { name, nodes, pkgs, ... }: with inputs; {
+          tok-00 = { name, nodes, pkgs, ... }: with inputs; {
               imports = [
-                  { nixpkgs.system = "x86_64-linux"; custom.domain = "video01.namely.icu"; }
-                  machines/dolomite
+                machines/dolomite
               ];
+              nixpkgs.system = "x86_64-linux";
+              networking.hostName = "tok-00";
+              system.stateVersion = "23.11";
               deployment = {
                 targetHost = "video01.namely.icu";
                 buildOnTarget = false;
+                tags = [ "proxy" ];
               };
           };
       };
 
-      nixosConfigurations.calcite = mkNixos {
-        system = "x86_64-linux";
-        modules = [
-          nixos-hardware.nixosModules.asus-zephyrus-ga401
-          machines/calcite/configuration.nix
-          (mkHome "xin" "calcite")
-        ];
-      };
-
-      nixosConfigurations.massicot = mkNixos {
-        system = "aarch64-linux";
-        modules = [
-          machines/massicot
-        ];
-      };
-
-      nixosConfigurations.dolomite = mkNixos {
-        system = "x86_64-linux";
-        modules = [
-          machines/dolomite
-        ];
-      };
-
-      nixosConfigurations.raspite = mkNixos {
-        system = "aarch64-linux";
-        modules = [
-          nixos-hardware.nixosModules.raspberry-pi-4
-          machines/raspite/configuration.nix
-          (mkHome "xin" "raspite")
-        ];
-      };
+      nixosConfigurations = {
+        calcite = mkNixos {
+          system = "x86_64-linux";
+          modules = [
+            nixos-hardware.nixosModules.asus-zephyrus-ga401
+            machines/calcite/configuration.nix
+            (mkHome "xin" "calcite")
+          ];
+        }; 
+        raspite = mkNixos {
+          system = "aarch64-linux";
+          modules = [
+            nixos-hardware.nixosModules.raspberry-pi-4
+            machines/raspite/configuration.nix
+            (mkHome "xin" "raspite")
+          ];
+        };
+      } // self.colmenaHive.nodes;
 
       images.raspite = (mkNixos {
         system = "aarch64-linux";
@@ -163,16 +163,5 @@
           }
         ];
       }).config.system.build.sdImage;
-    } // 
-      (with flake-utils.lib; (eachSystem defaultSystems (system:
-        let pkgs = import nixpkgs { inherit system; }; in
-      {
-        packages = {
-          homeConfigurations."xin" = import ./home/xin/gold { inherit home-manager pkgs; };
-        };
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [ git colmena nix-output-monitor ssh-to-age ];
-        };
-      }
-      )));
+    };
 }

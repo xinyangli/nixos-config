@@ -12,22 +12,16 @@
       clash_subscription_link = { 
         owner = "root";
       };
-      singbox_password = {
-        owner = "root";
-      };
-      singbox_domain = {
-        owner = "root";
-      };
       singbox_sg_server = {
          owner = "root";
       };
       singbox_jp_server = {
          owner = "root";
       };
-      singbox_sg_password = {
+      singbox_password = {
          owner = "root";
       };
-      singbox_sg_uuid = {
+      singbox_uuid = {
          owner = "root";
       };
     };
