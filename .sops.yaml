@@ -39,6 +39,7 @@ creation_rules:
       - *host-raspite
       - *host-sgp-00
       - *host-tok-00
+      - *host-massicot
   - path_regex: home/xin/secrets.yaml
     key_groups:
     - age:

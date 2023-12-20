@@ -37,6 +37,15 @@
     networking.firewall.allowedTCPPorts = [ 80 8080 ];
     networking.firewall.allowedUDPPorts = [ ] ++ (lib.range 6311 6314);
 
+    custom.prometheus = {
+      enable = true;
+      exporters.enable = true;
+      grafana = {
+        enable = true;
+        password_file = config.sops.secrets.grafana_cloud_api.path;
+      };
+    };
+
     services.sing-box = let
       singTls = {
         enabled = true;

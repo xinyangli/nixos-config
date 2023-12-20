@@ -24,6 +24,9 @@
       singbox_uuid = {
          owner = "root";
       };
+      grafana_cloud_api = {
+         owner = "prometheus";
+      };
     };
   };
 }

@@ -104,6 +104,7 @@
 
           sgp-00 = { name, nodes, pkgs, ... }: with inputs; {
               imports = [
+                self.nixosModules.default
                 machines/dolomite
               ];
               nixpkgs.system = "x86_64-linux";
@@ -118,6 +119,7 @@
 
           tok-00 = { name, nodes, pkgs, ... }: with inputs; {
               imports = [
+                self.nixosModules.default
                 machines/dolomite
               ];
               nixpkgs.system = "x86_64-linux";

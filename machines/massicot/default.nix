@@ -18,6 +18,10 @@
       gts_env = {
         owner = "gotosocial";
       };
+      grafana_cloud_api = {
+        owner = "prometheus";
+        sopsFile = ../secrets.yaml;
+      };
     };
   };
 
