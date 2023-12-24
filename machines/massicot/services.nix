@@ -11,6 +11,21 @@ in
     domain = "vaultwarden.xinyang.life";
   };
 
+  custom.hedgedoc = {
+    enable = true;
+    caddy = true;
+    domain = "docs.xinyang.life";
+    mediaPath = "/mnt/storage/hedgedoc";
+    oidc = {
+      enable = true;
+      baseURL = "https://auth.xinyang.life/oauth2/openid/hedgedoc";
+      authorizationURL = "https://auth.xinyang.life/ui/oauth2";
+      tokenURL = "https://auth.xinyang.life/oauth2/token";
+      userProfileURL = "https://auth.xinyang.life/oauth2/openid/hedgedoc/userinfo";
+    };
+    environmentFile = config.sops.secrets.hedgedoc_env.path;
+  };
+
   custom.prometheus = {
     enable = true;
     exporters.enable = true;
@@ -27,7 +42,7 @@ in
       fsType = "cifs";
       options = ["uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path}"];
     };
-  }) [ "forgejo" "gotosocial" "conduit" ] );
+  }) [ "forgejo" "gotosocial" "conduit" "hedgedoc" ] );
 
   system.activationScripts = {
     conduit-media-link.text = ''
@@ -144,7 +159,7 @@ in
           flush_interval -1
       }
     '';
-    virtualHosts."git.xinyang.life:443".extraConfig = ''
+    virtualHosts."https://git.xinyang.life:443".extraConfig = ''
       reverse_proxy http://${config.services.gitea.settings.server.DOMAIN}:${toString config.services.gitea.settings.server.HTTP_PORT}
     '';
     
@@ -155,8 +170,8 @@ in
            abort
         }
     '';
-    virtualHosts."https://auth.xinyang.life:443".extraConfig = ''
-      reverse_proxy https://auth.xinyang.life:${toString kanidm_listen_port} {
+    virtualHosts."https://auth.xinyang.life".extraConfig = ''
+      reverse_proxy https://127.0.0.1:${toString kanidm_listen_port} {
           header_up Host {upstream_hostport}
           header_down Access-Control-Allow-Origin "*"
           transport http {

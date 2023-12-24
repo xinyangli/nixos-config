@@ -18,6 +18,9 @@
       gts_env = {
         owner = "gotosocial";
       };
+      hedgedoc_env = {
+        owner = "hedgedoc";
+      };
       grafana_cloud_api = {
         owner = "prometheus";
         sopsFile = ../secrets.yaml;

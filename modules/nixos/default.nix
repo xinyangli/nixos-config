@@ -4,5 +4,6 @@
     ./restic.nix
     ./vaultwarden.nix
     ./prometheus.nix
+    ./hedgedoc.nix
   ];
 }
