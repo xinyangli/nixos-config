@@ -158,10 +158,6 @@
     clang-tools
     rnix-lsp
 
-    # C/C++
-    gcc
-    gdb
-
     # Python
     # reference: https://nixos.wiki/wiki/Python
     (

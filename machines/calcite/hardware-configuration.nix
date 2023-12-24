@@ -23,13 +23,6 @@
       fsType = "vfat";
     };
 
-  fileSystems."/media/data" =
-    {
-      device = "/dev/disk/by-label/WINDATA";
-      fsType = "ntfs3";
-      options = [ "rw" "uid=1000" ];
-    };
-
   swapDevices =
     [ { device = "/dev/disk/by-label/NIXSWAP"; }
     ];
