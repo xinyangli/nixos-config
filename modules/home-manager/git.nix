@@ -6,7 +6,7 @@ let
   cfg = config.custom-hm.git;
 in
 {
-  options = {
+  options.custom-hm.git = {
     enable = mkEnableOption "Enable git configuration";
   };
   config = {

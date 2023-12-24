@@ -55,23 +55,42 @@
   outputs = { self, ... }@inputs:
     with inputs;
     let
+      homeConfigurations = import ./home;
+      sharedModules = [
+        self.homeManagerModules
+        inputs.nix-index-database.hmModules.nix-index
+      ];
       mkHome = user: host: { config, system, ... }: {
         imports = [
+          home-manager.nixosModules.home-manager
           {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.xin = import ./home/${user}/${host};
-            home-manager.extraSpecialArgs = { inherit inputs system; };
+            home-manager = {
+              inherit sharedModules;
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = { inherit inputs; };
+            };
+            home-manager.users.${user} = homeConfigurations.${user}.${host};
           }
-          self.homeManagerModules
         ];
+      };
+      mkHomeConfiguration = user: settings: {
+        name = user;
+        value = home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs { system = "x86_64-linux"; };
+          modules = [
+            self.homeManagerModules
+          ] ++ sharedModules;
+          specialArgs = {
+            inherit inputs;
+          };
+        };
       };
       mkNixos = { system, modules, specialArgs ? {}}: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = specialArgs // { inherit inputs system; };
         modules = [
           self.nixosModules.default
-          home-manager.nixosModules.home-manager
           nur.nixosModules.nur
         ] ++ modules;
       };
@@ -80,6 +99,8 @@
     {
       nixosModules.default = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
+
+      homeConfigurations = listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
 
       colmenaHive = colmena.lib.makeHive {
           meta = {
@@ -166,5 +187,14 @@
           }
         ];
       }).config.system.build.sdImage;
-    };
+    } // flake-utils.lib.eachDefaultSystem (system: 
+      let pkgs = nixpkgs.legacyPackages.${system}; in
+      {
+        devShells = {
+          default = pkgs.mkShell {
+            packages = with pkgs; [ git colmena ];
+          };
+        };
+      }
+    );
 }

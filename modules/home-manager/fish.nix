@@ -6,7 +6,7 @@ let
   cfg = config.custom-hm.fish;
 in
 {
-  options = {
+  options.custom-hm.fish = {
     enable = mkEnableOption "fish";
     plugins = mkOption {
       type = types.listOf types.str;
@@ -30,9 +30,9 @@ in
     programs.fish = mkIf cfg.enable {
       enable = true;
       plugins = with pkgs; filter (
-        e: hasAttr e.name builtins.listToAttrs # { "xxx" = true; }
+        e: hasAttr e.name (builtins.listToAttrs # { "xxx" = true; }
            (map (p: { name = p; value = true; }) cfg.plugins) # { name = "xxx"; value = true; }
-        ) [
+      )) [
         {
           name = "pisces";
           src = fishPlugins.pisces.src;

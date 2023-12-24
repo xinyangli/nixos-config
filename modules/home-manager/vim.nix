@@ -6,7 +6,7 @@ let
   cfg = config.custom-hm.neovim;
 in
 {
-  options = {
+  options.custom-hm.neovim = {
     enable = mkEnableOption "neovim configurations";
   };
   config = mkIf cfg.enable {

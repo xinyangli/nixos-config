@@ -1,10 +1,7 @@
-{ inputs, config, pkgs, ... }:
+{ config, pkgs, ... }:
 {
   imports = [
-    ../common
-    ../vscode.nix
-    ../alacritty.nix
-    inputs.nix-index-database.hmModules.nix-index
+    ./common
   ];
 
   programs.nix-index-database.comma.enable = true;
@@ -35,10 +32,13 @@
     remmina
   ];
 
-  # custom-hm = {
-  #   fish = { enable = true; };
-  #   git = { enable = true; };
-  #   neovim = { enable = true; };
-  #   zellij = { enable = true; };
-  # };
+  custom-hm = {
+    alacritty = { enable = true; };
+    direnv = { enable = true; };
+    fish = { enable = true; };
+    git = { enable = true; };
+    neovim = { enable = true; };
+    vscode = { enable = true; };
+    zellij = { enable = true; };
+  };
 }
