@@ -192,7 +192,7 @@
       {
         devShells = {
           default = pkgs.mkShell {
-            packages = with pkgs; [ git colmena nix-output-monitor ];
+            packages = with pkgs; [ git colmena sops nix-output-monitor ];
           };
         };
       }

@@ -251,6 +251,10 @@
       owner = "xin";
       sopsFile = ./secrets.yaml;
     };
+    sing_box_url = {
+      owner = "root";
+      sopsFile = ./secrets.yaml;
+    };
   };
   custom.restic.enable = true;
   custom.restic.repositoryFile = config.sops.secrets.restic_repo_calcite.path;

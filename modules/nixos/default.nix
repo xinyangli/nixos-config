@@ -5,5 +5,6 @@
     ./vaultwarden.nix
     ./prometheus.nix
     ./hedgedoc.nix
+    ./sing-box.nix
   ];
 }
