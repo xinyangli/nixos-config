@@ -28,6 +28,11 @@
 
   networking.hostName = "calcite";
 
+  programs.steam = {
+    enable = true;
+    gamescopeSession = { enable = true; };
+  };
+
   programs.vim.defaultEditor = true;
 
   # Keep this even if enabled in home manager
@@ -99,7 +104,7 @@
     enable = true;
     wireplumber.enable = true;
     alsa.enable = true;
-    #alsa.support32Bit = true;
+    alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     jack.enable = true;
@@ -110,6 +115,17 @@
     isNormalUser = true;
     description = "xin";
     extraGroups = [ "networkmanager" "wheel" "wireshark" "tss" ];
+  };
+
+  services.kanidm = {
+    enableClient = true;
+    enablePam = true;
+    clientSettings = {
+      uri = "https://auth.xinyang.life";
+    };
+    unixSettings = {
+      pam_allowed_login_groups = [ "linux_users" "xin@auth.xinyang.life" "test" ];
+    };
   };
 
   # Enable automatic login for the user.
@@ -129,6 +145,7 @@
     "openssl-1.1.1w"
     # For wechat-uos
     "electron-19.1.9"
+    "electron-25.9.0"
   ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -141,23 +158,10 @@
     wineWowPackages.waylandFull
     faudio
 
-    # ==== CLI tools ==== #
-    rust-analyzer
-
     # tesseract5 # ocr
     ocrmypdf # pdfocr
 
-    grc
-
-    sops
-    git-crypt
-
     # ==== Development ==== #
-
-    # Language server
-    clang-tools
-    rnix-lsp
-
     # Python
     # reference: https://nixos.wiki/wiki/Python
     (
@@ -173,17 +177,7 @@
       python-with-my-packages
     )
 
-    # Tex
-    texlive.combined.scheme-full
-
     # ==== GUI Softwares ==== #
-
-    # IDE
-    jetbrains.jdk # patch jetbrain runtime java
-    jetbrains.clion
-    jetbrains.pycharm-professional
-    jetbrains.idea-ultimate
-    android-studio
 
     # Gnome tweaks
     gnomeExtensions.paperwm
@@ -191,19 +185,20 @@
     gnomeExtensions.tray-icons-reloaded
     gnome.gnome-tweaks
     gthumb
+    oculante
 
     # Multimedia
     vlc
     obs-studio
     spotify
 
+    rawtherapee
     digikam
 
     # IM
     element-desktop
     tdesktop
     qq
-    config.nur.repos.xddxdd.wechat-uos
 
     # Password manager
     bitwarden
@@ -212,19 +207,16 @@
     firefox
     chromium
     brave
-    microsoft-edge
 
     # Writting
     obsidian
     zotero
-    wpsoffice
     onlyoffice-bin
+    wpsoffice
 
     config.nur.repos.linyinfeng.wemeet
 
     virt-manager
-
-    ghidra
   ];
 
   system.stateVersion = "22.05";
@@ -291,9 +283,10 @@
       defaultFonts = {
         serif = [ "Noto Serif CJK SC" "Ubuntu" ];
         sansSerif = [ "Noto Sans CJK SC" "Ubuntu" ];
-        monospace = [ "FiraCode NerdFont Mono" "Ubuntu" ];
+        monospace = [ "FiraCode NerdFont Mono" "Noto Sans Mono CJK SC" "Ubuntu" ];
       };
     };
+    enableDefaultPackages = true;
   };
   # Virtualization
   virtualisation = {

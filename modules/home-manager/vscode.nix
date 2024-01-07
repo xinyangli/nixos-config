@@ -25,7 +25,6 @@ in
         ms-vscode-remote.remote-ssh
         vscodevim.vim
         github.vscode-pull-request-github
-        eamodio.gitlens
         gruntfuggly.todo-tree # todo highlight
 
         # Language support
@@ -35,6 +34,7 @@ in
         davidanson.vscode-markdownlint
         # C/C++
         ms-vscode.cmake-tools
+        twxs.cmake
         llvm-vs-code-extensions.vscode-clangd
         # Nix
         jnoortheen.nix-ide
@@ -43,6 +43,7 @@ in
         # Vue
         vue.volar
         # Scale / chisel
+        scala-lang.scala
         scalameta.metals
 
         sterben.fpga-support
@@ -50,6 +51,7 @@ in
         ms-vscode-remote.remote-ssh-edit
         mushan.vscode-paste-image
       ]) ++ (with pkgs.vscode-extensions; [
+        waderyan.gitblame
         catppuccin.catppuccin-vsc
         # Rust
         rust-lang.rust-analyzer
@@ -140,6 +142,7 @@ in
           "editor.wordWrapColumn" = 80;
           "editor.unicodeHighlight.ambiguousCharacters" = false;
         };
+        "cmake.configureOnEdit" = false;
       };
     };
   };

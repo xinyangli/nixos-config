@@ -81,7 +81,7 @@
           modules = [
             self.homeManagerModules
           ] ++ sharedModules;
-          specialArgs = {
+          extraSpecialArgs = {
             inherit inputs;
           };
         };
@@ -100,7 +100,7 @@
       nixosModules.default = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
-      homeConfigurations = listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
+      homeConfigurations = builtins.listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
 
       colmenaHive = colmena.lib.makeHive {
           meta = {
@@ -192,7 +192,7 @@
       {
         devShells = {
           default = pkgs.mkShell {
-            packages = with pkgs; [ git colmena ];
+            packages = with pkgs; [ git colmena nix-output-monitor ];
           };
         };
       }

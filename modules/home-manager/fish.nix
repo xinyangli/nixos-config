@@ -10,7 +10,7 @@ in
     enable = mkEnableOption "fish";
     plugins = mkOption {
       type = types.listOf types.str;
-      default = [ "pisces" "done" "hydro" ];
+      default = [ "pisces" "done" "hydro" "grc" ];
     };
     functions = {
       enable = mkOption {
@@ -26,26 +26,27 @@ in
     };
   };
 
-  config = {
-    programs.fish = mkIf cfg.enable {
+  config = mkIf cfg.enable {
+    home.packages = [ pkgs.grc ];
+    programs.fish = {
       enable = true;
-      plugins = with pkgs; filter (
+      plugins = with pkgs; (filter (
         e: hasAttr e.name (builtins.listToAttrs # { "xxx" = true; }
            (map (p: { name = p; value = true; }) cfg.plugins) # { name = "xxx"; value = true; }
       )) [
-        {
-          name = "pisces";
+        { name = "pisces";
           src = fishPlugins.pisces.src;
         }
-        {
-          name = "done";
+        { name = "done";
           src = fishPlugins.done.src;
         }
-        {
-          name = "hydro";
+        { name = "hydro";
           src = fishPlugins.hydro.src;
         }
-      ];
+        { name = "grc";
+          src = fishPlugins.grc.src;
+        }
+      ]);
       interactiveShellInit = let
         extraInit = if cfg.functions.enable then ''
           ${pkgs.nix-your-shell}/bin/nix-your-shell fish | source
@@ -61,7 +62,6 @@ in
           end
         '' else "";
       in ''
-        fish_config theme choose 'ayu Dark'
         fish_config prompt choose arrow
       '' + extraInit;
       functions = mkIf cfg.functions.enable {

@@ -23,6 +23,12 @@
       fsType = "vfat";
     };
 
+  fileSystems."/media/data" =
+    { device = "/dev/nvme0n1p7";
+      fsType = "ntfs-3g";
+      options = [ "rw" "uid=1000" "nofail" "x-systemd.device-timeout=2" ];
+    };
+
   swapDevices =
     [ { device = "/dev/disk/by-label/NIXSWAP"; }
     ];
@@ -41,6 +47,6 @@
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   hardware.opengl = {
     enable = true;
-    driSupport32Bit = false;
+    driSupport32Bit = true;
   };
 }

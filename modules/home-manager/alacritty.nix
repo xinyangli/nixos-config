@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, pkgs, lib, ... }:
 with lib;
 
 let
@@ -25,7 +25,14 @@ in
           resize_increments = true;
           dynamic_padding = true;
         };
+        import = [
+          "${config.xdg.configHome}/alacritty/catppuccin-macchiato.yml"  
+        ];
       };
+    };
+    xdg.configFile."alacritty/catppuccin-macchiato.yml".source = builtins.fetchurl {
+      url = "https://raw.githubusercontent.com/catppuccin/alacritty/main/catppuccin-macchiato.yml";
+      sha256 = "sha256-+m8FyPStdh1A1xMVBOkHpfcaFPcyVL99tIxHuDZ2zXI=";
     };
   };
 }
