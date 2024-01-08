@@ -36,7 +36,7 @@
     alacritty = { enable = true; };
     direnv = { enable = true; };
     fish = { enable = true; };
-    git = { enable = true; };
+    git = { enable = true; signing.enable = true; };
     neovim = { enable = true; };
     vscode = { enable = true; };
     zellij = { enable = true; };

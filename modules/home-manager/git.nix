@@ -8,9 +8,20 @@ in
 {
   options.custom-hm.git = {
     enable = mkEnableOption "Enable git configuration";
+    signing = mkOption {
+      type = types.submodule {
+        options = {
+          enable = mkEnableOption "Git ssh signing";
+          keyFile = mkOption {
+            type = types.str;
+            default = "~/.ssh/id_ed25519_sk";
+          };
+        };
+      };
+    };
   };
   config = {
-    programs.git = {
+    programs.git = mkIf cfg.enable {
       enable = true;
       delta.enable = true;
       userName = "Xinyang Li";
@@ -20,6 +31,17 @@ in
         a = "add";
         d = "diff";
         s = "status";
+      };
+      signing = mkIf cfg.signing.enable { 
+        signByDefault = true;
+        key = cfg.signing.keyFile;
+      };
+      
+      extraConfig.user = mkIf cfg.signing.enable {
+        signingkey = cfg.signing.keyFile;
+      };
+      extraConfig.gpg = mkIf cfg.signing.enable {
+        format = "ssh";
       };
     };
   };
