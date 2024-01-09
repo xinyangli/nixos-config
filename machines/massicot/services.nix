@@ -40,7 +40,7 @@ in
     value = { 
       device = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
       fsType = "cifs";
-      options = ["uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path}"];
+      options = ["uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path},rw,x-systemd.automount"];
     };
   }) [ "forgejo" "gotosocial" "conduit" "hedgedoc" ] );
 
@@ -112,6 +112,7 @@ in
         ROOT_URL = "https://git.xinyang.life/";
         START_SSH_SERVER = true;
         BUILTIN_SSH_SERVER_USER = "git";
+        SSH_USER = "git";
         SSH_DOMAIN = "ssh.xinyang.life";
         SSH_PORT = 2222;
         LFS_MAX_FILE_SIZE = 10737418240;
@@ -137,6 +138,15 @@ in
       };
     };
   };
+
+  users.users.git = {
+    isSystemUser = true;
+    useDefaultShell = true;
+    group = "git";
+    extraGroups = [ "forgejo" ];
+  };
+  users.groups.git = { };
+
 
   services.caddy = {
     enable = true;

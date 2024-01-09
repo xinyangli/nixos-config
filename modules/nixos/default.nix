@@ -6,5 +6,6 @@
     ./prometheus.nix
     ./hedgedoc.nix
     ./sing-box.nix
+    ./kanidm-client.nix
   ];
 }

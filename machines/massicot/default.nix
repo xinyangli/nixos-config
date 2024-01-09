@@ -62,31 +62,33 @@
     hostName = "massicot";
   };
 
+  custom.kanidm-client = {
+    enable = true;
+    uri = "https://auth.xinyang.life/";
+    asSSHAuth = {
+      enable = true;
+      allowedGroups = [ "linux_users" ];
+    };
+    sudoers = [ "xin@auth.xinyang.life" ];
+  };
+
+  security.sudo = {
+      execWheelOnly = true;
+      wheelNeedsPassword = false;
+    };
+
   services.openssh = {
     enable = true;
     settings = {
       PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+      GSSAPIAuthentication = "no";
+      KerberosAuthentication = "no";
     };
   };
+
+  services.fail2ban.enable = true;
   
   systemd.services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
-  
-  users.users.xin = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
-    openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPBcSvUQnmMFtpftFKIsDqeyUyZHzRg5ewgn3VEcLnss"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIInPn+7cMbH7zCEPJArU/Ot6oq8NHo8a2rYaCfTp7zgd"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPeNQ43f/ce4VxVPsAaKPPTp8rokQpmwNIsOX7JBZq4A"
-    ];
-    hashedPassword = "$y$j9T$JOJn97hZndiDamUmmT.iq.$ue7gNZz/b14ur8GhyutOCvFjsv.3rcsHmk7m.WRk6u7";
-  };
-
-  security.sudo.extraRules = [
-    { users = [ "xin" ];
-      commands = [ { command = "ALL"; options = [ "NOPASSWD" ]; } ];
-    }
-  ];
-
-  
 }

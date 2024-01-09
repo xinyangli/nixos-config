@@ -119,12 +119,8 @@
 
   services.kanidm = {
     enableClient = true;
-    enablePam = true;
     clientSettings = {
       uri = "https://auth.xinyang.life";
-    };
-    unixSettings = {
-      pam_allowed_login_groups = [ "linux_users" "xin@auth.xinyang.life" "test" ];
     };
   };
 

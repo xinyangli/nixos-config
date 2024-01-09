@@ -67,7 +67,7 @@ in
           80
         ];
         "editor.mouseWheelZoom" = true;
-        "git.autofetch" = true;
+        "git.autofetch" = false;
         "window.zoomLevel" = -1;
 
         "nix.enableLanguageServer" = true;
