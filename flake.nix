@@ -9,7 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-vscode-extensions =  {
+    nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
@@ -20,7 +20,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
-  
+
     nur = {
       url = "github:nix-community/NUR";
     };
@@ -86,7 +86,7 @@
           };
         };
       };
-      mkNixos = { system, modules, specialArgs ? {}}: nixpkgs.lib.nixosSystem {
+      mkNixos = { system, modules, specialArgs ? { } }: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = specialArgs // { inherit inputs system; };
         modules = [
@@ -102,57 +102,65 @@
 
       homeConfigurations = builtins.listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
 
-      colmenaHive = colmena.lib.makeHive {
+      colmenaHive =
+        let
+          deploymentModule = {
+            deployment.targetUser = "xin";
+          };
+          sharedModules = [
+            self.nixosModules.default
+            deploymentModule
+          ];
+        in
+        colmena.lib.makeHive {
           meta = {
-              nixpkgs = import nixpkgs {
-                  system = "x86_64-linux";
-              };
-              machinesFile = ./nixbuild.net;
-              specialArgs = {
-                inherit inputs;
-              };
+            nixpkgs = import nixpkgs {
+              system = "x86_64-linux";
+            };
+            machinesFile = ./nixbuild.net;
+            specialArgs = {
+              inherit inputs;
+            };
           };
 
           massicot = { name, nodes, pkgs, ... }: with inputs; {
-              deployment.targetHost = "49.13.13.122";
+            deployment.targetHost = "49.13.13.122";
+            deployment.buildOnTarget = true;
 
-              imports = [
-                  { nixpkgs.system = "aarch64-linux"; }
-                  self.nixosModules.default
-                  machines/massicot
-              ];
+            imports = [
+              { nixpkgs.system = "aarch64-linux"; }
+              machines/massicot
+            ] ++ sharedModules;
           };
 
           sgp-00 = { name, nodes, pkgs, ... }: with inputs; {
-              imports = [
-                self.nixosModules.default
-                machines/dolomite
-              ];
-              nixpkgs.system = "x86_64-linux";
-              networking.hostName = "sgp-00";
-              system.stateVersion = "23.11";
-              deployment = {
-                targetHost = "video.namely.icu";
-                buildOnTarget = false;
-                tags = [ "proxy" ];
-              };
+            imports = [
+              machines/dolomite
+            ] ++ sharedModules;
+            nixpkgs.system = "x86_64-linux";
+            networking.hostName = "sgp-00";
+            system.stateVersion = "23.11";
+            deployment = {
+              targetHost = "video.namely.icu";
+              buildOnTarget = false;
+              tags = [ "proxy" ];
+            };
           };
 
           tok-00 = { name, nodes, pkgs, ... }: with inputs; {
-              imports = [
-                self.nixosModules.default
-                machines/dolomite
-              ];
-              nixpkgs.system = "x86_64-linux";
-              networking.hostName = "tok-00";
-              system.stateVersion = "23.11";
-              deployment = {
-                targetHost = "video01.namely.icu";
-                buildOnTarget = false;
-                tags = [ "proxy" ];
-              };
+            imports = [
+              machines/dolomite
+            ] ++ sharedModules;
+            nixpkgs.system = "x86_64-linux";
+            networking.hostName = "tok-00";
+            system.stateVersion = "23.11";
+            deployment = {
+              targetHost = "video01.namely.icu";
+              buildOnTarget = false;
+              tags = [ "proxy" ];
+            };
           };
-      };
+        };
 
       nixosConfigurations = {
         calcite = mkNixos {
@@ -162,7 +170,7 @@
             machines/calcite/configuration.nix
             (mkHome "xin" "calcite")
           ];
-        }; 
+        };
         raspite = mkNixos {
           system = "aarch64-linux";
           modules = [
@@ -186,12 +194,12 @@
           }
         ];
       }).config.system.build.sdImage;
-    } // flake-utils.lib.eachDefaultSystem (system: 
+    } // flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs.legacyPackages.${system}; in
       {
         devShells = {
           default = pkgs.mkShell {
-            packages = with pkgs; [ git colmena sops nix-output-monitor ];
+            packages = with pkgs; [ git colmena sops nix-output-monitor rnix-lsp ];
           };
         };
       }

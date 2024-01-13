@@ -5,7 +5,7 @@ let
   cfg = config.custom-hm.vscode;
 in
 {
-  options.custom-hm.vscode = { 
+  options.custom-hm.vscode = {
     enable = mkEnableOption "Vscode config";
   };
   config = mkIf cfg.enable {

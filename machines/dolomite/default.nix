@@ -66,10 +66,15 @@
       };
     };
     services.fail2ban.enable = true;
+    programs.mosh.enable = true;
 
     security.sudo = {
       execWheelOnly = true;
       wheelNeedsPassword = false;
+    };
+
+    nix.settings = {
+      trusted-users = config.users.groups.wheel.members;
     };
 
     services.sing-box = let
