@@ -164,8 +164,7 @@
               protocol = "dns";
             }
             {
-              geoip = "cn";
-              geosite = "cn";
+              inbound = "sg4";
               outbound = "direct";
             }
           ];
