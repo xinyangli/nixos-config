@@ -180,6 +180,7 @@
     gnomeExtensions.search-light
     gnomeExtensions.tray-icons-reloaded
     gnome.gnome-tweaks
+    gnome.gnome-themes-extra
     gthumb
     oculante
 

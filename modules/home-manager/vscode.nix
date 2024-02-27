@@ -55,7 +55,6 @@ in
         catppuccin.catppuccin-vsc
         # Rust
         rust-lang.rust-analyzer
-        github.copilot
       ]);
       userSettings = {
         "workbench.colorTheme" = "Catppuccin Macchiato";
