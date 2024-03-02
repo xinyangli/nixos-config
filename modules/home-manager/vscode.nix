@@ -33,8 +33,6 @@ in
         # Markdown
         davidanson.vscode-markdownlint
         # C/C++
-        ms-vscode.cmake-tools
-        twxs.cmake
         llvm-vs-code-extensions.vscode-clangd
         # Nix
         jnoortheen.nix-ide
@@ -51,6 +49,8 @@ in
         ms-vscode-remote.remote-ssh-edit
         mushan.vscode-paste-image
       ]) ++ (with pkgs.vscode-extensions; [
+        ms-vscode.cmake-tools
+        twxs.cmake
         waderyan.gitblame
         catppuccin.catppuccin-vsc
         # Rust
