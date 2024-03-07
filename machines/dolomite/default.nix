@@ -38,7 +38,7 @@
     networking.firewall.allowedUDPPorts = [ ] ++ (lib.range 6311 6314);
 
     custom.prometheus = {
-      enable = true;
+      enable = false;
       exporters.enable = true;
       grafana = {
         enable = true;

@@ -73,8 +73,8 @@
 
   # Configure keymap in X11
   services.xserver = {
-    layout = "us";
-    xkbVariant = "";
+    xkb.layout = "us";
+    xkb.variant = "";
   };
   # Keyboard mapping on internal keyboard
   services.keyd = {
@@ -294,7 +294,6 @@
     libvirtd.enable = true;
     podman = {
       enable = true;
-      enableNvidia = true;
     };
     docker = {
       enable = true;

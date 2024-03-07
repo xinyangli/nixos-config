@@ -49,4 +49,9 @@
     enable = true;
     driSupport32Bit = true;
   };
+
+  hardware.nvidia = {
+    powerManagement.enable = true;
+    dynamicBoost.enable = lib.mkForce false;
+  };
 }
