@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports =
@@ -22,9 +22,16 @@
     enable = true;
     # expose /run/current-system/sw/lib/libtpm2_pkcs11.so
     pkcs11.enable = true;
+    # TODO: Need this until fapi-config is fixed in NixOS
+    pkcs11.package = pkgs.tpm2-pkcs11.override { fapiSupport = false; };
     # TPM2TOOLS_TCTI and TPM2_PKCS11_TCTI env variables
     tctiEnvironment.enable = true;
   };
+  services.gnome.gnome-keyring.enable = lib.mkForce false;
+  security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
+  services.ssh-tpm-agent.enable = true;
+
+  programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
 
   networking.hostName = "calcite";
 

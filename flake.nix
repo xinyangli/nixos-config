@@ -169,6 +169,7 @@
             nixos-hardware.nixosModules.asus-zephyrus-ga401
             machines/calcite/configuration.nix
             (mkHome "xin" "calcite")
+            (./overlays)
           ];
         };
         raspite = mkNixos {
@@ -199,7 +200,7 @@
       {
         devShells = {
           default = pkgs.mkShell {
-            packages = with pkgs; [ git colmena sops nix-output-monitor rnix-lsp ];
+            packages = with pkgs; [ git colmena sops nix-output-monitor rnix-lsp nvd ];
           };
         };
       }

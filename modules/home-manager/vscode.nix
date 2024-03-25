@@ -44,13 +44,14 @@ in
         scala-lang.scala
         scalameta.metals
 
+        (ms-vscode.cmake-tools.overrideAttrs (_: { sourceRoot = "extension"; }))
+        twxs.cmake
+
         sterben.fpga-support
 
         ms-vscode-remote.remote-ssh-edit
         mushan.vscode-paste-image
       ]) ++ (with pkgs.vscode-extensions; [
-        ms-vscode.cmake-tools
-        twxs.cmake
         waderyan.gitblame
         catppuccin.catppuccin-vsc
         # Rust
