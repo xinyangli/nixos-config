@@ -259,11 +259,17 @@
       owner = "root";
       sopsFile = ./secrets.yaml;
     };
+    gitea_env = {
+      owner = "root";
+      sopsFile = ./secrets.yaml;
+    };
   };
   custom.restic.enable = true;
   custom.restic.repositoryFile = config.sops.secrets.restic_repo_calcite.path;
   custom.restic.passwordFile = config.sops.secrets.restic_repo_calcite_password.path;
 
+  custom.forgejo-actions-runner.enable = true;
+  custom.forgejo-actions-runner.tokenFile = config.sops.secrets.gitea_env.path;
 
   # MTP support
   services.gvfs.enable = true;
