@@ -203,6 +203,7 @@
     element-desktop
     tdesktop
     qq
+    wechat-uos
 
     # Password manager
     bitwarden
