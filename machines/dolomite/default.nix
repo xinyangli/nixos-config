@@ -1,12 +1,19 @@
 { inputs, config, pkgs, lib, modulesPath, ... }:
+let
+  awsHosts = [ "sgp-00" "tok-00 "];
+  bwgHosts = [ "la-00" ];
+in
 {
   imports = [
     ../sops.nix
-    "${modulesPath}/virtualisation/amazon-image.nix"
+   ./bandwagon.nix
+   ./lightsail.nix
   ];
 
 
   config = {
+    isBandwagon = builtins.elem config.networking.hostName bwgHosts;
+    isLightsail = builtins.elem config.networking.hostName awsHosts;
     sops = {
       secrets = {
         wg_private_key = {
@@ -19,7 +26,6 @@
         };
       };
     };
-    boot.loader.grub.device = lib.mkForce "/dev/nvme0n1";
     boot.kernel.sysctl = {
       "net.core.default_qdisc" = "fq";
       "net.ipv4.tcp_congestion_control" = "bbr";
@@ -39,9 +45,9 @@
 
     custom.prometheus = {
       enable = false;
-      exporters.enable = true;
+      exporters.enable = false;
       grafana = {
-        enable = true;
+        enable = false;
         password_file = config.sops.secrets.grafana_cloud_api.path;
       };
     };
