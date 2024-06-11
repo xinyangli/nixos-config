@@ -10,7 +10,7 @@ in
     isBandwagon = lib.mkEnableOption "Bandwagon instance";
   };
 
-  config = lib.mkIf cfg.isBandwagon {
+  config = lib.mkIf cfg {
     boot.initrd.availableKernelModules = [ "ata_piix" "xhci_pci" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
     boot.initrd.kernelModules = [ ];
     boot.kernelModules = [ ];
@@ -28,9 +28,8 @@ in
 
     swapDevices = [ ];
 
-    boot.loader.grub.enable = lib.mkForce true;
-    boot.loader.grub.version = lib.mkForce 2;
-    boot.loader.grub.device = lib.mkForce "/dev/sda";
+    boot.loader.grub.enable = true;
+    boot.loader.grub.device = "/dev/sda";
     networking.useDHCP = false;
     networking.interfaces.ens18.useDHCP = true;
     networking.interfaces.ens19.useDHCP = true;

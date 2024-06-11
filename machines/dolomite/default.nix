@@ -1,13 +1,13 @@
-{ inputs, config, pkgs, lib, modulesPath, ... }:
+{ config, lib, ... }:
 let
-  awsHosts = [ "sgp-00" "tok-00 "];
+  awsHosts = [ "tok-00 "];
   bwgHosts = [ "la-00" ];
 in
 {
   imports = [
     ../sops.nix
-   ./bandwagon.nix
-   ./lightsail.nix
+    ./bandwagon.nix
+    ./lightsail.nix
   ];
 
 
