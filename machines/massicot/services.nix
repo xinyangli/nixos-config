@@ -35,18 +35,23 @@ in
     };
   };
 
-  fileSystems = builtins.listToAttrs (map (share: {
-    name = "/mnt/storage/${share}";
-    value = { 
-      device = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
-      fsType = "cifs";
-      options = ["uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path},rw,x-systemd.automount"];
-    };
-  }) [ "forgejo" "gotosocial" "conduit" "hedgedoc" ] );
+  systemd.mounts = map (share: {
+    what = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
+    where = "/mnt/storage/${share}";
+    type = "cifs";
+    options = "rw,uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path},_netdev,fsc";
+    before = [ "${share}.service" ];
+    after = [ "cachefilesd.service" ];
+    wantedBy = [ "${share}.service" ];
+  }) [ "forgejo" "gotosocial" "conduit" "hedgedoc" ];
+
+  services.cachefilesd.enable = true;
 
   system.activationScripts = {
     conduit-media-link.text = ''
-      ln -snf /mnt/storage/conduit/media /var/lib/private/matrix-conduit/media
+      mkdir -m 700 -p /var/lib/private/matrix-conduit/media
+      chown conduit:conduit /var/lib/private/matrix-conduit/media
+      mount --bind --verbose /mnt/storage/conduit/media /var/lib/private/matrix-conduit/media
     '';
   };
   security.acme = {
@@ -76,6 +81,8 @@ in
       server_name = "xinyang.life";
       port = 6167;
       # database_path = "/var/lib/matrix-conduit/";
+      max_concurrent_requests = 100;
+      log = "info";
       database_backend = "rocksdb";
       allow_registration = false;
     };
@@ -153,21 +160,23 @@ in
     virtualHosts."xinyang.life:443".extraConfig = ''
       tls internal
       encode zstd gzip
-      reverse_proxy /_matrix/* localhost:6167
       handle_path /.well-known/matrix/client {
           header Content-Type "application/json"
           header Access-Control-Allow-Origin "*"
           header Content-Disposition attachment; filename="client"
-          respond `{"m.homeserver":{"base_url":"https://xinyang.life/"}, "org.matrix.msc3575.proxy":{"url":"https://xinyang.life/"}}`
+          respond `{"m.homeserver":{"base_url":"https://msg.xinyang.life/"}, "org.matrix.msc3575.proxy":{"url":"https://msg.xinyang.life/"}}`
       }
       handle_path /.well-known/matrix/server {
           header Content-Type "application/json"
           header Access-Control-Allow-Origin "*"
-          respond `{"m.server": "xinyang.life:443"}`
+          respond `{"m.server": "msg.xinyang.life:443"}`
       }
       reverse_proxy * http://localhost:8080 {
           flush_interval -1
       }
+    '';
+    virtualHosts."https://msg.xinyang.life:443".extraConfig = ''
+      reverse_proxy /_matrix/* localhost:6167
     '';
     virtualHosts."https://git.xinyang.life:443".extraConfig = ''
       reverse_proxy http://${config.services.gitea.settings.server.DOMAIN}:${toString config.services.gitea.settings.server.HTTP_PORT}
