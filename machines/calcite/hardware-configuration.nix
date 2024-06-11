@@ -10,12 +10,16 @@
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "ahci" "usbhid" ];
   boot.initrd.kernelModules = [ ];
+  boot.initrd.luks.devices.cryptroot = {
+    device = "/dev/disk/by-uuid/5a51f623-6fbd-4843-9f83-c895067e8e7d";
+  };
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-label/NIXROOT";
-      fsType = "ext4";
+    { # device = "/dev/disk/by-label/NIXROOT";
+      device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
     };
 
   fileSystems."/boot/efi" =

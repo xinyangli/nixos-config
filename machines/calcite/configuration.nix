@@ -66,17 +66,13 @@
     LC_TIME = "en_US.utf8";
   };
 
-  i18n.inputMethod = {
-    enabled = "fcitx5";
-    fcitx5.addons = with pkgs; [ fcitx5-rime ];
-  };
-
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+
 
   # Configure keymap in X11
   services.xserver = {
@@ -132,8 +128,8 @@
   };
 
   # Enable automatic login for the user.
-  services.xserver.displayManager.autoLogin.enable = true;
-  services.xserver.displayManager.autoLogin.user = "xin";
+  services.displayManager.autoLogin.enable = true;
+  services.displayManager.autoLogin.user = "xin";
 
   # Smart services
   services.smartd.enable = true;
@@ -145,10 +141,6 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.1.1w"
-    # For wechat-uos
-    "electron-19.1.9"
-    "electron-25.9.0"
   ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -156,10 +148,6 @@
     # Filesystem
     owncloud-client
     nfs-utils
-
-    winetricks
-    wineWowPackages.waylandFull
-    faudio
 
     # tesseract5 # ocr
     ocrmypdf # pdfocr
@@ -174,6 +162,7 @@
           requests
           numpy
           pyyaml
+          setuptools
         ];
         python-with-my-packages = python3.withPackages my-python-packages;
       in
@@ -185,9 +174,11 @@
     # Gnome tweaks
     gnomeExtensions.paperwm
     gnomeExtensions.search-light
-    gnomeExtensions.tray-icons-reloaded
+    gnomeExtensions.appindicator
     gnome.gnome-tweaks
     gnome.gnome-themes-extra
+    gnome.gnome-remote-desktop
+    bibata-cursors
     gthumb
     oculante
 
@@ -195,29 +186,29 @@
     vlc
     obs-studio
     spotify
-
-    rawtherapee
-    digikam
-
     # IM
     element-desktop
     tdesktop
     qq
-    wechat-uos
 
     # Password manager
     bitwarden
 
     # Browser
     firefox
-    chromium
+    (chromium.override {
+      commandLineArgs = [
+        "--ozone-platform-hint=auto"
+        "--enable-wayland-ime"
+      ];
+    })
     brave
 
     # Writting
-    obsidian
     zotero
-    onlyoffice-bin
+    # onlyoffice-bin
     wpsoffice
+    zed-editor
 
     config.nur.repos.linyinfeng.wemeet
 

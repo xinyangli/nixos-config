@@ -19,8 +19,11 @@
   services.tailscale.enable = true;
   # services.tailscale.useRoutingFeatures = "both";
 
+  services.dae.enable = true;
+  services.dae.configFile = "/var/lib/dae/config.dae";
+
   custom.sing-box = {
-    enable = true;
+    enable = false;
     configFile = {
       urlFile = config.sops.secrets.sing_box_url.path;
       hash = "6ca5bc8a16f8c413227690aceeee2c12c02cab09473c216b849af1e854b98588";
