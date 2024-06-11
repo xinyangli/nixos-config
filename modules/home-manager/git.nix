@@ -36,7 +36,6 @@ in
         signByDefault = true;
         key = cfg.signing.keyFile;
       };
-      
       extraConfig.user = mkIf cfg.signing.enable {
         signingkey = cfg.signing.keyFile;
       };

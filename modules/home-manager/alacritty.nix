@@ -18,6 +18,7 @@ in
           args = [
             "attach"
             "-c"
+            "alacritty-zellij"
           ];
         };
         font.size = 10.0;
@@ -25,14 +26,7 @@ in
           resize_increments = true;
           dynamic_padding = true;
         };
-        import = [
-          "${config.xdg.configHome}/alacritty/catppuccin-macchiato.toml"
-        ];
       };
-    };
-    xdg.configFile."alacritty/catppuccin-macchiato.toml".source = builtins.fetchurl {
-      url = "https://raw.githubusercontent.com/catppuccin/alacritty/main/catppuccin-macchiato.toml";
-      sha256 = "sha256:1iq187vg64h4rd15b8fv210liqkbzkh8sw04ykq0hgpx20w3qilv";
     };
   };
 }

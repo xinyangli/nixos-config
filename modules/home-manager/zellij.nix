@@ -20,7 +20,6 @@ in
             "Ctrl n"
           ];
         };
-        theme = "catppuccin-macchiato";
       };
     };
   };

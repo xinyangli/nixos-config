@@ -22,11 +22,13 @@ let
         llvm-vs-code-extensions.vscode-clangd
         (ms-vscode.cmake-tools.overrideAttrs (_: { sourceRoot = "extension"; }))
         twxs.cmake
+        ms-vscode.cpptools
       ];
       settings = {
         "cmake.configureOnEdit" = false;
         "cmake.showOptionsMovedNotification" = false;
         "cmake.showNotAllDocumentsSavedQuestion" = false;
+        "C_Cpp.intelliSenseEngine" = "Disabled";
       };
     };
     pythonPackages = {
@@ -37,7 +39,7 @@ let
       settings = { };
     };
     scalaPackages = {
-      systemPackages = with pkgs; [ ];
+      systemPackages = with pkgs; [ coursier ];
       extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
         scala-lang.scala
         scalameta.metals
@@ -54,7 +56,7 @@ let
         "latex-workshop.latex.tools" = [
           { "name" = "xelatex";
             "command" = "xelatex";
-            "args" = [ "-synctex=1" "-interaction=nonstopmode" "-file-line-error" "-pdf" "%DOCFILE%" ];
+            "args" = [ "-synctex=1" "-interaction=nonstopmode" "-file-line-error" "%DOCFILE%" ];
           }
           { "name" = "pdflatex";
             "command" = "pdflatex";
@@ -104,6 +106,7 @@ in
     ] ++ zipAttrsWithLanguageOption "systemPackages");
     programs.vscode = {
       enable = true;
+      package = pkgs.vscode.override { commandLineArgs = "--enable-wayland-ime"; };
       enableUpdateCheck = false;
       enableExtensionUpdateCheck = false;
       mutableExtensionsDir = false;
@@ -131,7 +134,6 @@ in
           catppuccin.catppuccin-vsc
           # Rust
           rust-lang.rust-analyzer
-        # ]) ++ ;
         ])
       ] ++ zipAttrsWithLanguageOption "extension");
       userSettings = lib.mkMerge ([
