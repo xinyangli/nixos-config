@@ -29,6 +29,13 @@
           extraPkgs = with pkgs; [
             nodejs_20 # nodejs is needed for running most 3rdparty actions
             # add any other pre-installed packages here
+            curl
+            xz
+            openssl
+            coreutils-full
+            cmake
+            gnumake
+            gcc
           ];
           # change this is you want 
           channelURL = "https://nixos.org/channels/nixpkgs-23.11";

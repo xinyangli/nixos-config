@@ -1,6 +1,9 @@
-{ config, libs, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
+  imports = [
+    ./hass.nix
+  ];
   nixpkgs.overlays = [
     # Workaround https://github.com/NixOS/nixpkgs/issues/126755#issuecomment-869149243
     (final: super: {
@@ -8,29 +11,21 @@
         super.makeModulesClosure (x // { allowMissing = true; });
     })
   ];
-  
-  imports = [
-    ../sops.nix
-  ];
 
   environment.systemPackages = with pkgs; [
     git
+    libraspberrypi
+    raspberrypi-eeprom
   ];
 
   # Use mirror for binary cache
   nix.settings.substituters = [
+    "https://mirrors.bfsu.edu.cn/nix-channels/store"
     "https://mirrors.ustc.edu.cn/nix-channels/store"
-    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
   ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  sops = {
-    secrets.password = {
-      sopsFile = ./secrets.yaml;
-    };
-  };
-
-  system.stateVersion = "22.11";
+  system.stateVersion = "24.05";
   
   networking = {
     hostName = "raspite";
@@ -38,23 +33,31 @@
     interfaces.eth0.useDHCP = true;
   };
 
-  networking.proxy = {
-    default = "http://127.0.0.1:7890/";
-    noProxy = "127.0.0.1,localhost,internal.domain,.coho-tet.ts.net";
+  # boot.kernelPackages = pkgs.linuxPackages_stable;
+
+  custom.kanidm-client = {
+    enable = true;
+    uri = "https://auth.xinyang.life";
+    asSSHAuth = {
+      enable = true;
+      allowedGroups = [ "linux_users" ];
+      hardening = true;
+    };
+    sudoers = [ "xin@auth.xinyang.life" ];
   };
 
-  services.openssh = {
-    enable = true;
+  security.sudo = {
+    execWheelOnly = true;
+    wheelNeedsPassword = false;
   };
-  
-  systemd.services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
-  
-  users.users.xin = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
-    openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIInPn+7cMbH7zCEPJArU/Ot6oq8NHo8a2rYaCfTp7zgd xin@nixos" ];
-    # passwordFile = config.sops.secrets.password.path;
-    hashedPassword = "$y$j9T$KEOMZBlXtudOYWq/elAdI.$Vd3X8rjEplbuRBeZPp.8/gpL3zthpBNjhBR47wFc8D4";
+
+  nix.settings = {
+    trusted-users = [ "@wheel" ];
   };
-  
+
+  # fileSystems."/".fsType = lib.mkForce "btrfs";
+  boot.supportedFilesystems.zfs = lib.mkForce false;
+
+  services.dae.enable = false;
+  services.dae.configFile = "/var/lib/dae/config.dae";
 }

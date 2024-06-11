@@ -16,6 +16,10 @@ in
               type = types.listOf types.str;
               example = [ "linux_users" ];
             };
+            hardening = mkOption {
+              type = types.bool;
+              default = false;
+            };
           };
         };
       };
@@ -48,7 +52,15 @@ in
       enable = true;
       authorizedKeysCommand = "/etc/ssh/auth %u";
       authorizedKeysCommandUser = "kanidm-ssh-runner"; 
+      settings = mkIf cfg.asSSHAuth.enable {
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+        PermitRootLogin = lib.mkForce "no";
+        GSSAPIAuthentication = "no";
+        KerberosAuthentication = "no";
+      };
     };
+
     environment.etc."ssh/auth" = mkIf cfg.asSSHAuth.enable {
       mode = "0555";
       text = ''
@@ -59,6 +71,7 @@ in
     users.groups.wheel.members = cfg.sudoers;
     users.groups.kanidm-ssh-runner = { };
     users.users.kanidm-ssh-runner = { isSystemUser = true; group = "kanidm-ssh-runner"; };
+
   };
 }
 
