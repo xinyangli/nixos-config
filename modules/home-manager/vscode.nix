@@ -17,7 +17,7 @@ let
       };
     };
     cxxPackages = {
-      systemPackages = with pkgs; [ clang-tools ];
+      systemPackages = with pkgs; [ clang-tools cmake-format ];
       extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
         llvm-vs-code-extensions.vscode-clangd
         (ms-vscode.cmake-tools.overrideAttrs (_: { sourceRoot = "extension"; }))

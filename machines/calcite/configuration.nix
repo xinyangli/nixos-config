@@ -40,6 +40,17 @@
     gamescopeSession = { enable = true; };
   };
 
+  programs.oidc-agent.enable = true;
+  programs.oidc-agent.providers = [
+    { issuer = "https://home.xinyang.life:9201";
+      pubclient = {
+        client_id = "xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69";
+        client_secret = "UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh";
+        scope = "openid offline_access profile email";
+      };
+    }
+  ];
+
   programs.vim.defaultEditor = true;
 
   # Keep this even if enabled in home manager
@@ -97,7 +108,7 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
-  services.printing.drivers = [ pkgs.hplip ];
+  # services.printing.drivers = [ pkgs.hplip ];
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -145,6 +156,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    oidc-agent
     # Filesystem
     owncloud-client
     nfs-utils

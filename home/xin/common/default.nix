@@ -14,7 +14,6 @@
     tmux
     ffmpeg
     tealdeer
-    neofetch
     rclone
 
     inetutils

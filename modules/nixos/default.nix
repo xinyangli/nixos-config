@@ -9,5 +9,6 @@
     ./kanidm-client.nix
     ./ssh-tpm-agent.nix # FIXME: Waiting for upstream merge
     ./forgejo-actions-runner.nix
+    ./oidc-agent.nix
   ];
 }
