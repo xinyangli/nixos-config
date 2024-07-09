@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  awsHosts = [ "tok-00 "];
+  awsHosts = [ "tok-00"];
   bwgHosts = [ "la-00" ];
 in
 {
@@ -80,7 +80,7 @@ in
     };
 
     nix.settings = {
-      trusted-users = config.users.groups.wheel.members;
+      trusted-users = config.users.groups.wheel.members ++ [ "root" ];
     };
 
     services.sing-box = let
