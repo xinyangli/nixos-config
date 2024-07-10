@@ -85,6 +85,11 @@ in
       log = "info";
       database_backend = "rocksdb";
       allow_registration = false;
+
+      well_known = {
+        client = "https://msg.xinyang.life";
+        server = "msg.xinyang.life:443";
+      };
     };
   };
 
@@ -160,17 +165,7 @@ in
     virtualHosts."xinyang.life:443".extraConfig = ''
       tls internal
       encode zstd gzip
-      handle_path /.well-known/matrix/client {
-          header Content-Type "application/json"
-          header Access-Control-Allow-Origin "*"
-          header Content-Disposition attachment; filename="client"
-          respond `{"m.homeserver":{"base_url":"https://msg.xinyang.life/"}, "org.matrix.msc3575.proxy":{"url":"https://msg.xinyang.life/"}}`
-      }
-      handle_path /.well-known/matrix/server {
-          header Content-Type "application/json"
-          header Access-Control-Allow-Origin "*"
-          respond `{"m.server": "msg.xinyang.life:443"}`
-      }
+      reverse_proxy /.well-known/matrix/* localhost:6167
       reverse_proxy * http://localhost:8080 {
           flush_interval -1
       }
