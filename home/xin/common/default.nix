@@ -15,6 +15,7 @@
     ffmpeg
     tealdeer
     rclone
+    wl-clipboard
 
     inetutils
   ];

@@ -28,6 +28,10 @@ let
         "cmake.configureOnEdit" = false;
         "cmake.showOptionsMovedNotification" = false;
         "cmake.showNotAllDocumentsSavedQuestion" = false;
+        "cmake.pinnedCommands" = [
+          "workbench.action.tasks.configureTaskRunner"
+          "workbench.action.tasks.runTask"
+         ];
         "C_Cpp.intelliSenseEngine" = "Disabled";
       };
     };

@@ -187,8 +187,9 @@
     gnomeExtensions.paperwm
     gnomeExtensions.search-light
     gnomeExtensions.appindicator
-    gnome.gnome-tweaks
-    gnome.gnome-themes-extra
+    gnomeExtensions.pano
+    gnome-tweaks
+    gnome-themes-extra
     gnome.gnome-remote-desktop
     bibata-cursors
     gthumb
@@ -202,6 +203,7 @@
     element-desktop
     tdesktop
     qq
+    feishu
 
     # Password manager
     bitwarden
@@ -317,4 +319,6 @@
       autoPrune.enable = true;
     };
   };
+
+  services.nixseparatedebuginfod.enable = true;
 }

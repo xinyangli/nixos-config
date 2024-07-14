@@ -1,8 +1,8 @@
 {
   inputs = {
     # Pin nixpkgs to a specific commit
-    nixpkgs.url = "github:nixos/nixpkgs/9b10b8f00cb5494795e5f51b39210fed4d2b0748";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
 
     home-manager = {
       url = "github:nix-community/home-manager";
