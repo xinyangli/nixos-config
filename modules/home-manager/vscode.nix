@@ -105,6 +105,8 @@ in
     };
   };
   config = mkIf cfg.enable {
+    nixpkgs.config.allowUnfree = true;
+
     home.packages = lib.mkMerge ([
       [ pkgs.clang-tools ]
     ] ++ zipAttrsWithLanguageOption "systemPackages");
