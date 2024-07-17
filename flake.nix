@@ -1,7 +1,7 @@
 {
   inputs = {
     # Pin nixpkgs to a specific commit
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:xinyangli/nixpkgs/deploy";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
 
     home-manager = {
