@@ -79,10 +79,6 @@ in
       wheelNeedsPassword = false;
     };
 
-    nix.settings = {
-      trusted-users = [ "root" ];
-    };
-
     services.sing-box = let
       singTls = {
         enabled = true;

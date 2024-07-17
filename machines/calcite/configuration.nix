@@ -9,6 +9,10 @@
       ../sops.nix
     ];
 
+  commonSettings = {
+    nix.enableMirrors = true;
+  };
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -229,23 +233,6 @@
 
   system.stateVersion = "22.05";
 
-  # Use mirror for binary cache
-  nix.settings.substituters = [
-    "https://mirrors.bfsu.edu.cn/nix-channels/store"
-    "https://mirrors.ustc.edu.cn/nix-channels/store"
-  ];
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 30d";
-  };
-  nix.optimise.automatic = true;
-
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-    trusted-users = [ "xin" "root" ];
-  };
   nix.extraOptions = ''
     !include "${config.sops.secrets.github_public_token.path}"
   '';

@@ -4,6 +4,9 @@
   imports = [
     ./hass.nix
   ];
+
+  commonSettings.nix.enableMirrors = true;
+
   nixpkgs.overlays = [
     # Workaround https://github.com/NixOS/nixpkgs/issues/126755#issuecomment-869149243
     (final: super: {
@@ -17,13 +20,6 @@
     libraspberrypi
     raspberrypi-eeprom
   ];
-
-  # Use mirror for binary cache
-  nix.settings.substituters = [
-    "https://mirrors.bfsu.edu.cn/nix-channels/store"
-    "https://mirrors.ustc.edu.cn/nix-channels/store"
-  ];
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   system.stateVersion = "24.05";
   
@@ -49,10 +45,6 @@
   security.sudo = {
     execWheelOnly = true;
     wheelNeedsPassword = false;
-  };
-
-  nix.settings = {
-    trusted-users = [ "@wheel" ];
   };
 
   # fileSystems."/".fsType = lib.mkForce "btrfs";

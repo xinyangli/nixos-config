@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 {
   imports = [
+    ./common-nix-conf.nix
     ./restic.nix
     ./vaultwarden.nix
     ./prometheus.nix
