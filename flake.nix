@@ -120,7 +120,6 @@
             nixpkgs = import nixpkgs {
               system = "x86_64-linux";
             };
-            machinesFile = ./nixbuild.net;
             specialArgs = {
               inherit inputs;
             };
@@ -194,7 +193,7 @@
       {
         devShells = {
           default = pkgs.mkShell {
-            packages = with pkgs; [ git colmena sops nix-output-monitor nil nvd ];
+            packages = with pkgs; [ nix git colmena sops nix-output-monitor nil nvd ];
           };
         };
       }

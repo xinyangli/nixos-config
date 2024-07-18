@@ -10,7 +10,10 @@
     ];
 
   commonSettings = {
-    nix.enableMirrors = true;
+    nix = {
+      enableMirrors = true;
+      signing.enable = true;
+    };
   };
 
   # Bootloader.
