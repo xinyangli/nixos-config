@@ -19,6 +19,13 @@ in
             "Ctrl p"
             "Ctrl n"
           ];
+          shared_except = {
+            _args = [ "pane" "locked" ];
+            bind = {
+              _args = [ "Ctrl b"];
+              SwitchToMode = "Pane";
+            };
+          };
         };
       };
     };
