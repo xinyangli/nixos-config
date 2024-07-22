@@ -54,4 +54,9 @@
     vscode = { enable = true; languages = { cxx = true; python = true; scala = true; latex = true; }; };
     zellij = { enable = true; };
   };
+
+  programs.atuin = {
+    enable = true;
+    flags = [ "--disable-up-arrow" ];
+  };
 }
