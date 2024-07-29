@@ -59,6 +59,7 @@
     , ... }@inputs:
     let
       sharedHmModules = [
+        inputs.sops-nix.homeManagerModules.sops
         inputs.nix-index-database.hmModules.nix-index
         catppuccin.homeManagerModules.catppuccin
         self.homeManagerModules
@@ -174,6 +175,18 @@
               nixos-hardware.nixosModules.raspberry-pi-4
               machines/raspite/configuration.nix
             ] ++ sharedColmenaModules;
+          };
+
+          weilite = { ... }: {
+            imports = [
+              machines/weilite
+            ] ++ sharedColmenaModules;
+            deployment = {
+              targetHost = "weilite.coho-tet.ts.net";
+              targetPort = 2222;
+              buildOnTarget = false;
+            };
+            nixpkgs.system = "x86_64-linux";
           };
         };
 
