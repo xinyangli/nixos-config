@@ -22,8 +22,8 @@ in
       # TODO: mailserver support
     };
   };
-  config = {
-    services.vaultwarden = mkIf cfg.enable {
+  config = mkIf cfg.enable {
+    services.vaultwarden =  {
       enable = true;
       dbBackend = "sqlite";
       config = {
