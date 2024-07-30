@@ -63,6 +63,7 @@ in
     };
   };
   services.kanidm = {
+    package = pkgs.kanidm.withSecretProvisioning;
     enableServer = true;
     serverSettings = {
       domain = "auth.xinyang.life";
@@ -71,6 +72,84 @@ in
       tls_key = ''${config.security.acme.certs."auth.xinyang.life".directory}/key.pem'';
       tls_chain = ''${config.security.acme.certs."auth.xinyang.life".directory}/fullchain.pem'';
       # db_path = "/var/lib/kanidm/kanidm.db";
+    };
+    provision = {
+      enable = true;
+      autoRemove = true;
+      groups = {
+        forgejo-access = {
+          members = [ "xin" ];
+        };
+        gts-users = {
+          members = [ "xin" ];
+        };
+        ocis-users = {
+          members = [ "xin" ];
+        };
+        linux_users = {
+          members = [ "xin" ];
+        };
+        hedgedoc-users = {
+          members = [ "xin" ];
+        };
+        immich-users = {
+          members = [ "xin" "zhuo" ];
+        };
+      };
+      persons = {
+        xin = {
+          displayName = "Xinyang Li";
+          mailAddresses = [ "lixinyang411@gmail.com" ];
+        };
+        
+        zhuo = {
+          displayName = "Zhuo";
+          mailAddresses = [ "13681104320@163.com" ];
+        };
+      };
+      systems.oauth2 = {
+        forgejo = {
+          displayName = "ForgeJo";
+          originUrl = "https://git.xinyang.life/";
+          originLanding = "	https://git.xinyang.life/user/oauth2/kandim";
+          allowInsecureClientDisablePkce = true;
+          scopeMaps = {
+            forgejo-access = [ "openid" "email" "profile" "groups" ];
+          };
+        };
+        gts = {
+          displayName = "GoToSocial";
+          originUrl = "https://xinyang.life/";
+          allowInsecureClientDisablePkce = true;
+          scopeMaps = {
+            gts-users = [ "openid" "email" "profile" "groups" ];
+          };
+        };
+        owncloud = {
+          displayName = "ownCloud";
+          originUrl = "https://home.xinyang.life:9201/";
+          public = true;
+          scopeMaps = {
+            ocis-users = [ "openid" "email" "profile" ];
+          };
+        };
+        hedgedoc = {
+          displayName = "HedgeDoc";
+          originUrl = "https://docs.xinyang.life/";
+          allowInsecureClientDisablePkce = true;
+          scopeMaps = {
+            hedgedoc-users = [ "openid" "email" "profile" ];
+          };
+        };
+        immich-mobile = {
+          displayName = "Immich";
+          originUrl = "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/";
+          allowInsecureClientDisablePkce = true;
+          scopeMaps = {
+            immich-users = [ "openid" "email" "profile" ];
+          };
+        };
+      };
     };
   };
   services.matrix-conduit = {
@@ -179,10 +258,6 @@ in
     
     virtualHosts."http://auth.xinyang.life:80".extraConfig = ''
         reverse_proxy ${config.security.acme.certs."auth.xinyang.life".listenHTTP}
-        route {
-           reverse_proxy * ${config.security.acme.certs."auth.xinyang.life".listenHTTP} order first
-           abort
-        }
     '';
     virtualHosts."https://auth.xinyang.life".extraConfig = ''
       reverse_proxy https://127.0.0.1:${toString kanidm_listen_port} {

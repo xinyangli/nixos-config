@@ -101,6 +101,7 @@
       };
     in
     {
+      nixpkgs = nixpkgs;
       nixosModules.default = import ./modules/nixos;
       homeManagerModules = import ./modules/home-manager;
 
@@ -183,7 +184,7 @@
             ] ++ sharedColmenaModules;
             deployment = {
               targetHost = "weilite.coho-tet.ts.net";
-              targetPort = 2222;
+              targetPort = 22;
               buildOnTarget = false;
             };
             nixpkgs.system = "x86_64-linux";

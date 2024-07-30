@@ -33,6 +33,7 @@
   boot.loader.grub = {
     enable = true;
     efiSupport = true;
+    configurationLimit = 5;
   };
 
   fileSystems."/mnt/storage" = {
