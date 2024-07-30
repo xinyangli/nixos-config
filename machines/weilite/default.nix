@@ -1,9 +1,10 @@
-{ config, pkgs, lib, modulesPath, ... }:
+{ inputs, config, pkgs, lib, modulesPath, ... }:
 
 with lib;
 
 {
   imports = [
+    inputs.sops-nix.nixosModules.sops
     (modulesPath + "/profiles/qemu-guest.nix")
   ];
 
@@ -30,10 +31,28 @@ with lib;
       pkgs.virtiofsd
     ];
 
+    sops = {
+      defaultSopsFile = ./secrets.yaml;
+      age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      secrets = {
+        cloudflare_dns_token = {
+          owner = "caddy";
+          mode = "400";
+        };
+      };
+    };
+
     systemd.mounts = [
-      { what = "XinPhotos";
-        where = "/mnt/XinPhotos";
+      { what = "immich";
+        where = "/mnt/XinPhotos/immich";
         type = "virtiofs";
+        options = "rw";
+        wantedBy = [ "immich-server.service" ];
+      }
+      { what = "originals";
+        where = "/mnt/XinPhotos/originals";
+        type = "virtiofs";
+        options = "ro,nodev,nosuid";
         wantedBy = [ "immich-server.service" ];
       }
     ];
@@ -65,9 +84,30 @@ with lib;
 
     services.caddy = {
       enable = true;
+      package = pkgs.caddy.withPlugins {
+        caddyModules = [
+          { repo = "github.com/caddy-dns/cloudflare"; version = "89f16b99c18ef49c8bb470a82f895bce01cbaece"; }
+        ];
+        vendorHash = "sha256-fTcMtg5GGEgclIwJCav0jjWpqT+nKw2OF1Ow0MEEitk=";
+      };
       virtualHosts."weilite.coho-tet.ts.net:8080".extraConfig = ''
         reverse_proxy 127.0.0.1:${toString config.services.immich.port}
       '';
+      # API Token must be added in systemd environment file
+      virtualHosts."immich.xinyang.life:8000".extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy 127.0.0.1:${toString config.services.immich.port}
+      '';
+    };
+
+    networking.firewall.allowedTCPPorts = [ 8000 ];
+
+    systemd.services.caddy = {
+      serviceConfig = {
+        EnvironmentFile = config.sops.secrets.cloudflare_dns_token.path;
+      };
     };
 
     time.timeZone = "Asia/Shanghai";
