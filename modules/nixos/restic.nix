@@ -16,8 +16,8 @@ in
       };
     };
   };
-  config = {
-    services.restic.backups = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
+    services.restic.backups = {
       remotebackup = {
         repositoryFile = cfg.repositoryFile;
         passwordFile = cfg.passwordFile;

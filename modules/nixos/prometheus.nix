@@ -25,7 +25,7 @@ in
     };
   };
 
-  config = mkMerge [{
+  config = mkIf cfg.enable (mkMerge [{
     services.caddy.globalConfig = ''
       servers {
         metrics
@@ -91,5 +91,5 @@ in
       })
     ];
   }
-  ];
+  ]);
 }

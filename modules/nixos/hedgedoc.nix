@@ -44,8 +44,8 @@ in
       };
     };
   };
-  config = {
-    services.hedgedoc = mkIf cfg.enable {
+  config = mkIf cfg.enable {
+    services.hedgedoc = {
       enable = true;
       environmentFile = cfg.environmentFile;
       settings = {
@@ -71,13 +71,13 @@ in
         defaultPermission = "private";
       };
     };
-    services.caddy = mkIf ( cfg.enable && cfg.enable ) {
+    services.caddy = mkIf cfg.caddy {
       enable = true;
       virtualHosts."https://${cfg.domain}".extraConfig = ''
         reverse_proxy unix/${config.services.hedgedoc.settings.path}
       '';
     };
-    users.users.caddy.extraGroups = mkIf ( cfg.enable && cfg.enable ) [ "hedgedoc" ];
+    users.users.caddy.extraGroups = mkIf cfg.caddy [ "hedgedoc" ];
 
   };
 }
