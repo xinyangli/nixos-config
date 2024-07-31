@@ -61,6 +61,7 @@
     hedgedoc = {
       displayName = "HedgeDoc";
       originUrl = "https://docs.xinyang.life/";
+      originLanding = "https://docs.xinyang.life/auth/oauth2";
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
         hedgedoc-users = [ "openid" "email" "profile" ];
