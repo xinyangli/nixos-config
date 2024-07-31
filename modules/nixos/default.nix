@@ -5,7 +5,7 @@
     ./common-settings/nix-conf.nix
     ./restic.nix
     ./vaultwarden.nix
-    ./prometheus.nix
+    ./prometheus
     ./hedgedoc.nix
     ./sing-box.nix
     ./kanidm-client.nix
