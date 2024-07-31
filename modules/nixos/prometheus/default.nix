@@ -4,7 +4,6 @@ with lib;
 
 let
   cfg = config.custom.prometheus;
-  exporterCfg = config.custom.prometheus.exporters;
   mkExporterOption = enableOption: (mkOption {
     type = types.bool;
     default = enableOption;
@@ -26,6 +25,7 @@ let
 in
 {
   imports = [
+    ./blackbox.nix
     ./caddy.nix
     ./gotosocial.nix
     ./ntfy-sh.nix
@@ -43,6 +43,7 @@ in
         };
 
         restic.enable = mkExporterOption config.services.restic.server.enable;
+        blackbox.enable = mkExporterOption false;
         caddy.enable = mkExporterOption config.services.caddy.enable;
         gotosocial.enable = mkExporterOption config.services.gotosocial.enable;
         ntfy-sh.enable = mkExporterOption config.services.gotosocial.enable;
@@ -186,6 +187,13 @@ in
               for = "0m";
               labels = { severity = "critical"; };
               annotations = { summary = "Outbound network traffic exceed 300GB for last 30 day"; };
+            }
+            {
+              alert = "JobDown";
+              expr = "up == 0";
+              for = "1m";
+              labels = { severity = "critical"; };
+              annotations = { summary = "Job {{ $labels.job }} down for 1m."; };
             }
           ];
         }

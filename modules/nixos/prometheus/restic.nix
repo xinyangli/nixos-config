@@ -3,7 +3,7 @@ let
   cfg = config.custom.prometheus;
 in
 {
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && cfg.exporters.restic.enable) {
     services.restic.server.prometheus = true;
 
     services.prometheus.scrapeConfigs = [
@@ -16,7 +16,7 @@ in
     ];
 
     custom.prometheus.ruleModules = [
-      (lib.mkIf cfg.exporters.restic.enable {
+      {
         name = "restic_alerts";
         rules = [
           {
@@ -34,7 +34,7 @@ in
             annotations = { summary = "Restic {{ $labels.client_hostname }} / {{ $labels.client_username }} backup is outdated"; description = "Restic backup is outdated\\n  VALUE = {{ $value }}\\n  LABELS = {{ $labels }}"; };
           }
         ];
-      })
+      }
     ];
   };
 

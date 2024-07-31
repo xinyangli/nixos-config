@@ -3,7 +3,7 @@ let
   cfg = config.custom.prometheus;
 in
 {
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && cfg.exporters.caddy.enable) {
     services.caddy.globalConfig = lib.mkIf cfg.exporters.caddy.enable ''
       servers {
         metrics
@@ -11,16 +11,16 @@ in
     '';
 
     services.prometheus.scrapeConfigs = [
-      (lib.mkIf cfg.exporters.caddy.enable {
+      {
         job_name = "caddy";
         static_configs = [
           { targets = [ "127.0.0.1:2019" ]; }
         ];
-      })
+      }
     ];
 
     custom.prometheus.ruleModules = [
-      (lib.mkIf cfg.exporters.caddy.enable {
+      {
         name = "caddy_alerts";
         rules = [
           {
@@ -38,7 +38,7 @@ in
             annotations = { summary = "High request latency on {{ $labels.instance }}"; description = "95th percentile of request latency is above 0.5 seconds for the last 2 minutes."; };
           }
         ];
-      })
+      }
     ];
   };
 

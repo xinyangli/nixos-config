@@ -3,8 +3,8 @@ let
   cfg = config.custom.prometheus;
 in
 {
-  config = lib.mkIf cfg.exporters.gotosocial.enable {
-    services.gotosocial.settings = lib.mkIf cfg.exporters.gotosocial.enable {
+  config = lib.mkIf (cfg.enable && cfg.exporters.gotosocial.enable) {
+    services.gotosocial.settings = {
       metrics-enabled = true;
     };
     services.prometheus.scrapeConfigs = [
