@@ -45,11 +45,7 @@ in
 
     custom.prometheus = {
       enable = false;
-      exporters.enable = false;
-      grafana = {
-        enable = false;
-        password_file = config.sops.secrets.grafana_cloud_api.path;
-      };
+      exporters.blackbox.enable = true;
     };
 
     custom.kanidm-client = {

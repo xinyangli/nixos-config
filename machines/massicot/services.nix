@@ -28,11 +28,7 @@ in
 
   custom.prometheus = {
     enable = true;
-    exporters.enable = true;
-    grafana = {
-      enable = true;
-      password_file = config.sops.secrets.grafana_cloud_api.path;
-    };
+    exporters.blackbox.enable = true;
   };
 
   systemd.mounts = map (share: {
