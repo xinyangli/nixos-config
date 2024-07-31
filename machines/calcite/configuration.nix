@@ -265,6 +265,11 @@
   custom.forgejo-actions-runner.enable = true;
   custom.forgejo-actions-runner.tokenFile = config.sops.secrets.gitea_env.path;
 
+  custom.prometheus = {
+    enable = true;
+    exporters.blackbox.enable = true;
+  };
+
   # MTP support
   services.gvfs.enable = true;
 
