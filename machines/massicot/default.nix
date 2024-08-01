@@ -25,6 +25,9 @@
         owner = "prometheus";
         sopsFile = ../secrets.yaml;
       };
+      grafana_oauth_secret = {
+        owner = "grafana";
+      };
     };
   };
 

@@ -44,7 +44,7 @@ in
     networking.firewall.allowedUDPPorts = [ ] ++ (lib.range 6311 6314);
 
     custom.prometheus = {
-      enable = false;
+      enable = true;
       exporters.blackbox.enable = true;
     };
 
@@ -160,6 +160,10 @@ in
             {
               outbound = "dns-out";
               protocol = "dns";
+            }
+            {
+              inbound = "sg0";
+              outbound = "direct";
             }
             {
               inbound = "sg4";

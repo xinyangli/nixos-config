@@ -28,6 +28,7 @@ in
     ./blackbox.nix
     ./caddy.nix
     ./gotosocial.nix
+    ./immich.nix
     ./ntfy-sh.nix
     ./restic.nix
   ];
@@ -46,6 +47,7 @@ in
         blackbox.enable = mkExporterOption false;
         caddy.enable = mkExporterOption config.services.caddy.enable;
         gotosocial.enable = mkExporterOption config.services.gotosocial.enable;
+        immich.enable = mkExporterOption config.services.immich.enable;
         ntfy-sh.enable = mkExporterOption config.services.gotosocial.enable;
       };
       grafana = {

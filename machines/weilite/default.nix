@@ -42,6 +42,10 @@ with lib;
       };
     };
 
+    custom.prometheus = {
+      enable = true;
+    };
+
     systemd.mounts = [
       { what = "immich";
         where = "/mnt/XinPhotos/immich";

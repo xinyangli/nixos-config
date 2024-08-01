@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, ... }:
 let
   kanidm_listen_port = 5324;
 in
@@ -31,15 +31,16 @@ in
     exporters.blackbox.enable = true;
   };
 
-  systemd.mounts = map (share: {
-    what = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
-    where = "/mnt/storage/${share}";
-    type = "cifs";
-    options = "rw,uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path},_netdev,fsc";
-    before = [ "${share}.service" ];
-    after = [ "cachefilesd.service" ];
-    wantedBy = [ "${share}.service" ];
-  }) [ "forgejo" "gotosocial" "conduit" "hedgedoc" ];
+  systemd.mounts = map
+    (share: {
+      what = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
+      where = "/mnt/storage/${share}";
+      type = "cifs";
+      options = "rw,uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path},_netdev,fsc";
+      before = [ "${share}.service" ];
+      after = [ "cachefilesd.service" ];
+      wantedBy = [ "${share}.service" ];
+    }) [ "forgejo" "gotosocial" "conduit" "hedgedoc" ];
 
   services.cachefilesd.enable = true;
 
@@ -53,9 +54,9 @@ in
   security.acme = {
     acceptTerms = true;
     certs."auth.xinyang.life" = {
-        email = "lixinyang411@gmail.com";
-        listenHTTP = "127.0.0.1:1360";
-        group = "kanidm";
+      email = "lixinyang411@gmail.com";
+      listenHTTP = "127.0.0.1:1360";
+      group = "kanidm";
     };
   };
 
@@ -162,6 +163,38 @@ in
     };
   };
 
+  services.grafana = {
+    enable = true;
+    settings = {
+      server = {
+        http_addr = "127.0.0.1";
+        http_port = 3003;
+        root_url = "https://grafana.xinyang.life";
+        domain = "grafana.xinyang.life";
+      };
+      "auth.generic_oauth" = {
+        enabled = true;
+        name = "Kanidm";
+        client_id = "grafana";
+        scopes = "openid,profile,email,groups";
+        auth_url = "https://auth.xinyang.life/ui/oauth2";
+        token_url = "https://auth.xinyang.life/oauth2/token";
+        api_url = "https://auth.xinyang.life/oauth2/openid/grafana/userinfo";
+        use_pkce = true;
+        use_refresh_token = true;
+        allow_sign_up = true;
+        login_attribute_path = "preferred_username";
+        groups_attribute_path = "groups";
+        role_attribute_path = "contains(grafana_role[*], 'GrafanaAdmin') && 'GrafanaAdmin' || contains(grafana_role[*], 'Admin') && 'Admin' || contains(grafana_role[*], 'Editor') && 'Editor' || 'Viewer'";
+        allow_assign_grafana_admin = true;
+        auto_login = true;
+      };
+      "auth" = { disable_login_form = true; };
+    };
+  };
+
+  systemd.services.grafana.serviceConfig.EnvironmentFile = config.sops.secrets.grafana_oauth_secret.path;
+
   users.users.git = {
     isSystemUser = true;
     useDefaultShell = true;
@@ -192,9 +225,9 @@ in
     virtualHosts."https://git.xinyang.life:443".extraConfig = ''
       reverse_proxy http://${config.services.gitea.settings.server.DOMAIN}:${toString config.services.gitea.settings.server.HTTP_PORT}
     '';
-    
+
     virtualHosts."http://auth.xinyang.life:80".extraConfig = ''
-        reverse_proxy ${config.security.acme.certs."auth.xinyang.life".listenHTTP}
+      reverse_proxy ${config.security.acme.certs."auth.xinyang.life".listenHTTP}
     '';
     virtualHosts."https://auth.xinyang.life".extraConfig = ''
       reverse_proxy https://127.0.0.1:${toString kanidm_listen_port} {
@@ -205,7 +238,7 @@ in
           }
       }
     '';
-    virtualHosts."https://ntfy.xinyang.life".extraConfig =  ''
+    virtualHosts."https://ntfy.xinyang.life".extraConfig = ''
       reverse_proxy unix/${config.services.ntfy-sh.settings.listen-unix}
       @httpget {
         protocol http
@@ -214,5 +247,13 @@ in
       }
       redir @httpget https://{host}{uri}
     '';
+
+    virtualHosts."https://grafana.xinyang.life".extraConfig =
+      let
+        grafanaSettings = config.services.grafana.settings.server;
+      in
+      ''
+        reverse_proxy http://${grafanaSettings.http_addr}:${toString grafanaSettings.http_port}
+      '';
   };
 }

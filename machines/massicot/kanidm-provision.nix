@@ -18,7 +18,19 @@
       members = [ "xin" ];
     };
     immich-users = {
-      members = [ "xin" "zhuo" ];
+      members = [ "xin" "zhuo" "ycm" ];
+    };
+    grafana-superadmins = {
+      members = [ "xin" ];
+    };
+    grafana-admins = {
+      members = [ "xin" ];
+    };
+    grafana-editors = {
+      members = [ "xin" ];
+    };
+    grafana-users = {
+      members = [ "xin" ];
     };
   };
   persons = {
@@ -30,6 +42,11 @@
     zhuo = {
       displayName = "Zhuo";
       mailAddresses = [ "13681104320@163.com" ];
+    };
+
+    ycm = {
+      displayName = "Chunming";
+      mailAddresses = [ "chunmingyou@gmail.com" ];
     };
   };
   systems.oauth2 = {
@@ -73,6 +90,23 @@
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
         immich-users = [ "openid" "email" "profile" ];
+      };
+    };
+    grafana = {
+      displayName = "Grafana";
+      originUrl = "https://grafana.xinyang.life/";
+      scopeMaps = {
+        grafana-users = [ "openid" "email" "profile" "groups" ];
+      };
+      claimMaps = {
+        grafana_role = {
+          joinType = "array";
+          valuesByGroup = {
+            grafana-superadmins = [ "GrafanaAdmin" ];
+            grafana-admins = [ "Admin" ];
+            grafana-editors = [ "Editor" ];
+          };
+        };
       };
     };
   };
