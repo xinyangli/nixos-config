@@ -86,9 +86,9 @@ in
     provision = import ./kanidm-provision.nix;
   };
 
-  services.miniflux = {
+  custom.miniflux = {
     enable = true;
-    config = {
+    environment = {
       LISTEN_ADDR = "127.0.0.1:58173";
       OAUTH2_PROVIDER = "oidc";
       OAUTH2_CLIEND_ID = "miniflux";
@@ -97,7 +97,7 @@ in
       OAUTH2_USER_CREATION = 1;
       CREATE_ADMIN = lib.mkForce "";
     };
-    adminCredentialsFile = config.sops.secrets.miniflux_oauth_secret;
+    oauth2SecretFile = config.sops.secrets."miniflux/oauth2_secret".path;
   };
 
   services.matrix-conduit = {

@@ -28,9 +28,7 @@
       grafana_oauth_secret = {
         owner = "grafana";
       };
-      miniflux_oauth_secret = {
-        owner = "miniflux";
-      };
+      "miniflux/oauth2_secret" = { };
     };
   };
 
