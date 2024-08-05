@@ -7,7 +7,7 @@
     ./networking.nix
     ./services.nix
   ];
-  
+
   sops = {
     defaultSopsFile = ./secrets.yaml;
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
@@ -28,6 +28,9 @@
       grafana_oauth_secret = {
         owner = "grafana";
       };
+      miniflux_oauth_secret = {
+        owner = "miniflux";
+      };
     };
   };
 
@@ -42,7 +45,7 @@
   fileSystems."/mnt/storage" = {
     device = "//u380335-sub1.your-storagebox.de/u380335-sub1";
     fsType = "cifs";
-    options = ["credentials=${config.sops.secrets.storage_box_mount.path}"];
+    options = [ "credentials=${config.sops.secrets.storage_box_mount.path}" ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -51,7 +54,7 @@
   ];
 
   system.stateVersion = "22.11";
-  
+
   networking = {
     hostName = "massicot";
   };
@@ -67,9 +70,9 @@
   };
 
   security.sudo = {
-      execWheelOnly = true;
-      wheelNeedsPassword = false;
-    };
+    execWheelOnly = true;
+    wheelNeedsPassword = false;
+  };
 
   services.openssh = {
     enable = true;
@@ -83,6 +86,6 @@
   };
   services.fail2ban.enable = true;
   programs.mosh.enable = true;
-  
+
   systemd.services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
 }

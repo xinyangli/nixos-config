@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   kanidm_listen_port = 5324;
 in
@@ -85,6 +85,21 @@ in
     };
     provision = import ./kanidm-provision.nix;
   };
+
+  services.miniflux = {
+    enable = true;
+    config = {
+      LISTEN_ADDR = "127.0.0.1:58173";
+      OAUTH2_PROVIDER = "oidc";
+      OAUTH2_CLIEND_ID = "miniflux";
+      OAUTH2_REDIRECT_URL = "https://rss.xinyang.life/oauth2/oidc/callback";
+      OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://auth.xinyang.life/oauth2/openid/miniflux";
+      OAUTH2_USER_CREATION = 1;
+      CREATE_ADMIN = lib.mkForce "";
+    };
+    adminCredentialsFile = config.sops.secrets.miniflux_oauth_secret;
+  };
+
   services.matrix-conduit = {
     enable = true;
     # package = inputs.conduit.packages.${pkgs.system}.default;
@@ -238,6 +253,11 @@ in
           }
       }
     '';
+
+    virtualHosts."https://rss.xinyang.life".extraConfig = ''
+      reverse_proxy ${config.services.miniflux.config.LISTEN_ADDR}
+    '';
+
     virtualHosts."https://ntfy.xinyang.life".extraConfig = ''
       reverse_proxy unix/${config.services.ntfy-sh.settings.listen-unix}
       @httpget {

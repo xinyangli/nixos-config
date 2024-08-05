@@ -32,13 +32,16 @@
     grafana-users = {
       members = [ "xin" ];
     };
+    miniflux-users = {
+      members = [ "xin" ];
+    };
   };
   persons = {
     xin = {
       displayName = "Xinyang Li";
       mailAddresses = [ "lixinyang411@gmail.com" ];
     };
-    
+
     zhuo = {
       displayName = "Zhuo";
       mailAddresses = [ "13681104320@163.com" ];
@@ -90,6 +93,13 @@
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
         immich-users = [ "openid" "email" "profile" ];
+      };
+    };
+    miniflux = {
+      displayName = "Miniflux";
+      originUrl = "https://rss.xinyang.life/";
+      scopeMaps = {
+        miniflux-users = [ "openid" "email" "profile" ];
       };
     };
     grafana = {
