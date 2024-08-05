@@ -96,11 +96,11 @@ in
             node = {
               enable = true;
               enabledCollectors = [
-                "diskstats"
                 "loadavg"
                 "time"
                 "systemd"
               ];
+              listenAddress = "127.0.0.1";
               port = 9100;
             };
           };
