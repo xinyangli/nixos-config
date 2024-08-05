@@ -29,6 +29,7 @@ in
     ./caddy.nix
     ./gotosocial.nix
     ./immich.nix
+    ./miniflux.nix
     ./ntfy-sh.nix
     ./restic.nix
   ];
@@ -48,7 +49,8 @@ in
         caddy.enable = mkExporterOption config.services.caddy.enable;
         gotosocial.enable = mkExporterOption config.services.gotosocial.enable;
         immich.enable = mkExporterOption config.services.immich.enable;
-        ntfy-sh.enable = mkExporterOption config.services.gotosocial.enable;
+        miniflux.enable = mkExporterOption config.services.miniflux.enable;
+        ntfy-sh.enable = mkExporterOption config.services.ntfy-sh.enable;
       };
       grafana = {
         enable = mkEnableOption "Grafana Cloud";

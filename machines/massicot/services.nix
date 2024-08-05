@@ -29,6 +29,7 @@ in
   custom.prometheus = {
     enable = true;
     exporters.blackbox.enable = true;
+    exporters.miniflux.enable = true;
   };
 
   systemd.mounts = map
@@ -89,13 +90,14 @@ in
   custom.miniflux = {
     enable = true;
     environment = {
+      LOG_LEVEL = "debug";
       LISTEN_ADDR = "127.0.0.1:58173";
+      BASE_URL = "https://rss.xinyang.life/";
       OAUTH2_PROVIDER = "oidc";
-      OAUTH2_CLIEND_ID = "miniflux";
+      OAUTH2_CLIENT_ID = "miniflux";
       OAUTH2_REDIRECT_URL = "https://rss.xinyang.life/oauth2/oidc/callback";
       OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://auth.xinyang.life/oauth2/openid/miniflux";
       OAUTH2_USER_CREATION = 1;
-      CREATE_ADMIN = lib.mkForce "";
     };
     oauth2SecretFile = config.sops.secrets."miniflux/oauth2_secret".path;
   };
@@ -255,7 +257,7 @@ in
     '';
 
     virtualHosts."https://rss.xinyang.life".extraConfig = ''
-      reverse_proxy ${config.services.miniflux.config.LISTEN_ADDR}
+      reverse_proxy ${config.custom.miniflux.environment.LISTEN_ADDR}
     '';
 
     virtualHosts."https://ntfy.xinyang.life".extraConfig = ''
