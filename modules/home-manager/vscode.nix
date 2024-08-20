@@ -31,7 +31,7 @@ let
         "cmake.pinnedCommands" = [
           "workbench.action.tasks.configureTaskRunner"
           "workbench.action.tasks.runTask"
-         ];
+        ];
         "C_Cpp.intelliSenseEngine" = "Disabled";
       };
     };
@@ -43,7 +43,7 @@ let
       settings = { };
     };
     scalaPackages = {
-      systemPackages = with pkgs; [ coursier ];
+      systemPackages = with pkgs; [ coursier metals ];
       extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
         scala-lang.scala
         scalameta.metals
@@ -58,11 +58,13 @@ let
       settings = {
         "latex-workshop.latex.autoBuild.run" = "never";
         "latex-workshop.latex.tools" = [
-          { "name" = "xelatex";
+          {
+            "name" = "xelatex";
             "command" = "xelatex";
             "args" = [ "-synctex=1" "-interaction=nonstopmode" "-file-line-error" "%DOCFILE%" ];
           }
-          { "name" = "pdflatex";
+          {
+            "name" = "pdflatex";
             "command" = "pdflatex";
             "args" = [ "-synctex=1" "-interaction=nonstopmode" "-file-line-error" "%DOCFILE%" ];
           }
@@ -84,6 +86,7 @@ let
       };
     };
   };
+  llmExtensions = [ pkgs.vscode-extensions.continue.continue ];
 
   languages = [ "nix" "cxx" "python" "scala" "latex" ];
   zipAttrsWithLanguageOption = (attr:
@@ -103,12 +106,14 @@ in
       scala = mkEnableOption "Scala";
       latex = mkEnableOption "Latex";
     };
+    llm = mkEnableOption "tab completion with Continue and ollama";
   };
   config = mkIf cfg.enable {
     nixpkgs.config.allowUnfree = true;
 
     home.packages = lib.mkMerge ([
       [ pkgs.clang-tools ]
+      (mkIf cfg.llm [ pkgs.ollama ])
     ] ++ zipAttrsWithLanguageOption "systemPackages");
     programs.vscode = {
       enable = true;
@@ -135,30 +140,51 @@ in
           ms-vscode-remote.remote-ssh-edit
           mushan.vscode-paste-image
         ])
+
         (with pkgs.vscode-extensions; [
           waderyan.gitblame
           catppuccin.catppuccin-vsc
           # Rust
           rust-lang.rust-analyzer
         ])
+
+        (mkIf cfg.llm llmExtensions)
       ] ++ zipAttrsWithLanguageOption "extension");
       userSettings = lib.mkMerge ([
-      {"workbench.colorTheme" = "Catppuccin Macchiato";
-        "terminal.integrated.sendKeybindingsToShell" = true;
-        "extensions.ignoreRecommendations" = true;
-        "files.autoSave" = "afterDelay";
-        "editor.inlineSuggest.enabled" = true;
-        "editor.rulers" = [
-          80
-        ];
-        "editor.mouseWheelZoom" = true;
-        "git.autofetch" = false;
-        "window.zoomLevel" = -1;
+        {
+          "workbench.colorTheme" = "Catppuccin Macchiato";
+          "terminal.integrated.sendKeybindingsToShell" = true;
+          "extensions.ignoreRecommendations" = true;
+          "files.autoSave" = "afterDelay";
+          "editor.inlineSuggest.enabled" = true;
+          "editor.rulers" = [
+            80
+          ];
+          "editor.mouseWheelZoom" = true;
+          "git.autofetch" = false;
+          "window.zoomLevel" = -1;
 
-        "extensions.experimental.affinity" = {
-          "vscodevim.vim" = 1;
-        };
-      }] ++ zipAttrsWithLanguageOption "settings");
+          "extensions.experimental.affinity" = {
+            "vscodevim.vim" = 1;
+          };
+        }
+      ] ++ zipAttrsWithLanguageOption "settings");
+    };
+
+    home.file.".continue/config.json".text = lib.generators.toJSON { } {
+      models = [
+        {
+          model = "AUTODETECT";
+          provider = "ollama";
+          title = "Ollama";
+        }
+      ];
+      tabAutocompleteModel = {
+        model ="deepseek-coder:6.7b-base";
+        provider = "ollama";
+        title = "codegemma";
+      };
     };
   };
+
 }

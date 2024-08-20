@@ -51,12 +51,27 @@
     fish = { enable = true; };
     git = { enable = true; signing.enable = true; };
     neovim = { enable = true; };
-    vscode = { enable = true; languages = { cxx = true; python = true; scala = true; latex = true; }; };
+    vscode = { enable = true; languages = { cxx = true; python = true; scala = true; latex = true; }; llm = true; };
     zellij = { enable = true; };
   };
 
   programs.atuin = {
     enable = true;
     flags = [ "--disable-up-arrow" ];
+  };
+
+  programs.firefox.enable = true;
+
+  programs.firefox.policies = {
+    DefaultDownloadDirectory = "/media/data/Downloads";
+  };
+
+  programs.firefox.profiles.default = {
+    isDefault = true;
+    userChrome = builtins.readFile "${pkgs.fetchgit {
+      url = "https://gist.github.com/0ded98af9fe3da35f3688f81364d8c14.git";
+      rev = "11bb4f428382052bcbbceb6cc3fef97f3c939481";
+      hash = "sha256-J11indzEGdUA0HSW8eFe5AjesOxCL/G05KwkJk9GZSY=";
+    }}/userChrome.css";
   };
 }
