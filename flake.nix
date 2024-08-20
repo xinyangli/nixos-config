@@ -44,6 +44,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    my-nixvim = {
+      url = "git+https://git.xinyang.life/xin/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     catppuccin.url = "github:catppuccin/nix";
   };
 
@@ -56,8 +61,25 @@
     , flake-utils
     , nur
     , catppuccin
+    , my-nixvim
     , ... }@inputs:
     let
+      nixvimOverlay = (final: prev: {
+        nixvim = self.packages.${prev.stdenv.system}.nixvim;
+      });
+      overlayModule = { ... }: {
+        nixpkgs.overlays = [
+          nixvimOverlay
+          (import ./overlays/add-pkgs.nix)
+        ];
+      };
+      deploymentModule = {
+        deployment.targetUser = "xin";
+      };
+      sharedColmenaModules = [
+        self.nixosModules.default
+        deploymentModule
+      ];
       sharedHmModules = [
         inputs.sops-nix.homeManagerModules.sops
         inputs.nix-index-database.hmModules.nix-index
@@ -96,28 +118,17 @@
         modules = [
           self.nixosModules.default
           nur.nixosModules.nur
-          ./overlays
         ] ++ modules;
       };
     in
     {
       nixpkgs = nixpkgs;
-      nixosModules.default = import ./modules/nixos;
+      nixosModules.default = { imports = [ ./modules/nixos overlayModule ]; };
       homeManagerModules = import ./modules/home-manager;
 
       homeConfigurations = builtins.listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
 
-      colmenaHive =
-        let
-          deploymentModule = {
-            deployment.targetUser = "xin";
-          };
-          sharedColmenaModules = [
-            self.nixosModules.default
-            deploymentModule
-          ];
-        in
-        inputs.colmena.lib.makeHive {
+      colmenaHive = inputs.colmena.lib.makeHive {
           meta = {
             nixpkgs = import nixpkgs {
               system = "x86_64-linux";
@@ -209,6 +220,10 @@
           default = pkgs.mkShell {
             packages = with pkgs; [ nix git colmena sops nix-output-monitor nil nvd ];
           };
+        };
+
+        packages = {
+          nixvim = my-nixvim.packages.${system}.default;
         };
       }
     );

@@ -1,43 +1,22 @@
-{ config, pkgs, lib, ... }: 
-
-with lib;
-
+{ config, pkgs, lib, ... }:
 let
+  inherit (lib) mkIf mkEnableOption getExe;
   cfg = config.custom-hm.neovim;
+  tomlFormat = pkgs.formats.toml { };
+  neovideConfig = {
+    neovim-bin = getExe pkgs.nixvim;
+    fork = true;
+  };
 in
 {
   options.custom-hm.neovim = {
     enable = mkEnableOption "neovim configurations";
   };
   config = mkIf cfg.enable {
-    programs.neovim = {
-      enable = true;
-      vimAlias = true;
-      vimdiffAlias = true;
-      plugins = with pkgs.vimPlugins; [
-        catppuccin-nvim
-      ];
-      extraConfig = ''
-      set nocompatible
-    
-      syntax on
-      set number
-      set relativenumber
-      set shortmess+=I
-      set laststatus=2
-
-      set ignorecase
-      set smartcase
-      set list
-      set listchars=tab:→·
-      set tabstop=4
-      set shiftwidth=4
-      set expandtab
-
-      set mouse+=a
-
-      colorscheme catppuccin-macchiato
-      '';
+    home.packages = with pkgs; [ nixvim neovide ];
+    programs.neovim.enable = false;
+    home.file.".config/neovide/config.toml" = {
+      source = tomlFormat.generate "neovide-config" neovideConfig;
     };
   };
 }

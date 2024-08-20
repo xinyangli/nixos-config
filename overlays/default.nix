@@ -1,6 +1,1 @@
-{ config, pkgs, ... }:
-{
-  imports = [
-    ./add-pkgs.nix
-  ];
-}
+final: prev: (import ./add-pkgs.nix)
