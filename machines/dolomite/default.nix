@@ -95,8 +95,23 @@ in
         dns = {
           servers = [
             {
+              tag = "warp";
               address = "1.1.1.1";
               detour = "wg-out";
+            }
+            {
+              tag = "directdns";
+              address = "h3://8.8.8.8/dns-query";
+            }
+          ];
+          rules = [
+            {
+              outbound = "wg-out";
+              server = "warp";
+            }
+            {
+              outbound = "direct";
+              server = "directdns";
             }
           ];
         };

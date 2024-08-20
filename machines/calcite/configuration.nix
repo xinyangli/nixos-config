@@ -10,6 +10,7 @@
     ];
 
   commonSettings = {
+    auth.enable = true;
     nix = {
       enableMirrors = true;
       signing.enable = true;
@@ -23,7 +24,7 @@
   # boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" ];
   boot.supportedFilesystems = [ "ntfs" ];
-  boot.binfmt.emulatedSystems = ["aarch64-linux"]; 
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   security.tpm2 = {
     enable = true;
@@ -49,7 +50,8 @@
 
   programs.oidc-agent.enable = true;
   programs.oidc-agent.providers = [
-    { issuer = "https://home.xinyang.life:9201";
+    {
+      issuer = "https://home.xinyang.life:9201";
       pubclient = {
         client_id = "xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69";
         client_secret = "UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh";
@@ -157,6 +159,7 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
+    "openssl-1.1.1w"
   ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -208,13 +211,13 @@
     element-desktop
     tdesktop
     qq
+    wechat-uos
     feishu
 
     # Password manager
     bitwarden
 
     # Browser
-    firefox
     (chromium.override {
       commandLineArgs = [
         "--ozone-platform-hint=auto"
@@ -253,7 +256,7 @@
       owner = "root";
       sopsFile = ./secrets.yaml;
     };
-    gitea_env = {
+    "gitea/envfile" = {
       owner = "root";
       sopsFile = ./secrets.yaml;
     };
@@ -263,12 +266,18 @@
   custom.restic.passwordFile = config.sops.secrets.restic_repo_calcite_password.path;
 
   custom.forgejo-actions-runner.enable = true;
-  custom.forgejo-actions-runner.tokenFile = config.sops.secrets.gitea_env.path;
+  custom.forgejo-actions-runner.tokenFile = config.sops.secrets."gitea/envfile".path;
 
   custom.prometheus = {
     enable = true;
     exporters.blackbox.enable = true;
   };
+
+  services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+  };
+
 
   # MTP support
   services.gvfs.enable = true;

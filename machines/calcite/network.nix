@@ -13,6 +13,9 @@
 
   services.resolved = {
     enable = true;
+    extraConfig = ''
+      Cache=no
+    '';
   };
 
   # Enable Tailscale
