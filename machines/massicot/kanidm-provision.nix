@@ -5,6 +5,9 @@
     forgejo-access = {
       members = [ "xin" ];
     };
+    forgejo-admin = {
+      members = [ "xin" ];
+    };
     gts-users = {
       members = [ "xin" ];
     };
@@ -35,6 +38,9 @@
     miniflux-users = {
       members = [ "xin" ];
     };
+    idm_people_self_mail_write = {
+      members = [ ];
+    };
   };
   persons = {
     xin = {
@@ -60,6 +66,15 @@
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
         forgejo-access = [ "openid" "email" "profile" "groups" ];
+      };
+      claimMaps = {
+        forgejo_role = {
+          joinType = "array";
+          valuesByGroup = {
+            forgejo-access = [ "Access" ];
+            forgejo-admin = [ "Admin" ];
+          };
+        };
       };
     };
     gts = {

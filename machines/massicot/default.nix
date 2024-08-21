@@ -31,6 +31,9 @@
       "miniflux/oauth2_secret" = {
         owner = "root";
       };
+      "forgejo/env" = {
+        owner = "forgejo";
+      };
     };
   };
 

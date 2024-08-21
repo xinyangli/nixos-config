@@ -142,6 +142,8 @@ in
 
   services.forgejo = {
     enable = true;
+    # Use cutting edge instead of lts
+    package = pkgs.forgejo;
     repositoryRoot = "/mnt/storage/forgejo/repositories";
     lfs = {
       enable = true;
@@ -151,11 +153,10 @@ in
       service.DISABLE_REGISTRATION = true;
       server = {
         ROOT_URL = "https://git.xinyang.life/";
-        START_SSH_SERVER = true;
-        BUILTIN_SSH_SERVER_USER = "git";
-        SSH_USER = "git";
+        START_SSH_SERVER = false;
+        SSH_USER = config.services.forgejo.user;
         SSH_DOMAIN = "ssh.xinyang.life";
-        SSH_PORT = 2222;
+        SSH_PORT = 22;
         LFS_MAX_FILE_SIZE = 10737418240;
         LANDING_PAGE = "/explore/repos";
       };
@@ -166,17 +167,34 @@ in
         ENABLE_BASIC_AUTHENTICATION = false;
       };
       oauth2 = {
-        ENABLE = false; # Disable forgejo as oauth2 provider
+        ENABLED = false; # Disable forgejo as oauth2 provider
       };
       oauth2_client = {
         ACCOUNT_LINKING = "auto";
+        USERNAME = "email";
         ENABLE_AUTO_REGISTRATION = true;
-        UPDATE_AVATAR = true;
-        OPENID_CONNECT_SCOPES = "openid profile email";
+        UPDATE_AVATAR = false;
+        OPENID_CONNECT_SCOPES = "openid profile email groups";
       };
       other = {
         SHOW_FOOTER_VERSION = false;
       };
+    };
+  };
+
+  systemd.services.forgejo = {
+    serviceConfig = {
+      EnvironmentFile = config.sops.secrets."forgejo/env".path;
+      ExecStartPost = ''
+        ${lib.getExe config.services.forgejo.package} admin auth update-oauth \
+            --id 1 \
+            --name kanidm \
+            --provider openidConnect \
+            --key forgejo \
+            --secret $CLIENT_SECRET \
+            --icon-url https://auth.xinyang.life/pkg/img/favicon.png \
+            --group-claim-name forgejo_role --admin-group Admin
+      '';
     };
   };
 
