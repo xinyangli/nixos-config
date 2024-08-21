@@ -160,6 +160,8 @@
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.1.1w"
+    # FIXME: Waiting for https://github.com/NixOS/nixpkgs/pull/335753
+    "jitsi-meet-1.0.8043"
   ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
