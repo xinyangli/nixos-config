@@ -56,7 +56,7 @@
     forgejo = {
       displayName = "ForgeJo";
       originUrl = "https://git.xinyang.life/";
-      originLanding = "	https://git.xinyang.life/user/oauth2/kandim";
+      originLanding = "https://git.xinyang.life/user/oauth2/kandim";
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
         forgejo-access = [ "openid" "email" "profile" "groups" ];
@@ -65,6 +65,7 @@
     gts = {
       displayName = "GoToSocial";
       originUrl = "https://xinyang.life/";
+      originLanding = "https://xinyang.life/";
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
         gts-users = [ "openid" "email" "profile" "groups" ];
@@ -73,6 +74,7 @@
     owncloud = {
       displayName = "ownCloud";
       originUrl = "https://home.xinyang.life:9201/";
+      originLanding = "https://home.xinyang.life:9201/";
       public = true;
       scopeMaps = {
         ocis-users = [ "openid" "email" "profile" ];
@@ -90,6 +92,7 @@
     immich-mobile = {
       displayName = "Immich";
       originUrl = "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/";
+      originLanding = "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/";
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
         immich-users = [ "openid" "email" "profile" ];
@@ -98,6 +101,7 @@
     miniflux = {
       displayName = "Miniflux";
       originUrl = "https://rss.xinyang.life/";
+      originLanding = "https://rss.xinyang.life/";
       scopeMaps = {
         miniflux-users = [ "openid" "email" "profile" ];
       };
@@ -105,6 +109,7 @@
     grafana = {
       displayName = "Grafana";
       originUrl = "https://grafana.xinyang.life/";
+      originLanding = "https://grafana.xinyang.life/";
       scopeMaps = {
         grafana-users = [ "openid" "email" "profile" "groups" ];
       };
