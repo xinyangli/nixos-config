@@ -43,8 +43,7 @@ in
       ];
 
       extra-substituters = mkIf cfg.enableMirrors [
-        "https://mirrors.bfsu.edu.cn/nix-channels/store?priority=100"
-        "https://mirrors.ustc.edu.cn/nix-channels/store?priority=100"
+        "https://mirrors.cernet.edu.cn/nix-channels/store?priority=20"
       ];
 
       trusted-public-keys = [
