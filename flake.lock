@@ -293,11 +293,11 @@
         "nixvim": "nixvim"
       },
       "locked": {
-        "lastModified": 1724158316,
-        "narHash": "sha256-cz2N0vPfe0jmjxqKWh7dgVecLqmPLHQrvxGJk0atDbg=",
+        "lastModified": 1724306750,
+        "narHash": "sha256-mT8DXzj0zHfGJ+zuxFAnqnk+0bDEFgEk7TvEk59WbWQ=",
         "ref": "refs/heads/master",
-        "rev": "a5eb7fe89ee8ba654f339d8f75cecb39851743ec",
-        "revCount": 4,
+        "rev": "81990813485a580d69853d8429e3b8aece7f66a6",
+        "revCount": 11,
         "type": "git",
         "url": "https://git.xinyang.life/xin/nixvim"
       },

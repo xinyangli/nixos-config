@@ -228,5 +228,5 @@
         nixvim = my-nixvim.packages.${system}.default;
       };
     }
-    );
+  );
 }
