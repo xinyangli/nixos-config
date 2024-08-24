@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }: 
+{ config, lib, ... }: 
 
 with lib;
 
@@ -14,20 +14,22 @@ in
       enable = true;
       settings = {
         default_shell = "fish";
-        keybinds = {
-          unbind = [
-            "Ctrl p"
-            "Ctrl n"
-          ];
-          shared_except = {
-            _args = [ "pane" "locked" ];
-            bind = {
-              _args = [ "Ctrl b"];
-              SwitchToMode = "Pane";
-            };
-          };
-        };
       };
     };
+    xdg.configFile."zellij/config.kdl".text = ''
+      keybinds {
+          shared_except "pane" "locked" {
+            bind "Ctrl b" { SwitchToMode "Pane"; }
+          }
+          shared_except "locked" {
+            bind "Ctrl h" { MoveFocusOrTab "Left"; }
+            bind "Ctrl l" { MoveFocusOrTab "Right"; }
+            bind "Ctrl j" { MoveFocus "Down"; }
+            bind "Ctrl k" { MoveFocus "Up"; }
+            unbind "Alt h" "Alt l" "Alt j" "Alt k"
+          }
+          unbind "Ctrl p" "Ctrl n"
+      }
+    '';
   };
 }

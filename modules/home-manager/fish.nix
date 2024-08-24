@@ -60,9 +60,10 @@ in
           function fish_command_not_found
             ${pkgs.comma}/bin/comma $argv
           end
+          set -gx LS_COLORS (${lib.getExe pkgs.vivid} generate catppuccin-mocha)
         '' else "";
       in ''
-        fish_config prompt choose arrow
+        fish_config prompt choose default
       '' + extraInit;
       functions = mkIf cfg.functions.enable {
         gitignore = "curl -sL https://www.gitignore.io/api/$argv";
