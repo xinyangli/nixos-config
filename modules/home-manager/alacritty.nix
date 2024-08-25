@@ -25,6 +25,7 @@ in
         window = {
           resize_increments = true;
           dynamic_padding = true;
+          decorations = "none";
         };
       };
     };
