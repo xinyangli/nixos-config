@@ -82,6 +82,7 @@ in
       bindaddress = "[::]:${toString kanidm_listen_port}";
       tls_key = ''${config.security.acme.certs."auth.xinyang.life".directory}/key.pem'';
       tls_chain = ''${config.security.acme.certs."auth.xinyang.life".directory}/fullchain.pem'';
+      online_backup.versions = 7;
       # db_path = "/var/lib/kanidm/kanidm.db";
     };
     provision = import ./kanidm-provision.nix;
