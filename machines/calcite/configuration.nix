@@ -287,7 +287,7 @@
   # Fonts
   fonts = {
     packages = with pkgs; [
-      (nerdfonts.override { fonts = [ "FiraCode" ]; })
+      (nerdfonts.override { fonts = [ "FiraCode" "FiraMono" "JetBrainsMono" ]; })
       noto-fonts
       noto-fonts-emoji
       liberation_ttf
