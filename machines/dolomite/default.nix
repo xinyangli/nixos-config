@@ -37,9 +37,14 @@ in
       acceptTerms = true;
       certs.${config.deployment.targetHost} = {
         email = "me@namely.icu";
-        listenHTTP = ":80";
+        # Avoid port conflict
+        listenHTTP = if config.services.caddy.enable then ":30310" else ":80";
       };
     };
+    services.caddy.virtualHosts."http://${config.deployment.targetHost}:80".extraConfig = ''
+      reverse_proxy 127.0.0.1:30310
+    '';
+
     networking.firewall.allowedTCPPorts = [ 80 8080 ];
     networking.firewall.allowedUDPPorts = [ ] ++ (lib.range 6311 6314);
 
