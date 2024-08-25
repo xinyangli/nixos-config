@@ -24,6 +24,7 @@ in
       direnv = {
         enable = true;
         stdlib = changeCacheDir;
+        nix-direnv.enable = true;
       };
     };
   };
