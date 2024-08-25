@@ -1,4 +1,4 @@
-{ config, pkgs, ...}:
+{ config, pkgs, ... }:
 
 {
   imports = [ ];
@@ -38,10 +38,11 @@
   # Open ports in the firewall.
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 3389 ];
-  networking.firewall.allowedUDPPorts = [ 3389 41641 ];
-  networking.firewall.trustedInterfaces = [
-    "tailscale0"
+  networking.firewall.allowedUDPPorts = [
+    3389
+    41641
   ];
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
   # Use nftables to manager firewall
   networking.nftables.enable = true;
 

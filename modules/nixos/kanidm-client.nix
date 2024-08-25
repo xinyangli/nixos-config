@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 
 let
@@ -27,31 +32,29 @@ in
         type = types.listOf types.str;
         default = [ ];
       };
-      uri = mkOption {
-        type = types.str;
-      };
+      uri = mkOption { type = types.str; };
     };
   };
   config = mkIf cfg.enable {
-    services.kanidm = mkMerge
-      [ (mkIf cfg.enable {
-          enableClient = true;
-          clientSettings = {
-            uri = cfg.uri;
-          };
-        })
-        (mkIf cfg.asSSHAuth.enable {
-           enablePam = true;
-           unixSettings = {
-             pam_allowed_login_groups = cfg.asSSHAuth.allowedGroups;
-             default_shell = "/bin/sh";
-           };
-        })
-      ];
+    services.kanidm = mkMerge [
+      (mkIf cfg.enable {
+        enableClient = true;
+        clientSettings = {
+          uri = cfg.uri;
+        };
+      })
+      (mkIf cfg.asSSHAuth.enable {
+        enablePam = true;
+        unixSettings = {
+          pam_allowed_login_groups = cfg.asSSHAuth.allowedGroups;
+          default_shell = "/bin/sh";
+        };
+      })
+    ];
     services.openssh = mkIf cfg.asSSHAuth.enable {
       enable = true;
       authorizedKeysCommand = "/etc/ssh/auth %u";
-      authorizedKeysCommandUser = "kanidm-ssh-runner"; 
+      authorizedKeysCommandUser = "kanidm-ssh-runner";
       settings = mkIf cfg.asSSHAuth.enable {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
@@ -70,8 +73,10 @@ in
     };
     users.groups.wheel.members = cfg.sudoers;
     users.groups.kanidm-ssh-runner = { };
-    users.users.kanidm-ssh-runner = { isSystemUser = true; group = "kanidm-ssh-runner"; };
+    users.users.kanidm-ssh-runner = {
+      isSystemUser = true;
+      group = "kanidm-ssh-runner";
+    };
 
   };
 }
-

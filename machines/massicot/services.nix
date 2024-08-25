@@ -1,10 +1,24 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   kanidm_listen_port = 5324;
 in
 {
-  networking.firewall.allowedTCPPorts = [ 80 443 2222 8448 ];
-  networking.firewall.allowedUDPPorts = [ 80 443 8448 ];
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
+    2222
+    8448
+  ];
+  networking.firewall.allowedUDPPorts = [
+    80
+    443
+    8448
+  ];
 
   custom.vaultwarden = {
     enable = true;
@@ -32,16 +46,23 @@ in
     exporters.miniflux.enable = true;
   };
 
-  systemd.mounts = map
-    (share: {
-      what = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
-      where = "/mnt/storage/${share}";
-      type = "cifs";
-      options = "rw,uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path},_netdev,fsc";
-      before = [ "${share}.service" ];
-      after = [ "cachefilesd.service" ];
-      wantedBy = [ "${share}.service" ];
-    }) [ "forgejo" "gotosocial" "conduit" "hedgedoc" ];
+  systemd.mounts =
+    map
+      (share: {
+        what = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
+        where = "/mnt/storage/${share}";
+        type = "cifs";
+        options = "rw,uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path},_netdev,fsc";
+        before = [ "${share}.service" ];
+        after = [ "cachefilesd.service" ];
+        wantedBy = [ "${share}.service" ];
+      })
+      [
+        "forgejo"
+        "gotosocial"
+        "conduit"
+        "hedgedoc"
+      ];
 
   services.cachefilesd.enable = true;
 
@@ -225,11 +246,14 @@ in
         allow_assign_grafana_admin = true;
         auto_login = true;
       };
-      "auth" = { disable_login_form = true; };
+      "auth" = {
+        disable_login_form = true;
+      };
     };
   };
 
-  systemd.services.grafana.serviceConfig.EnvironmentFile = config.sops.secrets.grafana_oauth_secret.path;
+  systemd.services.grafana.serviceConfig.EnvironmentFile =
+    config.sops.secrets.grafana_oauth_secret.path;
 
   users.users.git = {
     isSystemUser = true;
@@ -240,9 +264,7 @@ in
   users.groups.git = { };
 
   users.users = {
-    ${config.services.caddy.user}.extraGroups = [
-      config.services.ntfy-sh.group
-    ];
+    ${config.services.caddy.user}.extraGroups = [ config.services.ntfy-sh.group ];
   };
 
   services.caddy = {

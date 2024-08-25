@@ -1,4 +1,11 @@
-{ inputs, config, pkgs, lib, modulesPath, ... }:
+{
+  inputs,
+  config,
+  pkgs,
+  lib,
+  modulesPath,
+  ...
+}:
 
 with lib;
 
@@ -19,17 +26,21 @@ with lib;
     };
 
     boot = {
-      loader =  {
+      loader = {
         systemd-boot.enable = true;
         efi.canTouchEfiVariables = true;
       };
-      initrd.availableKernelModules = [ "uhci_hcd" "ehci_pci" "ahci" "usb_storage" "sd_mod" ];
+      initrd.availableKernelModules = [
+        "uhci_hcd"
+        "ehci_pci"
+        "ahci"
+        "usb_storage"
+        "sd_mod"
+      ];
       kernelModules = [ "kvm-intel" ];
     };
 
-    environment.systemPackages = [
-      pkgs.virtiofsd
-    ];
+    environment.systemPackages = [ pkgs.virtiofsd ];
 
     sops = {
       defaultSopsFile = ./secrets.yaml;
@@ -47,13 +58,15 @@ with lib;
     };
 
     systemd.mounts = [
-      { what = "immich";
+      {
+        what = "immich";
         where = "/mnt/XinPhotos/immich";
         type = "virtiofs";
         options = "rw";
         wantedBy = [ "immich-server.service" ];
       }
-      { what = "originals";
+      {
+        what = "originals";
         where = "/mnt/XinPhotos/originals";
         type = "virtiofs";
         options = "ro,nodev,nosuid";
@@ -61,7 +74,10 @@ with lib;
       }
     ];
 
-    services.openssh.ports = [ 22 2222 ];
+    services.openssh.ports = [
+      22
+      2222
+    ];
 
     services.immich = {
       enable = true;
@@ -90,7 +106,10 @@ with lib;
       enable = true;
       package = pkgs.caddy.withPlugins {
         caddyModules = [
-          { repo = "github.com/caddy-dns/cloudflare"; version = "89f16b99c18ef49c8bb470a82f895bce01cbaece"; }
+          {
+            repo = "github.com/caddy-dns/cloudflare";
+            version = "89f16b99c18ef49c8bb470a82f895bce01cbaece";
+          }
         ];
         vendorHash = "sha256-fTcMtg5GGEgclIwJCav0jjWpqT+nKw2OF1Ow0MEEitk=";
       };
@@ -115,7 +134,7 @@ with lib;
     };
 
     time.timeZone = "Asia/Shanghai";
-  
+
     fileSystems."/" = {
       device = "/dev/disk/by-label/nixos";
       fsType = "btrfs";
@@ -124,7 +143,10 @@ with lib;
     fileSystems."/boot" = {
       device = "/dev/sda1";
       fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
+      options = [
+        "fmask=0022"
+        "dmask=0022"
+      ];
     };
 
     system.stateVersion = "24.11";

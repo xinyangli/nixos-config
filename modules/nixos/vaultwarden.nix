@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 with lib;
 
@@ -23,7 +28,7 @@ in
     };
   };
   config = mkIf cfg.enable {
-    services.vaultwarden =  {
+    services.vaultwarden = {
       enable = true;
       dbBackend = "sqlite";
       config = {
@@ -44,4 +49,3 @@ in
     };
   };
 }
-

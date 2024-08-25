@@ -1,9 +1,6 @@
-
 { config, pkgs, ... }:
 {
-  imports = [
-    ../common
-  ];
+  imports = [ ../common ];
 
   home.username = "xin";
   home.homeDirectory = "/home/xin";

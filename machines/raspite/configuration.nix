@@ -1,17 +1,19 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  imports = [
-    ./hass.nix
-  ];
+  imports = [ ./hass.nix ];
 
   commonSettings.nix.enableMirrors = true;
 
   nixpkgs.overlays = [
     # Workaround https://github.com/NixOS/nixpkgs/issues/126755#issuecomment-869149243
     (final: super: {
-      makeModulesClosure = x:
-        super.makeModulesClosure (x // { allowMissing = true; });
+      makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
     })
   ];
 
@@ -22,7 +24,7 @@
   ];
 
   system.stateVersion = "24.05";
-  
+
   networking = {
     hostName = "raspite";
     useDHCP = false;

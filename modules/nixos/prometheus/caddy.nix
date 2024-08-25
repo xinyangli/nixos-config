@@ -13,9 +13,7 @@ in
     services.prometheus.scrapeConfigs = [
       {
         job_name = "caddy";
-        static_configs = [
-          { targets = [ "127.0.0.1:2019" ]; }
-        ];
+        static_configs = [ { targets = [ "127.0.0.1:2019" ]; } ];
       }
     ];
 
@@ -27,8 +25,12 @@ in
             alert = "UpstreamHealthy";
             expr = "caddy_reverse_proxy_upstreams_healthy != 1";
             for = "5m";
-            labels = { severity = "critical"; };
-            annotations = { summary = "Upstream {{ $labels.unstream }} not healthy"; };
+            labels = {
+              severity = "critical";
+            };
+            annotations = {
+              summary = "Upstream {{ $labels.unstream }} not healthy";
+            };
           }
         ];
       }

@@ -1,4 +1,10 @@
-{ inputs, config, lib, pkgs, ... }:
+{
+  inputs,
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 with lib;
 
 let
@@ -6,7 +12,10 @@ let
 
   packages = {
     nixPackages = {
-      systemPackages = with pkgs; [ nixd nixpkgs-fmt ];
+      systemPackages = with pkgs; [
+        nixd
+        nixpkgs-fmt
+      ];
       extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
         jnoortheen.nix-ide
       ];
@@ -17,10 +26,15 @@ let
       };
     };
     cxxPackages = {
-      systemPackages = with pkgs; [ clang-tools cmake-format ];
+      systemPackages = with pkgs; [
+        clang-tools
+        cmake-format
+      ];
       extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
         llvm-vs-code-extensions.vscode-clangd
-        (ms-vscode.cmake-tools.overrideAttrs (_: { sourceRoot = "extension"; }))
+        (ms-vscode.cmake-tools.overrideAttrs (_: {
+          sourceRoot = "extension";
+        }))
         twxs.cmake
         ms-vscode.cpptools
       ];
@@ -43,7 +57,10 @@ let
       settings = { };
     };
     scalaPackages = {
-      systemPackages = with pkgs; [ coursier metals ];
+      systemPackages = with pkgs; [
+        coursier
+        metals
+      ];
       extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
         scala-lang.scala
         scalameta.metals
@@ -61,20 +78,56 @@ let
           {
             "name" = "xelatex";
             "command" = "xelatex";
-            "args" = [ "-synctex=1" "-interaction=nonstopmode" "-file-line-error" "%DOCFILE%" ];
+            "args" = [
+              "-synctex=1"
+              "-interaction=nonstopmode"
+              "-file-line-error"
+              "%DOCFILE%"
+            ];
           }
           {
             "name" = "pdflatex";
             "command" = "pdflatex";
-            "args" = [ "-synctex=1" "-interaction=nonstopmode" "-file-line-error" "%DOCFILE%" ];
+            "args" = [
+              "-synctex=1"
+              "-interaction=nonstopmode"
+              "-file-line-error"
+              "%DOCFILE%"
+            ];
           }
-          { "name" = "bibtex"; "command" = "bibtex"; "args" = [ "%DOCFILE%" ]; }
+          {
+            "name" = "bibtex";
+            "command" = "bibtex";
+            "args" = [ "%DOCFILE%" ];
+          }
         ];
         "latex-workshop.latex.recipes" = [
-          { "name" = "xelatex"; "tools" = [ "xelatex" ]; }
-          { "name" = "pdflatex"; "tools" = [ "pdflatex" ]; }
-          { "name" = "xe->bib->xe->xe"; "tools" = [ "xelatex" "bibtex" "xelatex" "xelatex" ]; }
-          { "name" = "pdf->bib->pdf->pdf"; "tools" = [ "pdflatex" "bibtex" "pdflatex" "pdflatex" ]; }
+          {
+            "name" = "xelatex";
+            "tools" = [ "xelatex" ];
+          }
+          {
+            "name" = "pdflatex";
+            "tools" = [ "pdflatex" ];
+          }
+          {
+            "name" = "xe->bib->xe->xe";
+            "tools" = [
+              "xelatex"
+              "bibtex"
+              "xelatex"
+              "xelatex"
+            ];
+          }
+          {
+            "name" = "pdf->bib->pdf->pdf";
+            "tools" = [
+              "pdflatex"
+              "bibtex"
+              "pdflatex"
+              "pdflatex"
+            ];
+          }
         ];
         "[latex]" = {
           "editor.formatOnPaste" = false;
@@ -88,9 +141,15 @@ let
   };
   llmExtensions = [ pkgs.vscode-extensions.continue.continue ];
 
-  languages = [ "nix" "cxx" "python" "scala" "latex" ];
-  zipAttrsWithLanguageOption = (attr:
-    (map (l: (lib.mkIf cfg.languages.${l} packages."${l}Packages".${attr})) languages)
+  languages = [
+    "nix"
+    "cxx"
+    "python"
+    "scala"
+    "latex"
+  ];
+  zipAttrsWithLanguageOption = (
+    attr: (map (l: (lib.mkIf cfg.languages.${l} packages."${l}Packages".${attr})) languages)
   );
 in
 {
@@ -111,64 +170,71 @@ in
   config = mkIf cfg.enable {
     nixpkgs.config.allowUnfree = true;
 
-    home.packages = lib.mkMerge ([
-      [ pkgs.clang-tools ]
-      (mkIf cfg.llm [ pkgs.ollama ])
-    ] ++ zipAttrsWithLanguageOption "systemPackages");
+    home.packages = lib.mkMerge (
+      [
+        [ pkgs.clang-tools ]
+        (mkIf cfg.llm [ pkgs.ollama ])
+      ]
+      ++ zipAttrsWithLanguageOption "systemPackages"
+    );
     programs.vscode = {
       enable = true;
       package = pkgs.vscode.override { commandLineArgs = "--enable-wayland-ime"; };
       enableUpdateCheck = false;
       enableExtensionUpdateCheck = false;
       mutableExtensionsDir = false;
-      extensions = lib.mkMerge ([
-        (with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
-          mkhl.direnv
+      extensions = lib.mkMerge (
+        [
+          (with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
+            mkhl.direnv
 
-          ms-azuretools.vscode-docker
-          ms-vscode-remote.remote-ssh
-          vscodevim.vim
-          github.vscode-pull-request-github
-          gruntfuggly.todo-tree # todo highlight
+            ms-azuretools.vscode-docker
+            ms-vscode-remote.remote-ssh
+            vscodevim.vim
+            github.vscode-pull-request-github
+            gruntfuggly.todo-tree # todo highlight
 
-          # Markdown
-          davidanson.vscode-markdownlint
-          # Latex
-          # Scale / chisel
-          sterben.fpga-support
+            # Markdown
+            davidanson.vscode-markdownlint
+            # Latex
+            # Scale / chisel
+            sterben.fpga-support
 
-          ms-vscode-remote.remote-ssh-edit
-          mushan.vscode-paste-image
-        ])
+            ms-vscode-remote.remote-ssh-edit
+            mushan.vscode-paste-image
+          ])
 
-        (with pkgs.vscode-extensions; [
-          waderyan.gitblame
-          catppuccin.catppuccin-vsc
-          # Rust
-          rust-lang.rust-analyzer
-        ])
+          (with pkgs.vscode-extensions; [
+            waderyan.gitblame
+            catppuccin.catppuccin-vsc
+            # Rust
+            rust-lang.rust-analyzer
+          ])
 
-        (mkIf cfg.llm llmExtensions)
-      ] ++ zipAttrsWithLanguageOption "extension");
-      userSettings = lib.mkMerge ([
-        {
-          "workbench.colorTheme" = "Catppuccin Macchiato";
-          "terminal.integrated.sendKeybindingsToShell" = true;
-          "extensions.ignoreRecommendations" = true;
-          "files.autoSave" = "afterDelay";
-          "editor.inlineSuggest.enabled" = true;
-          "editor.rulers" = [
-            80
-          ];
-          "editor.mouseWheelZoom" = true;
-          "git.autofetch" = false;
-          "window.zoomLevel" = -1;
+          (mkIf cfg.llm llmExtensions)
+        ]
+        ++ zipAttrsWithLanguageOption "extension"
+      );
+      userSettings = lib.mkMerge (
+        [
+          {
+            "workbench.colorTheme" = "Catppuccin Macchiato";
+            "terminal.integrated.sendKeybindingsToShell" = true;
+            "extensions.ignoreRecommendations" = true;
+            "files.autoSave" = "afterDelay";
+            "editor.inlineSuggest.enabled" = true;
+            "editor.rulers" = [ 80 ];
+            "editor.mouseWheelZoom" = true;
+            "git.autofetch" = false;
+            "window.zoomLevel" = -1;
 
-          "extensions.experimental.affinity" = {
-            "vscodevim.vim" = 1;
-          };
-        }
-      ] ++ zipAttrsWithLanguageOption "settings");
+            "extensions.experimental.affinity" = {
+              "vscodevim.vim" = 1;
+            };
+          }
+        ]
+        ++ zipAttrsWithLanguageOption "settings"
+      );
     };
 
     home.file.".continue/config.json".text = lib.generators.toJSON { } {
@@ -180,7 +246,7 @@ in
         }
       ];
       tabAutocompleteModel = {
-        model ="deepseek-coder:6.7b-base";
+        model = "deepseek-coder:6.7b-base";
         provider = "ollama";
         title = "codegemma";
       };

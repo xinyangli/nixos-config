@@ -10,9 +10,7 @@ in
     services.prometheus.scrapeConfigs = [
       {
         job_name = "gotosocial";
-        static_configs = [
-          { targets = [ "localhost:8080" ]; }
-        ];
+        static_configs = [ { targets = [ "localhost:8080" ]; } ];
       }
     ];
   };

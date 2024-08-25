@@ -1,7 +1,17 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
-  inherit (lib) mkIf mkEnableOption mkOption types;
+  inherit (lib)
+    mkIf
+    mkEnableOption
+    mkOption
+    types
+    ;
 
   cfg = config.commonSettings.nix;
 in
@@ -33,7 +43,10 @@ in
     nix.optimise.automatic = true;
 
     nix.settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
       trusted-users = [ "root" ];
 
@@ -52,10 +65,7 @@ in
         "xin-1:8/ul1IhdWLswERF/8RfeAw8VZqjwHrJ1x55y1yjxQ+Y="
       ];
 
-      secret-key-files = mkIf cfg.signing.enable [
-        cfg.signing.keyFile
-      ];
+      secret-key-files = mkIf cfg.signing.enable [ cfg.signing.keyFile ];
     };
   };
 }
-

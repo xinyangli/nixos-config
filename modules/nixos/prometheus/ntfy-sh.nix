@@ -8,9 +8,7 @@ in
     services.prometheus.scrapeConfigs = [
       {
         job_name = "ntfy-sh";
-        static_configs = [
-          { targets = [ "ntfy.xinyang.life" ]; }
-        ];
+        static_configs = [ { targets = [ "ntfy.xinyang.life" ]; } ];
       }
     ];
   };

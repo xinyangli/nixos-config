@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   inherit (lib) mkIf mkEnableOption getExe;
   cfg = config.custom-hm.neovim;
@@ -13,7 +18,10 @@ in
     enable = mkEnableOption "neovim configurations";
   };
   config = mkIf cfg.enable {
-    home.packages = with pkgs; [ nixvim neovide ];
+    home.packages = with pkgs; [
+      nixvim
+      neovide
+    ];
     programs.neovim.enable = false;
     home.file.".config/neovide/config.toml" = {
       source = tomlFormat.generate "neovide-config" neovideConfig;

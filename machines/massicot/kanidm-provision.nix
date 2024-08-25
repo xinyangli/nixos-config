@@ -21,7 +21,11 @@
       members = [ "xin" ];
     };
     immich-users = {
-      members = [ "xin" "zhuo" "ycm" ];
+      members = [
+        "xin"
+        "zhuo"
+        "ycm"
+      ];
     };
     grafana-superadmins = {
       members = [ "xin" ];
@@ -65,7 +69,12 @@
       originLanding = "https://git.xinyang.life/user/oauth2/kandim";
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
-        forgejo-access = [ "openid" "email" "profile" "groups" ];
+        forgejo-access = [
+          "openid"
+          "email"
+          "profile"
+          "groups"
+        ];
       };
       claimMaps = {
         forgejo_role = {
@@ -83,7 +92,12 @@
       originLanding = "https://xinyang.life/";
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
-        gts-users = [ "openid" "email" "profile" "groups" ];
+        gts-users = [
+          "openid"
+          "email"
+          "profile"
+          "groups"
+        ];
       };
     };
     owncloud = {
@@ -92,7 +106,11 @@
       originLanding = "https://home.xinyang.life:9201/";
       public = true;
       scopeMaps = {
-        ocis-users = [ "openid" "email" "profile" ];
+        ocis-users = [
+          "openid"
+          "email"
+          "profile"
+        ];
       };
     };
     hedgedoc = {
@@ -101,7 +119,11 @@
       originLanding = "https://docs.xinyang.life/auth/oauth2";
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
-        hedgedoc-users = [ "openid" "email" "profile" ];
+        hedgedoc-users = [
+          "openid"
+          "email"
+          "profile"
+        ];
       };
     };
     immich-mobile = {
@@ -110,7 +132,11 @@
       originLanding = "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/";
       allowInsecureClientDisablePkce = true;
       scopeMaps = {
-        immich-users = [ "openid" "email" "profile" ];
+        immich-users = [
+          "openid"
+          "email"
+          "profile"
+        ];
       };
     };
     miniflux = {
@@ -118,7 +144,11 @@
       originUrl = "https://rss.xinyang.life/";
       originLanding = "https://rss.xinyang.life/";
       scopeMaps = {
-        miniflux-users = [ "openid" "email" "profile" ];
+        miniflux-users = [
+          "openid"
+          "email"
+          "profile"
+        ];
       };
     };
     grafana = {
@@ -126,7 +156,12 @@
       originUrl = "https://grafana.xinyang.life/";
       originLanding = "https://grafana.xinyang.life/";
       scopeMaps = {
-        grafana-users = [ "openid" "email" "profile" "groups" ];
+        grafana-users = [
+          "openid"
+          "email"
+          "profile"
+          "groups"
+        ];
       };
       claimMaps = {
         grafana_role = {

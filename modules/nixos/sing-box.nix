@@ -1,4 +1,10 @@
-{ config, pkgs, lib, utils, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  utils,
+  ...
+}:
 let
   cfg = config.custom.sing-box;
   settingsFormat = pkgs.formats.json { };
@@ -16,9 +22,7 @@ in
       };
 
       configFile = {
-        urlFile = lib.mkOption {
-          type = lib.types.path;
-        };
+        urlFile = lib.mkOption { type = lib.types.path; };
         name = lib.mkOption {
           type = lib.types.str;
           default = "config.json";
@@ -62,10 +66,10 @@ in
 
     systemd.packages = [ cfg.package ];
 
-    systemd.services.sing-box = 
-    let
-      configFile = cfg.stateDir + "/${cfg.configFile.name}";
-    in
+    systemd.services.sing-box =
+      let
+        configFile = cfg.stateDir + "/${cfg.configFile.name}";
+      in
       {
         preStart = ''
           umask 0077
@@ -81,4 +85,3 @@ in
       };
   };
 }
-

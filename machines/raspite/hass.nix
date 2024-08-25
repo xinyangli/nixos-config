@@ -1,4 +1,5 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, ... }:
+{
   services.home-assistant = {
     enable = true;
     extraComponents = [
@@ -9,14 +10,12 @@
     ];
     openFirewall = false;
     config = {
-      default_config = {};
+      default_config = { };
       http = {
         server_host = "::1";
         base_url = "raspite.local:1000";
         use_x_forward_for = true;
-        trusted_proxies = [
-          "::1"
-        ];
+        trusted_proxies = [ "::1" ];
       };
     };
   };
@@ -28,16 +27,17 @@
 
   users.groups.dialout.members = config.users.groups.wheel.members;
 
-  environment.systemPackages = with pkgs; [
-    zigbee2mqtt
+  environment.systemPackages = with pkgs; [ zigbee2mqtt ];
+
+  networking.firewall.allowedTCPPorts = [
+    1000
+    1001
   ];
 
-  networking.firewall.allowedTCPPorts = [ 1000 1001 ];
-
   services.caddy = {
-    enable = true; 
+    enable = true;
     virtualHosts = {
-        # reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}
+      # reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}
       "raspite.local:1000".extraConfig = ''
         reverse_proxy http://[::1]:8123
       '';

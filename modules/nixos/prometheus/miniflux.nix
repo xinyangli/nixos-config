@@ -8,9 +8,7 @@ in
     services.prometheus.scrapeConfigs = [
       {
         job_name = "miniflux";
-        static_configs = [
-          { targets = [ config.systemd.services.miniflux.environment.LISTEN_ADDR ]; }
-        ];
+        static_configs = [ { targets = [ config.systemd.services.miniflux.environment.LISTEN_ADDR ]; } ];
       }
     ];
   };

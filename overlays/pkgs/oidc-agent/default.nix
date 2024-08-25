@@ -1,14 +1,15 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, curl
-, webkitgtk
-, libmicrohttpd
-, libsecret
-, qrencode
-, libsodium
-, pkg-config
-, help2man
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  curl,
+  webkitgtk,
+  libmicrohttpd,
+  libsecret,
+  qrencode,
+  libsodium,
+  pkg-config,
+  help2man,
 }:
 
 stdenv.mkDerivation rec {
@@ -19,8 +20,7 @@ stdenv.mkDerivation rec {
     owner = "indigo-dc";
     repo = "oidc-agent";
     rev = "v${version}";
-    sha256 = "sha256-cOK/rZ/jnyALLuhDM3+qvwwe4Fjkv8diQBkw7NfVo0c="
-    ;
+    sha256 = "sha256-cOK/rZ/jnyALLuhDM3+qvwwe4Fjkv8diQBkw7NfVo0c=";
   };
 
   buildInputs = [
@@ -47,7 +47,6 @@ stdenv.mkDerivation rec {
     make install_man PREFIX=$out
   '';
 
-
   meta = with lib; {
     description = "oidc-agent for managing OpenID Connect tokens on the command line";
     homepage = "https://github.com/indigo-dc/oidc-agent";
@@ -55,4 +54,3 @@ stdenv.mkDerivation rec {
     license = licenses.mit;
   };
 }
-

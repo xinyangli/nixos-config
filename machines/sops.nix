@@ -1,4 +1,9 @@
-{ inputs, config, lib, ... }:
+{
+  inputs,
+  config,
+  lib,
+  ...
+}:
 {
   imports = [ inputs.sops-nix.nixosModules.sops ];
   config = {
@@ -11,24 +16,22 @@
           owner = "root";
         };
         singbox_sg_server = {
-           owner = "root";
+          owner = "root";
         };
         singbox_jp_server = {
-           owner = "root";
+          owner = "root";
         };
         singbox_password = {
-           owner = "root";
+          owner = "root";
         };
         singbox_uuid = {
-           owner = "root";
+          owner = "root";
         };
         private_dns_address = {
-           owner = "root";
+          owner = "root";
         };
       };
-      secrets.grafana_cloud_api = lib.mkIf config.services.prometheus.enable {
-        owner = "prometheus";
-      };
+      secrets.grafana_cloud_api = lib.mkIf config.services.prometheus.enable { owner = "prometheus"; };
     };
   };
 }

@@ -1,10 +1,16 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}:
 with lib;
 let
   cfg = config.ec2;
 in
 {
-  imports = [ 
+  imports = [
     "${modulesPath}/profiles/headless.nix"
     # Note: While we do use the headless profile, we also explicitly
     # turn on the serial console on ttyS0 below. This is because
@@ -39,18 +45,22 @@ in
       fsType = "vfat";
     };
 
-    boot.extraModulePackages = [
-      config.boot.kernelPackages.ena
-    ];
+    boot.extraModulePackages = [ config.boot.kernelPackages.ena ];
     boot.initrd.kernelModules = [ "xen-blkfront" ];
     boot.initrd.availableKernelModules = [ "nvme" ];
-    boot.kernelParams = [ "console=ttyS0,115200n8" "random.trust_cpu=on" ];
+    boot.kernelParams = [
+      "console=ttyS0,115200n8"
+      "random.trust_cpu=on"
+    ];
 
     # Prevent the nouveau kernel module from being loaded, as it
     # interferes with the nvidia/nvidia-uvm modules needed for CUDA.
     # Also blacklist xen_fbfront to prevent a 30 second delay during
     # boot.
-    boot.blacklistedKernelModules = [ "nouveau" "xen_fbfront" ];
+    boot.blacklistedKernelModules = [
+      "nouveau"
+      "xen_fbfront"
+    ];
 
     boot.loader.grub.efiSupport = cfg.efi;
     boot.loader.grub.efiInstallAsRemovable = cfg.efi;
@@ -64,7 +74,7 @@ in
     systemd.services.fetch-ec2-metadata = {
       wantedBy = [ "multi-user.target" ];
       wants = [ "network-online.target" ];
-      after = ["network-online.target"];
+      after = [ "network-online.target" ];
       path = [ pkgs.curl ];
       script = builtins.readFile ./ec2-metadata-fetcher.sh;
       serviceConfig.Type = "oneshot";

@@ -1,8 +1,13 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   nixpkgs.overlays = [
-    (self: super: { 
+    (self: super: {
       element-desktop = super.element-desktop.override { commandLineArgs = "--enable-wayland-ime"; };
     })
   ];

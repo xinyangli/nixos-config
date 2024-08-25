@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.custom.prometheus;
 in
@@ -8,7 +13,7 @@ in
       enable = true;
       listenAddress = "127.0.0.1";
       configFile = pkgs.writeText "blackbox.config.yaml" (
-        lib.generators.toYAML {} {
+        lib.generators.toYAML { } {
           modules = {
             tcp4_connect = {
               prober = "tcp";
@@ -25,7 +30,7 @@ in
     };
 
     services.prometheus.scrapeConfigs = [
-       {
+      {
         job_name = "blackbox";
         scrape_interval = "1m";
         metrics_path = "/probe";
@@ -73,8 +78,13 @@ in
             alert = "HighProbeLatency";
             expr = "probe_duration_seconds > 0.5";
             for = "2m";
-            labels = { severity = "warning"; };
-            annotations = { summary = "High request latency on {{ $labels.instance }}"; description = "95th percentile of request latency is above 0.5 seconds for the last 2 minutes."; };
+            labels = {
+              severity = "warning";
+            };
+            annotations = {
+              summary = "High request latency on {{ $labels.instance }}";
+              description = "95th percentile of request latency is above 0.5 seconds for the last 2 minutes.";
+            };
           }
         ];
       }

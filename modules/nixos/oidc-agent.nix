@@ -1,10 +1,20 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
-  inherit (lib) mkIf mkEnableOption mkOption types;
+  inherit (lib)
+    mkIf
+    mkEnableOption
+    mkOption
+    types
+    ;
 
   cfg = config.programs.oidc-agent;
-  providerFormat = pkgs.formats.json {};
+  providerFormat = pkgs.formats.json { };
 in
 {
   options.programs.oidc-agent = {
@@ -18,7 +28,7 @@ in
     };
     providers = mkOption {
       type = providerFormat.type;
-      default = {};
+      default = { };
       description = ''
         Configuration of providers which contains a json array of json objects
         each describing an issuer, see https://indigo-dc.gitbook.io/oidc-agent/configuration/issuers

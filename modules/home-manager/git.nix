@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }: 
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 with lib;
 
@@ -32,16 +37,12 @@ in
         d = "diff";
         s = "status";
       };
-      signing = mkIf cfg.signing.enable { 
+      signing = mkIf cfg.signing.enable {
         signByDefault = true;
         key = cfg.signing.keyFile;
       };
-      extraConfig.user = mkIf cfg.signing.enable {
-        signingkey = cfg.signing.keyFile;
-      };
-      extraConfig.gpg = mkIf cfg.signing.enable {
-        format = "ssh";
-      };
+      extraConfig.user = mkIf cfg.signing.enable { signingkey = cfg.signing.keyFile; };
+      extraConfig.gpg = mkIf cfg.signing.enable { format = "ssh"; };
     };
   };
 }

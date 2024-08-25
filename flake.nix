@@ -52,28 +52,28 @@
     catppuccin.url = "github:catppuccin/nix";
   };
 
-
   outputs =
-    { self
-    , home-manager
-    , nixpkgs
-    , nixos-hardware
-    , flake-utils
-    , nur
-    , catppuccin
-    , my-nixvim
-    , ...
+    {
+      self,
+      home-manager,
+      nixpkgs,
+      nixos-hardware,
+      flake-utils,
+      nur,
+      catppuccin,
+      my-nixvim,
+      ...
     }@inputs:
     let
-      nixvimOverlay = (final: prev: {
-        nixvim = self.packages.${prev.stdenv.system}.nixvim;
-      });
-      overlayModule = { ... }: {
-        nixpkgs.overlays = [
-          nixvimOverlay
-          (import ./overlays/add-pkgs.nix)
-        ];
-      };
+      nixvimOverlay = (final: prev: { nixvim = self.packages.${prev.stdenv.system}.nixvim; });
+      overlayModule =
+        { ... }:
+        {
+          nixpkgs.overlays = [
+            nixvimOverlay
+            (import ./overlays/add-pkgs.nix)
+          ];
+        };
       deploymentModule = {
         deployment.targetUser = "xin";
       };
@@ -87,20 +87,25 @@
         catppuccin.homeManagerModules.catppuccin
         self.homeManagerModules
       ];
-      mkHome = user: host: { ... }: {
-        imports = [
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              sharedModules = sharedHmModules;
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = { inherit inputs; };
-            };
-            home-manager.users.${user} = (import ./home).${user}.${host};
-          }
-        ];
-      };
+      mkHome =
+        user: host:
+        { ... }:
+        {
+          imports = [
+            home-manager.nixosModules.home-manager
+            {
+              home-manager = {
+                sharedModules = sharedHmModules;
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                extraSpecialArgs = {
+                  inherit inputs;
+                };
+              };
+              home-manager.users.${user} = (import ./home).${user}.${host};
+            }
+          ];
+        };
       mkHomeConfiguration = user: host: {
         name = user;
         value = home-manager.lib.homeManagerConfiguration {
@@ -114,94 +119,109 @@
           };
         };
       };
-      mkNixos = { system, modules, specialArgs ? { } }: nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = specialArgs // { inherit inputs system; };
-        modules = [
-          self.nixosModules.default
-          nur.nixosModules.nur
-        ] ++ modules;
-      };
+      mkNixos =
+        {
+          system,
+          modules,
+          specialArgs ? { },
+        }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = specialArgs // {
+            inherit inputs system;
+          };
+          modules = [
+            self.nixosModules.default
+            nur.nixosModules.nur
+          ] ++ modules;
+        };
     in
     {
       nixpkgs = nixpkgs;
-      nixosModules.default = { imports = [ ./modules/nixos overlayModule ]; };
+      nixosModules.default = {
+        imports = [
+          ./modules/nixos
+          overlayModule
+        ];
+      };
       homeManagerModules = import ./modules/home-manager;
 
       homeConfigurations = builtins.listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
 
       colmenaHive = inputs.colmena.lib.makeHive {
         meta = {
-          nixpkgs = import nixpkgs {
-            system = "x86_64-linux";
-          };
+          nixpkgs = import nixpkgs { system = "x86_64-linux"; };
           specialArgs = {
             inherit inputs;
           };
         };
 
-        massicot = { ... }: {
-          deployment.targetHost = "49.13.13.122";
-          deployment.buildOnTarget = true;
+        massicot =
+          { ... }:
+          {
+            deployment.targetHost = "49.13.13.122";
+            deployment.buildOnTarget = true;
 
-          imports = [
-            { nixpkgs.system = "aarch64-linux"; }
-            machines/massicot
-          ] ++ sharedColmenaModules;
-        };
-
-        tok-00 = { ... }: {
-          imports = [
-            machines/dolomite
-          ] ++ sharedColmenaModules;
-          nixpkgs.system = "x86_64-linux";
-          networking.hostName = "tok-00";
-          system.stateVersion = "23.11";
-          deployment = {
-            targetHost = "video01.namely.icu";
-            buildOnTarget = false;
-            tags = [ "proxy" ];
+            imports = [
+              { nixpkgs.system = "aarch64-linux"; }
+              machines/massicot
+            ] ++ sharedColmenaModules;
           };
-        };
 
-        la-00 = { ... }: {
-          imports = [
-            machines/dolomite
-          ] ++ sharedColmenaModules;
-          nixpkgs.system = "x86_64-linux";
-          networking.hostName = "la-00";
-          system.stateVersion = "21.05";
-          deployment = {
-            targetHost = "la-00.video.namely.icu";
-            buildOnTarget = false;
-            tags = [ "proxy" ];
+        tok-00 =
+          { ... }:
+          {
+            imports = [ machines/dolomite ] ++ sharedColmenaModules;
+            nixpkgs.system = "x86_64-linux";
+            networking.hostName = "tok-00";
+            system.stateVersion = "23.11";
+            deployment = {
+              targetHost = "video01.namely.icu";
+              buildOnTarget = false;
+              tags = [ "proxy" ];
+            };
           };
-        };
 
-        raspite = { ... }: {
-          deployment = {
-            targetHost = "raspite.local";
-            buildOnTarget = false;
+        la-00 =
+          { ... }:
+          {
+            imports = [ machines/dolomite ] ++ sharedColmenaModules;
+            nixpkgs.system = "x86_64-linux";
+            networking.hostName = "la-00";
+            system.stateVersion = "21.05";
+            deployment = {
+              targetHost = "la-00.video.namely.icu";
+              buildOnTarget = false;
+              tags = [ "proxy" ];
+            };
           };
-          nixpkgs.system = "aarch64-linux";
-          imports = [
-            "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-            nixos-hardware.nixosModules.raspberry-pi-4
-            machines/raspite/configuration.nix
-          ] ++ sharedColmenaModules;
-        };
 
-        weilite = { ... }: {
-          imports = [
-            machines/weilite
-          ] ++ sharedColmenaModules;
-          deployment = {
-            targetHost = "weilite.coho-tet.ts.net";
-            targetPort = 22;
-            buildOnTarget = false;
+        raspite =
+          { ... }:
+          {
+            deployment = {
+              targetHost = "raspite.local";
+              buildOnTarget = false;
+            };
+            nixpkgs.system = "aarch64-linux";
+            imports = [
+              "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
+              nixos-hardware.nixosModules.raspberry-pi-4
+              machines/raspite/configuration.nix
+            ] ++ sharedColmenaModules;
           };
-          nixpkgs.system = "x86_64-linux";
-        };
+
+        weilite =
+          { ... }:
+          {
+            imports = [ machines/weilite ] ++ sharedColmenaModules;
+            deployment = {
+              targetHost = "weilite.coho-tet.ts.net";
+              targetPort = 22;
+              buildOnTarget = false;
+            };
+            nixpkgs.system = "x86_64-linux";
+          };
       };
 
       nixosConfigurations = {
@@ -215,18 +235,30 @@
         };
       } // self.colmenaHive.nodes;
 
-    } // flake-utils.lib.eachDefaultSystem (system:
-    let pkgs = nixpkgs.legacyPackages.${system}; in
-    {
-      devShells = {
-        default = pkgs.mkShell {
-          packages = with pkgs; [ nix git colmena sops nix-output-monitor nil nvd ];
-        };
-      };
-
-      packages = {
-        nixvim = my-nixvim.packages.${system}.default;
-      };
     }
-  );
+    // flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      {
+        devShells = {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              nix
+              git
+              colmena
+              sops
+              nix-output-monitor
+              nil
+              nvd
+            ];
+          };
+        };
+
+        packages = {
+          nixvim = my-nixvim.packages.${system}.default;
+        };
+      }
+    );
 }

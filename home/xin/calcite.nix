@@ -1,8 +1,6 @@
 { config, pkgs, ... }@inputs:
 {
-  imports = [
-    ./common
-  ];
+  imports = [ ./common ];
 
   programs.nix-index-database.comma.enable = true;
 
@@ -46,12 +44,38 @@
   };
 
   custom-hm = {
-    alacritty = { enable = true; };
-    cosmic-term = { enable = true; };
-    direnv = { enable = true; }; fish = { enable = true; }; git = { enable = true; signing.enable = true; };
-    neovim = { enable = true; };
-    vscode = { enable = true; languages = { cxx = true; python = true; scala = true; latex = true; }; llm = true; };
-    zellij = { enable = true; };
+    alacritty = {
+      enable = true;
+    };
+    cosmic-term = {
+      enable = true;
+    };
+    direnv = {
+      enable = true;
+    };
+    fish = {
+      enable = true;
+    };
+    git = {
+      enable = true;
+      signing.enable = true;
+    };
+    neovim = {
+      enable = true;
+    };
+    vscode = {
+      enable = true;
+      languages = {
+        cxx = true;
+        python = true;
+        scala = true;
+        latex = true;
+      };
+      llm = true;
+    };
+    zellij = {
+      enable = true;
+    };
   };
 
   programs.gnome-shell.enable = true;

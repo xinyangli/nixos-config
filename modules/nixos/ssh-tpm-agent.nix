@@ -1,5 +1,10 @@
 # Temporary workaround
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   cfg = config.services.ssh-tpm-agent;
 in

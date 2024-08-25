@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   inherit (lib) mkEnableOption mkIf;
@@ -10,7 +15,5 @@ in
     enable = mkEnableOption "cosmic-term";
   };
 
-  config = mkIf cfg.enable {
-    home.packages = [ pkgs.cosmic-term ];
-  };
+  config = mkIf cfg.enable { home.packages = [ pkgs.cosmic-term ]; };
 }

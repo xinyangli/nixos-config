@@ -1,13 +1,17 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
-  imports =
-    [
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./network.nix
-      ../sops.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ./network.nix
+    ../sops.nix
+  ];
 
   commonSettings = {
     auth.enable = true;
@@ -22,7 +26,11 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   # boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" ];
+  boot.kernelModules = [
+    "nvidia"
+    "nvidia_modeset"
+    "nvidia_uvm"
+  ];
   boot.supportedFilesystems = [ "ntfs" ];
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
@@ -45,7 +53,9 @@
 
   programs.steam = {
     enable = true;
-    gamescopeSession = { enable = true; };
+    gamescopeSession = {
+      enable = true;
+    };
   };
 
   programs.oidc-agent.enable = true;
@@ -93,7 +103,6 @@
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
-
   # Configure keymap in X11
   services.xserver = {
     xkb.layout = "us";
@@ -135,7 +144,12 @@
   users.users.xin = {
     isNormalUser = true;
     description = "xin";
-    extraGroups = [ "networkmanager" "wheel" "wireshark" "tss" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "wireshark"
+      "tss"
+    ];
   };
 
   services.kanidm = {
@@ -179,13 +193,14 @@
     # reference: https://nixos.wiki/wiki/Python
     (
       let
-        my-python-packages = python-packages: with python-packages; [
-          pandas
-          requests
-          numpy
-          pyyaml
-          setuptools
-        ];
+        my-python-packages =
+          python-packages: with python-packages; [
+            pandas
+            requests
+            numpy
+            pyyaml
+            setuptools
+          ];
         python-with-my-packages = python3.withPackages my-python-packages;
       in
       python-with-my-packages
@@ -280,14 +295,19 @@
     acceleration = "cuda";
   };
 
-
   # MTP support
   services.gvfs.enable = true;
 
   # Fonts
   fonts = {
     packages = with pkgs; [
-      (nerdfonts.override { fonts = [ "FiraCode" "FiraMono" "JetBrainsMono" ]; })
+      (nerdfonts.override {
+        fonts = [
+          "FiraCode"
+          "FiraMono"
+          "JetBrainsMono"
+        ];
+      })
       noto-fonts
       noto-fonts-emoji
       liberation_ttf
@@ -305,9 +325,19 @@
     ];
     fontconfig = {
       defaultFonts = {
-        serif = [ "Noto Serif CJK SC" "Ubuntu" ];
-        sansSerif = [ "Noto Sans CJK SC" "Ubuntu" ];
-        monospace = [ "FiraCode NerdFont Mono" "Noto Sans Mono CJK SC" "Ubuntu" ];
+        serif = [
+          "Noto Serif CJK SC"
+          "Ubuntu"
+        ];
+        sansSerif = [
+          "Noto Sans CJK SC"
+          "Ubuntu"
+        ];
+        monospace = [
+          "FiraCode NerdFont Mono"
+          "Noto Sans Mono CJK SC"
+          "Ubuntu"
+        ];
       };
     };
     enableDefaultPackages = true;

@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 with lib;
 
@@ -26,22 +31,12 @@ in
       };
       oidc = {
         enable = mkEnableOption "OIDC support for HedgeDoc";
-        baseURL = mkOption {
-          type = types.str;
-        };
-        authorizationURL = mkOption {
-          type = types.str;
-        };
-        tokenURL = mkOption {
-          type = types.str;
-        };
-        userProfileURL = mkOption {
-          type = types.str;
-        };
+        baseURL = mkOption { type = types.str; };
+        authorizationURL = mkOption { type = types.str; };
+        tokenURL = mkOption { type = types.str; };
+        userProfileURL = mkOption { type = types.str; };
       };
-      environmentFile = mkOption {
-        type = types.path;
-      };
+      environmentFile = mkOption { type = types.path; };
     };
   };
   config = mkIf cfg.enable {

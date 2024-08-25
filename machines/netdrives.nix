@@ -1,7 +1,7 @@
 { pkgs, config, ... }:
 {
   sops.secrets = {
-    autofs-nas = { 
+    autofs-nas = {
       owner = "davfs2";
     };
     autofs-nas-secret = {
