@@ -290,6 +290,8 @@
     exporters.blackbox.enable = true;
   };
 
+  custom.stylix.enable = true;
+
   services.ollama = {
     enable = true;
     acceleration = "cuda";
@@ -334,7 +336,7 @@
           "Ubuntu"
         ];
         monospace = [
-          "FiraCode NerdFont Mono"
+          "JetbrainsMono Nerd Font"
           "Noto Sans Mono CJK SC"
           "Ubuntu"
         ];

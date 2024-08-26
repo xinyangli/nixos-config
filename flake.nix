@@ -50,6 +50,7 @@
     };
 
     catppuccin.url = "github:catppuccin/nix";
+    stylix.url = "github:danth/stylix";
   };
 
   outputs =

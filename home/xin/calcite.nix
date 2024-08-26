@@ -1,4 +1,4 @@
-{ config, pkgs, ... }@inputs:
+{ inputs, pkgs, ... }:
 {
   imports = [ ./common ];
 
@@ -35,6 +35,12 @@
   catppuccin = {
     enable = true;
     flavor = "mocha";
+  };
+
+  stylix = {
+    targets = {
+      gtk.enable = true;
+    };
   };
   xdg.enable = true;
 
