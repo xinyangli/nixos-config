@@ -19,8 +19,16 @@
     "usbhid"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.initrd.luks.devices.cryptroot = {
-    device = "/dev/disk/by-uuid/5a51f623-6fbd-4843-9f83-c895067e8e7d";
+
+  boot.initrd = {
+    systemd.enable = true; # initrd uses systemd
+    luks = {
+      fido2Support = false; # because systemd
+      devices.cryptroot = {
+        device = "/dev/disk/by-uuid/5a51f623-6fbd-4843-9f83-c895067e8e7d";
+        crypttabExtraOpts = [ "fido2-device=auto" ]; # cryptenroll
+      };
+    };
   };
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
@@ -69,5 +77,6 @@
   hardware.nvidia = {
     powerManagement.enable = true;
     dynamicBoost.enable = lib.mkForce false;
+    open = true;
   };
 }

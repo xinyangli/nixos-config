@@ -49,8 +49,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    catppuccin.url = "github:catppuccin/nix";
-    stylix.url = "github:danth/stylix";
+    catppuccin = {
+      url = "github:catppuccin/nix";
+    };
+
+    stylix = {
+      url = "github:xinyangli/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
   };
 
   outputs =

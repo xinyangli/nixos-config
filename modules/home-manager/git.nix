@@ -19,7 +19,7 @@ in
           enable = mkEnableOption "Git ssh signing";
           keyFile = mkOption {
             type = types.str;
-            default = "~/.ssh/id_ecdsa.pub";
+            default = "~/.ssh/id_ed25519_sk.pub";
           };
         };
       };

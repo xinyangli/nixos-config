@@ -30,20 +30,6 @@ in
     stylix.autoEnable = false;
     stylix.homeManagerIntegration.autoImport = true;
     stylix.homeManagerIntegration.followSystem = true;
-    stylix.fonts = {
-      monospace = {
-        name = "JetBrainsMono Nerd Font";
-        package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
-      };
-      serif = {
-        name = "Noto Serif CJK SC";
-        package = pkgs.noto-fonts;
-      };
-      sansSerif = {
-        name = "Noto Sans CJK SC";
-        package = pkgs.noto-fonts;
-      };
-    };
 
     stylix.targets = {
       console.enable = true;

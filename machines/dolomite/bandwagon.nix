@@ -45,5 +45,7 @@ in
     networking.useDHCP = false;
     networking.interfaces.ens18.useDHCP = true;
     networking.interfaces.ens19.useDHCP = true;
+
+    services.sing-box.settings.dns.strategy = "ipv4_only";
   };
 }

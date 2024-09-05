@@ -27,7 +27,7 @@
   };
 
   home.packages = with pkgs; [
-    thunderbird
+    # betterbird
     remmina
   ];
 

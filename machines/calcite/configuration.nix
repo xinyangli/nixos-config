@@ -215,7 +215,7 @@
     gnomeExtensions.pano
     gnome-tweaks
     gnome-themes-extra
-    gnome.gnome-remote-desktop
+    gnome-remote-desktop
     bibata-cursors
     gthumb
     oculante
@@ -357,4 +357,12 @@
   };
 
   services.nixseparatedebuginfod.enable = true;
+  services.bloop = {
+    install = true;
+    extraOptions = [
+      "-J-Xmx2G"
+      "-J-XX:MaxInlineLevel=20"
+      "-J-XX:+UseParallelGC"
+    ];
+  };
 }

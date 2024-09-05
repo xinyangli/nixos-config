@@ -36,8 +36,7 @@ let
           sourceRoot = "extension";
         }))
         twxs.cmake
-        ms-vscode.cpptools
-      ];
+      ] ++ (with pkgs.vscode-extensions; [ ms-vscode.cpptools ]);
       settings = {
         "cmake.configureOnEdit" = false;
         "cmake.showOptionsMovedNotification" = false;
