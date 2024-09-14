@@ -55,8 +55,8 @@
 
     stylix = {
       url = "github:xinyangli/stylix";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
+      # inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.home-manager.follows = "home-manager";
     };
   };
 
@@ -83,7 +83,7 @@
           ];
         };
       deploymentModule = {
-        deployment.targetUser = "xin";
+        deployment.targetUser = "root";
       };
       sharedColmenaModules = [
         self.nixosModules.default

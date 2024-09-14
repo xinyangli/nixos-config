@@ -12,6 +12,7 @@
     ./hardware-configuration.nix
     ./networking.nix
     ./services.nix
+    ./services
   ];
 
   sops = {
@@ -50,13 +51,13 @@
     efiSupport = true;
     configurationLimit = 5;
   };
-
-  fileSystems."/mnt/storage" = {
-    device = "//u380335-sub1.your-storagebox.de/u380335-sub1";
-    fsType = "cifs";
-    options = [ "credentials=${config.sops.secrets.storage_box_mount.path}" ];
-  };
-
+  #
+  # fileSystems."/mnt/storage" = {
+  #   device = "//u380335-sub1.your-storagebox.de/u380335-sub1";
+  #   fsType = "cifs";
+  #   options = [ "credentials=${config.sops.secrets.storage_box_mount.path}" ];
+  # };
+  #
   environment.systemPackages = with pkgs; [
     cifs-utils
     git

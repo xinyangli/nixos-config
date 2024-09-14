@@ -8,6 +8,9 @@ let
   kanidm_listen_port = 5324;
 in
 {
+  imports = [
+    ./kanidm-provision.nix
+  ];
   networking.firewall.allowedTCPPorts = [
     80
     443
@@ -46,33 +49,6 @@ in
     exporters.miniflux.enable = true;
   };
 
-  systemd.mounts =
-    map
-      (share: {
-        what = "//u380335-sub1.your-storagebox.de/u380335-sub1/${share}";
-        where = "/mnt/storage/${share}";
-        type = "cifs";
-        options = "rw,uid=${share},gid=${share},credentials=${config.sops.secrets.storage_box_mount.path},_netdev,fsc";
-        before = [ "${share}.service" ];
-        after = [ "cachefilesd.service" ];
-        wantedBy = [ "${share}.service" ];
-      })
-      [
-        "forgejo"
-        "gotosocial"
-        "conduit"
-        "hedgedoc"
-      ];
-
-  services.cachefilesd.enable = true;
-
-  system.activationScripts = {
-    conduit-media-link.text = ''
-      mkdir -m 700 -p /var/lib/private/matrix-conduit/media
-      chown conduit:conduit /var/lib/private/matrix-conduit/media
-      mount --bind --verbose /mnt/storage/conduit/media /var/lib/private/matrix-conduit/media
-    '';
-  };
   security.acme = {
     acceptTerms = true;
     certs."auth.xinyang.life" = {
@@ -106,7 +82,6 @@ in
       online_backup.versions = 7;
       # db_path = "/var/lib/kanidm/kanidm.db";
     };
-    provision = import ./kanidm-provision.nix;
   };
 
   custom.miniflux = {
@@ -143,6 +118,12 @@ in
       };
     };
   };
+
+  users.users.conduit = {
+    isSystemUser = true;
+    group = "conduit";
+  };
+  users.groups.conduit = { };
 
   services.gotosocial = {
     enable = true;

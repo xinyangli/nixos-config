@@ -2,17 +2,15 @@
   inputs,
   config,
   pkgs,
-  lib,
   modulesPath,
   ...
 }:
-
-with lib;
 
 {
   imports = [
     inputs.sops-nix.nixosModules.sops
     (modulesPath + "/profiles/qemu-guest.nix")
+    ./services
   ];
 
   config = {
@@ -48,6 +46,10 @@ with lib;
       secrets = {
         cloudflare_dns_token = {
           owner = "caddy";
+          mode = "400";
+        };
+        "immich/oauth_client_secret" = {
+          owner = "immich";
           mode = "400";
         };
       };
@@ -88,6 +90,31 @@ with lib;
       machine-learning.enable = false;
       environment = {
         IMMICH_MACHINE_LEARNING_ENABLED = "false";
+      };
+      database.enable = true;
+    };
+
+    custom.immich.jsonSettings = {
+      oauth = {
+        enabled = true;
+        issuerUrl = "https://auth.xinyang.life/oauth2/openid/immich/";
+        clientId = "immich";
+        clientSecret = {
+          _secret = config.sops.secrets."immich/oauth_client_secret".path;
+        };
+        scope = "openid email profile";
+        signingAlgorithm = "ES256";
+        storageLabelClaim = "email";
+        buttonText = "Login with Kanidm";
+        autoLaunch = true;
+        mobileOverrideEnabled = true;
+        mobileRedirectUri = "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/";
+      };
+      passwordLogin = {
+        enabled = false;
+      };
+      newVersionCheck = {
+        enabled = false;
       };
     };
 
