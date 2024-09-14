@@ -13,5 +13,6 @@
     ./forgejo-actions-runner.nix
     ./oidc-agent.nix
     ./miniflux.nix
+    ./immich.nix
   ];
 }

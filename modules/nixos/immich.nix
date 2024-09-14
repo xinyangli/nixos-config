@@ -31,7 +31,7 @@ in
         "/etc/immich" = {
           d = {
             inherit user group;
-            mode = "0600";
+            mode = "0700";
           };
         };
         "/etc/immich/config.json" = {
@@ -53,5 +53,8 @@ in
         Environment = "IMMICH_CONFIG_FILE=%d/config";
       };
     };
+
+    # https://github.com/NixOS/nixpkgs/pull/324127/files#r1723763510
+    services.immich.redis.host = "/run/redis-immich/redis.sock";
   };
 }

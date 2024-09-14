@@ -43,6 +43,7 @@ in
     };
     services.caddy = mkIf cfg.caddy {
       enable = true;
+
       virtualHosts."https://${cfg.domain}".extraConfig = ''
         reverse_proxy ${config.services.vaultwarden.config.ROCKET_ADDRESS}:${toString config.services.vaultwarden.config.ROCKET_PORT}
       '';

@@ -33,7 +33,8 @@ in
 
     stylix.targets = {
       console.enable = true;
-      gnome.enable = if config.services.xserver.desktopManager.gnome.enable then true else false;
+      # gnome.enable = if config.services.xserver.desktopManager.gnome.enable then true else false;
+      gnome.enable = false;
       gtk.enable = true;
     };
   };
