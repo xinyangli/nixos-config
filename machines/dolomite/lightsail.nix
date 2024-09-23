@@ -103,7 +103,8 @@ in
     environment.systemPackages = [ pkgs.cryptsetup ];
 
     # EC2 has its own NTP server provided by the hypervisor
-    networking.timeServers = [ "169.254.169.123" ];
+    services.timesyncd.enable = true;
+    services.timesyncd.servers = [ "169.254.169.123" ];
 
     # udisks has become too bloated to have in a headless system
     # (e.g. it depends on GTK).

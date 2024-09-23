@@ -42,9 +42,19 @@ in
 
     boot.loader.grub.enable = true;
     boot.loader.grub.device = "/dev/sda";
-    networking.useDHCP = false;
-    networking.interfaces.ens18.useDHCP = true;
-    networking.interfaces.ens19.useDHCP = true;
+    networking.useNetworkd = true;
+    systemd.network.networks."10-wan" = {
+      matchConfig.MACAddress = "ens18";
+      networkConfig.DHCP = "ipv4";
+      dhcpV4Config = {
+        UseDNS = false;
+      };
+    };
+    systemd.network.networks."20-lan" = {
+      matchConfig.MACAddress = "ens19";
+      networkConfig.DHCP = "ipv4";
+    };
+    services.resolved.enable = true;
 
     services.sing-box.settings.dns.strategy = "ipv4_only";
   };

@@ -101,29 +101,6 @@ in
       {
         enable = true;
         settings = {
-          dns = {
-            servers = [
-              {
-                tag = "warp";
-                address = "1.1.1.1";
-                detour = "wg-out";
-              }
-              {
-                tag = "directdns";
-                address = "h3://8.8.8.8/dns-query";
-              }
-            ];
-            rules = [
-              {
-                outbound = "wg-out";
-                server = "warp";
-              }
-              {
-                outbound = "direct";
-                server = "directdns";
-              }
-            ];
-          };
           inbounds =
             [
               {
@@ -182,17 +159,9 @@ in
               type = "direct";
               tag = "direct";
             }
-            {
-              type = "dns";
-              tag = "dns-out";
-            }
           ];
           route = {
             rules = [
-              {
-                outbound = "dns-out";
-                protocol = "dns";
-              }
               {
                 inbound = "sg0";
                 outbound = "direct";
