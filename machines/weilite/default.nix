@@ -38,6 +38,8 @@
       kernelModules = [ "kvm-intel" ];
     };
 
+    nixpkgs.config.allowUnfree = true;
+
     environment.systemPackages = [ pkgs.virtiofsd ];
 
     sops = {
@@ -45,6 +47,10 @@
       age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       secrets = {
         cloudflare_dns_token = {
+          owner = "caddy";
+          mode = "400";
+        };
+        dnspod_dns_token = {
           owner = "caddy";
           mode = "400";
         };
@@ -64,15 +70,29 @@
         what = "immich";
         where = "/mnt/XinPhotos/immich";
         type = "virtiofs";
-        options = "rw";
+        options = "rw,nodev,nosuid";
         wantedBy = [ "immich-server.service" ];
       }
       {
         what = "originals";
         where = "/mnt/XinPhotos/originals";
         type = "virtiofs";
-        options = "ro,nodev,nosuid";
+        options = "rw,nodev,nosuid";
         wantedBy = [ "immich-server.service" ];
+      }
+      {
+        what = "restic";
+        where = "/var/lib/restic";
+        type = "virtiofs";
+        options = "rw,nodev,nosuid";
+        wantedBy = [ "restic-rest-server.service" ];
+      }
+      {
+        what = "ocis";
+        where = "/var/lib/ocis";
+        type = "virtiofs";
+        options = "rw,nodev,nosuid";
+        wantedBy = [ "ocis.service" ];
       }
     ];
 
@@ -137,18 +157,22 @@
             repo = "github.com/caddy-dns/cloudflare";
             version = "89f16b99c18ef49c8bb470a82f895bce01cbaece";
           }
+{
+            repo = "github.com/caddy-dns/dnspod";
+            version = "1fd4ce87e919f47db5fa029c31ae74b9737a58af";
+          }
         ];
-        vendorHash = "sha256-fTcMtg5GGEgclIwJCav0jjWpqT+nKw2OF1Ow0MEEitk=";
+        vendorHash = "sha256-OhOeU2+JiJyIW9WdCYq98OKckXQZ9Fn5zULz0aLsXMI=";
       };
       virtualHosts."weilite.coho-tet.ts.net:8080".extraConfig = ''
         reverse_proxy 127.0.0.1:${toString config.services.immich.port}
       '';
       # API Token must be added in systemd environment file
       virtualHosts."immich.xinyang.life:8000".extraConfig = ''
-        tls {
-          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-        }
         reverse_proxy 127.0.0.1:${toString config.services.immich.port}
+      '';
+      globalConfig = ''
+        acme_dns dnspod {env.DNSPOD_API_TOKEN}
       '';
     };
 
@@ -156,7 +180,7 @@
 
     systemd.services.caddy = {
       serviceConfig = {
-        EnvironmentFile = config.sops.secrets.cloudflare_dns_token.path;
+        EnvironmentFile = config.sops.secrets.dnspod_dns_token.path;
       };
     };
 
