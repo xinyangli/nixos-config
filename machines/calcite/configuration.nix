@@ -182,11 +182,23 @@
   environment.systemPackages = with pkgs; [
     oidc-agent
     # Filesystem
-    owncloud-client
+    (owncloud-client.overrideAttrs (
+      finalAttrs: previousAttrs: {
+        src = pkgs.fetchFromGitHub {
+          owner = "xinyangli";
+          repo = "client";
+          rev = "e5ec2d68077361f1597b137a944884dda5574487";
+          hash = "sha256-xs8g7DdL1VxArK3n1c/9k7nW2vwYRHRuz6zaeX7E3eM=";
+        };
+      }
+    ))
     nfs-utils
 
     # tesseract5 # ocr
     ocrmypdf # pdfocr
+
+    gtkwave
+    bubblewrap
 
     # ==== Development ==== #
     # Python
@@ -256,6 +268,9 @@
 
   system.stateVersion = "22.05";
 
+  system.switch.enable = false;
+  system.switch.enableNg = true;
+
   nix.extraOptions = ''
     !include "${config.sops.secrets.github_public_token.path}"
   '';
@@ -282,7 +297,7 @@
   custom.restic.repositoryFile = config.sops.secrets.restic_repo_calcite.path;
   custom.restic.passwordFile = config.sops.secrets.restic_repo_calcite_password.path;
 
-  custom.forgejo-actions-runner.enable = true;
+  custom.forgejo-actions-runner.enable = false;
   custom.forgejo-actions-runner.tokenFile = config.sops.secrets."gitea/envfile".path;
 
   custom.prometheus = {
