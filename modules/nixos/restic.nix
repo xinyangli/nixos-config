@@ -1,6 +1,7 @@
 # TODO: https://github.com/lilyinstarlight/foosteros/blob/dfe1ab3eb68bfebfaa709482d52fa04ebdde81c8/config/restic.nix#L23 <- this is better
 {
   config,
+  pkgs,
   lib,
   ...
 }:
@@ -55,10 +56,10 @@ in
       }
       (lib.mkIf (config.fileSystems."/".fsType == "btrfs") {
         backupPrepareCommand = ''
-          btrfs subvolume snapshot -r / backup
+          ${pkgs.btrfs-progs}/bin/btrfs subvolume snapshot -r / backup
         '';
         backupCleanupCommand = ''
-          btrfs subvolume delete /backup 
+          ${pkgs.btrfs-progs}/bin/btrfs subvolume delete /backup 
         '';
         paths = map (p: "/backup" + p) cfg.paths;
       })
