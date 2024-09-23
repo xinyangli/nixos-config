@@ -83,7 +83,7 @@
           ];
         };
       deploymentModule = {
-        deployment.targetUser = "root";
+        deployment.targetUser = "xin";
       };
       sharedColmenaModules = [
         self.nixosModules.default
