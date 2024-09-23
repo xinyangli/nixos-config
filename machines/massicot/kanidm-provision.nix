@@ -37,6 +37,7 @@
           "xin"
           "zhuo"
           "ycm"
+          "yzl"
         ];
       };
       grafana-superadmins = {
@@ -72,6 +73,11 @@
       ycm = {
         displayName = "Chunming";
         mailAddresses = [ "chunmingyou@gmail.com" ];
+      };
+
+      yzl = {
+        displayName = "Zhengli Yang";
+        mailAddresses = [ "13391935399@189.cn" ];
       };
     };
     systems.oauth2 = {
