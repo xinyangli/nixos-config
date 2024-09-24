@@ -139,7 +139,8 @@
         originUrl = [
           "http://localhost/"
           "http://127.0.0.1/"
-          "oc://android.owncloud.com"
+          # TODO: Should allow mobile redirect url not ending with /
+          # "oc://android.owncloud.com"
         ];
         basicSecretFile = config.sops.secrets."kanidm/ocis_android_secret".path;
         preferShortUsername = true;

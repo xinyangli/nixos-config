@@ -17,6 +17,7 @@
     networking.hostName = "weilite";
     commonSettings = {
       auth.enable = true;
+      autoupgrade.enable = true;
       nix = {
         enable = true;
         enableMirrors = true;
@@ -157,7 +158,7 @@
             repo = "github.com/caddy-dns/cloudflare";
             version = "89f16b99c18ef49c8bb470a82f895bce01cbaece";
           }
-{
+          {
             repo = "github.com/caddy-dns/dnspod";
             version = "1fd4ce87e919f47db5fa029c31ae74b9737a58af";
           }

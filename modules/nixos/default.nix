@@ -1,6 +1,7 @@
 {
   imports = [
     ./common-settings/auth.nix
+    ./common-settings/autoupgrade.nix
     ./common-settings/nix-conf.nix
     ./restic.nix
     ./vaultwarden.nix

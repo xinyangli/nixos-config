@@ -1,7 +1,5 @@
 {
   inputs,
-  config,
-  libs,
   pkgs,
   ...
 }:
@@ -51,13 +49,6 @@
     efiSupport = true;
     configurationLimit = 5;
   };
-  #
-  # fileSystems."/mnt/storage" = {
-  #   device = "//u380335-sub1.your-storagebox.de/u380335-sub1";
-  #   fsType = "cifs";
-  #   options = [ "credentials=${config.sops.secrets.storage_box_mount.path}" ];
-  # };
-  #
   environment.systemPackages = with pkgs; [
     cifs-utils
     git
@@ -69,14 +60,11 @@
     hostName = "massicot";
   };
 
-  custom.kanidm-client = {
-    enable = true;
-    uri = "https://auth.xinyang.life/";
-    asSSHAuth = {
+  commonSettings = {
+    auth.enable = true;
+    nix = {
       enable = true;
-      allowedGroups = [ "linux_users" ];
     };
-    sudoers = [ "xin@auth.xinyang.life" ];
   };
 
   security.sudo = {
