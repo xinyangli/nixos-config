@@ -1,6 +1,8 @@
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 {
-  imports = [ ./common ];
+  imports = [
+    ./common
+  ];
 
   programs.nix-index-database.comma.enable = true;
 
@@ -37,11 +39,6 @@
     flavor = "mocha";
   };
 
-  stylix = {
-    targets = {
-      gtk.enable = true;
-    };
-  };
   xdg.enable = true;
 
   i18n.inputMethod = {
