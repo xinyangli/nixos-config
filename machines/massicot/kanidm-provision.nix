@@ -118,31 +118,18 @@
           ];
         };
       };
-      owncloud = {
-        displayName = "ownCloud";
-        originUrl = "https://drive.xinyang.life:8443/";
-        originLanding = "https://drive.xinyang.life:8443/";
-        public = true;
-        preferShortUsername = true;
-        scopeMaps = {
-          ocis-users = [
-            "openid"
-            "email"
-            "profile"
-          ];
-        };
-      };
-
+      # It's used for all the clients. I'm too lazy to change the name.
       owncloud-android = {
         displayName = "ownCloud Apps";
         originLanding = "https://drive.xinyang.life:8443/";
         originUrl = [
-          "http://localhost/"
-          "http://127.0.0.1/"
+          "http://localhost:38622/"
+          "http://localhost:43580/"
+          "https://drive.xinyang.life:8443/"
           # TODO: Should allow mobile redirect url not ending with /
           # "oc://android.owncloud.com"
         ];
-        basicSecretFile = config.sops.secrets."kanidm/ocis_android_secret".path;
+        public = true;
         preferShortUsername = true;
         scopeMaps = {
           ocis-users = [

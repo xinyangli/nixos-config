@@ -126,7 +126,11 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
-  # services.printing.drivers = [ pkgs.hplip ];
+  services.printing.drivers = [
+    pkgs.hplip
+    pkgs.gutenprintBin
+    pkgs.canon-cups-ufr2
+  ];
 
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -180,6 +184,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    imhex
     oidc-agent
     # Filesystem
     (owncloud-client.overrideAttrs (
@@ -187,8 +192,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "xinyangli";
           repo = "client";
-          rev = "e5ec2d68077361f1597b137a944884dda5574487";
-          hash = "sha256-xs8g7DdL1VxArK3n1c/9k7nW2vwYRHRuz6zaeX7E3eM=";
+          rev = "780d1c4c8bf02be42e118c792ff833ab10c2fdcc";
+          hash = "sha256-pEwcGJI9sN9nooW/RQHmi52Du6yzofgZeB8PcjwPtZ8=";
         };
       }
     ))

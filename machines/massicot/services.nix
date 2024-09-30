@@ -268,33 +268,15 @@ in
     virtualHosts."http://auth.xinyang.life:80".extraConfig = ''
       reverse_proxy ${config.security.acme.certs."auth.xinyang.life".listenHTTP}
     '';
-    virtualHosts."https://auth.xinyang.life".extraConfig =
-      let
-        reverseProxyKanidm = ''
-          reverse_proxy https://127.0.0.1:${toString kanidm_listen_port} {
-              header_up Host {upstream_hostport}
-              header_down Access-Control-Allow-Origin "*"
-              transport http {
-                  tls_server_name ${config.services.kanidm.serverSettings.domain}
-              }
+    virtualHosts."https://auth.xinyang.life".extraConfig = ''
+      reverse_proxy https://127.0.0.1:${toString kanidm_listen_port} {
+          header_up Host {upstream_hostport}
+          header_down Access-Control-Allow-Origin "*"
+          transport http {
+              tls_server_name ${config.services.kanidm.serverSettings.domain}
           }
-        '';
-      in
-      ''
-        reverse_proxy /oauth2/openid/owncloud/userinfo https://127.0.0.1:${toString kanidm_listen_port} {
-            header_up Host {upstream_hostport}
-            header_down Access-Control-Allow-Origin "*"
-            transport http {
-                tls_server_name ${config.services.kanidm.serverSettings.domain}
-            }
-            @error status 400
-            handle_response @error {
-                rewrite /oauth2/openid/owncloud/userinfo /oauth2/openid/owncloud-android/userinfo
-                ${reverseProxyKanidm}
-            }
-        }
-        ${reverseProxyKanidm}
-      '';
+      }
+    '';
 
     virtualHosts."https://rss.xinyang.life".extraConfig = ''
       reverse_proxy ${config.custom.miniflux.environment.LISTEN_ADDR}
