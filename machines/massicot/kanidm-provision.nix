@@ -1,15 +1,5 @@
 { config, lib, ... }:
 {
-  sops.secrets = {
-    "kanidm/ocis_android_secret" = {
-      owner = "kanidm";
-    };
-  };
-  systemd.services.kanidm.serviceConfig = {
-    BindReadOnlyPaths = [
-      config.sops.secrets."kanidm/ocis_android_secret".path
-    ];
-  };
   services.kanidm.provision = {
     enable = true;
     autoRemove = true;
