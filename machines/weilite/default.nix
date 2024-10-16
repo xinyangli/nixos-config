@@ -108,9 +108,9 @@
       host = "127.0.0.1";
       port = 3001;
       openFirewall = true;
-      machine-learning.enable = false;
+      machine-learning.enable = true;
       environment = {
-        IMMICH_MACHINE_LEARNING_ENABLED = "false";
+        IMMICH_MACHINE_LEARNING_ENABLED = "true";
       };
       database.enable = true;
     };
