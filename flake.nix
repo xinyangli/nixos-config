@@ -208,7 +208,7 @@
           { ... }:
           {
             deployment = {
-              targetHost = "raspite.local";
+              targetHost = "raspite.coho-tet.ts.net";
               buildOnTarget = false;
             };
             nixpkgs.system = "aarch64-linux";
