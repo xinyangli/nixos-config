@@ -2,17 +2,20 @@
 let
   awsHosts = [ "tok-00" ];
   bwgHosts = [ "la-00" ];
+  clawHosts = [ "hk-00" ];
 in
 {
   imports = [
     ../sops.nix
     ./bandwagon.nix
     ./lightsail.nix
+    ./claw.nix
   ];
 
   config = {
     isBandwagon = builtins.elem config.networking.hostName bwgHosts;
     isLightsail = builtins.elem config.networking.hostName awsHosts;
+    isClaw = builtins.elem config.networking.hostName clawHosts;
     sops = {
       secrets = {
         wg_private_key = {

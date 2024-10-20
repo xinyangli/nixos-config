@@ -204,6 +204,20 @@
             };
           };
 
+        hk-00 =
+          { ... }:
+          {
+            imports = [ machines/dolomite ] ++ sharedColmenaModules;
+            nixpkgs.system = "x86_64-linux";
+            networking.hostName = "hk-00";
+            system.stateVersion = "24.05";
+            deployment = {
+              targetHost = "hk-00.video.namely.icu";
+              buildOnTarget = false;
+              tags = [ "proxy" ];
+            };
+          };
+
         raspite =
           { ... }:
           {
