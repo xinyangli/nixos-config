@@ -225,6 +225,8 @@
 
     # ==== GUI Softwares ==== #
 
+    eudic
+
     # Gnome tweaks
     gnomeExtensions.paperwm
     gnomeExtensions.search-light
@@ -348,11 +350,11 @@
     fontconfig = {
       defaultFonts = {
         serif = [
-          "Noto Serif CJK SC"
+          "Source Han Serif SC"
           "Ubuntu"
         ];
         sansSerif = [
-          "Noto Sans CJK SC"
+          "Source Han Sans SC"
           "Ubuntu"
         ];
         monospace = [
