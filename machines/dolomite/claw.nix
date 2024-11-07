@@ -16,7 +16,7 @@ in
     isClaw = lib.mkEnableOption "Lightsail instance";
   };
 
-  config = lib.mkIf cfg.isClaw {
+  config = lib.mkIf cfg {
     boot.initrd.availableKernelModules = [
       "uhci_hcd"
       "virtio_blk"
@@ -45,7 +45,9 @@ in
     # (the default) this is the recommended approach. When using systemd-networkd it's
     # still possible to use this option, but it's recommended to use it in conjunction
     # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-    networking.useNetworkd = true;
+    # networking.useNetworkd = false;
+
+    systemd.network.enable = true;
     systemd.network.networks."10-wan" = {
       matchConfig.MACAddress = "00:16:3e:0a:ec:45";
       networkConfig.DHCP = "ipv4";
