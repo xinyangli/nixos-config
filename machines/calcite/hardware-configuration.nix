@@ -79,4 +79,6 @@
     dynamicBoost.enable = lib.mkForce false;
     open = true;
   };
+
+  hardware.bluetooth.enable = true;
 }

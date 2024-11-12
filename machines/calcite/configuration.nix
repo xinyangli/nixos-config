@@ -51,6 +51,8 @@
 
   networking.hostName = "calcite";
 
+  services.blueman.enable = true;
+
   programs.steam = {
     enable = true;
     gamescopeSession = {
@@ -96,18 +98,15 @@
     LC_TIME = "en_US.utf8";
   };
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
-  services.xserver = {
-    xkb.layout = "us";
-    xkb.variant = "";
+  services.displayManager = {
+    enable = true;
+    defaultSession = "niri";
   };
+
+  programs.niri.enable = true;
+
+  services.xserver.displayManager.gdm.enable = true;
+
   # Keyboard mapping on internal keyboard
   services.keyd = {
     enable = true;
@@ -163,16 +162,8 @@
     };
   };
 
-  # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "xin";
-
   # Smart services
   services.smartd.enable = true;
-
-  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-  systemd.services."getty@tty1".enable = false;
-  systemd.services."autovt@tty1".enable = false;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -227,14 +218,6 @@
 
     eudic
 
-    # Gnome tweaks
-    gnomeExtensions.paperwm
-    gnomeExtensions.search-light
-    gnomeExtensions.appindicator
-    gnomeExtensions.pano
-    gnome-tweaks
-    gnome-themes-extra
-    gnome-remote-desktop
     bibata-cursors
     gthumb
     oculante
@@ -247,8 +230,6 @@
     element-desktop
     tdesktop
     qq
-    wechat-uos
-    feishu
 
     # Password manager
     bitwarden
@@ -304,15 +285,22 @@
   custom.restic.repositoryFile = config.sops.secrets.restic_repo_calcite.path;
   custom.restic.passwordFile = config.sops.secrets.restic_repo_calcite_password.path;
 
-  custom.forgejo-actions-runner.enable = false;
-  custom.forgejo-actions-runner.tokenFile = config.sops.secrets."gitea/envfile".path;
+  custom.forgejo-actions-runner = {
+    enable = false;
+    tokenFile = config.sops.secrets."gitea/envfile".path;
+    settings = {
+      runner.capacity = 2;
+      runner.fetch_timeout = "120s";
+      runner.fetch_interval = "30s";
+    };
+  };
 
   custom.prometheus = {
     enable = true;
     exporters.blackbox.enable = true;
   };
 
-  custom.stylix.enable = true;
+  custom.stylix.enable = false;
 
   services.ollama = {
     enable = true;
@@ -322,6 +310,9 @@
   # MTP support
   services.gvfs.enable = true;
 
+  services.flatpak.enable = true;
+  xdg.portal.enable = true;
+
   # Fonts
   fonts = {
     packages = with pkgs; [
@@ -330,6 +321,8 @@
           "FiraCode"
           "FiraMono"
           "JetBrainsMono"
+          "RobotoMono"
+          "Ubuntu"
         ];
       })
       noto-fonts

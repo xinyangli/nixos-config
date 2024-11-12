@@ -9,5 +9,6 @@
     ./vim.nix
     ./vscode.nix
     ./zellij.nix
+    ./gui
   ];
 }
