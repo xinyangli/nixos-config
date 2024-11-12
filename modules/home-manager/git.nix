@@ -36,6 +36,7 @@ in
         a = "add";
         d = "diff";
         s = "status";
+        ck = "checkout";
       };
       signing = mkIf cfg.signing.enable {
         signByDefault = true;

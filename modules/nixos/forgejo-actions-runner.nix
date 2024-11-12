@@ -6,12 +6,20 @@
 }:
 let
   cfg = config.custom.forgejo-actions-runner;
+  settingsFormat = pkgs.formats.yaml { };
 in
 {
   options = {
     custom.forgejo-actions-runner = {
       enable = lib.mkEnableOption "TPM supported ssh agent in go";
       tokenFile = lib.mkOption { type = lib.types.path; };
+      settings = lib.mkOption {
+        type = lib.types.submodule {
+          freeformType = settingsFormat.type;
+        };
+
+        default = { };
+      };
     };
   };
   config = lib.mkIf cfg.enable {
@@ -30,7 +38,7 @@ in
         ];
         settings = {
           container.network = "host";
-        };
+        } // cfg.settings;
       };
     };
   };

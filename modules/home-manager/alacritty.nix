@@ -13,7 +13,7 @@ in
     programs.alacritty = {
       enable = true;
       settings = {
-        shell = {
+        terminal.shell = {
           program = config.programs.zellij.package + "/bin/zellij";
           args = [
             "attach"

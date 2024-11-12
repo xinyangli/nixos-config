@@ -11,6 +11,7 @@ let
   neovideConfig = {
     neovim-bin = getExe pkgs.nixvim;
     fork = true;
+    frame = "none";
   };
 in
 {

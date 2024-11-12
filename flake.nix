@@ -274,6 +274,7 @@
               nix-output-monitor
               nil
               nvd
+              nh
             ];
           };
         };
