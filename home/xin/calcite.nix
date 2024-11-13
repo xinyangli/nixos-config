@@ -36,6 +36,8 @@ in
   home.packages = with pkgs; [
     thunderbird
     remmina
+    qq
+    wechat-uos
   ];
 
   # Theme
@@ -84,6 +86,7 @@ in
     zellij = {
       enable = true;
     };
+
     gui = {
       niri.enable = true;
       waybar.enable = true;

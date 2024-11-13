@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [ ];
@@ -10,7 +10,6 @@
       dns = "systemd-resolved";
     };
   };
-  systemd.services.NetworkManager-wait-online.enable = false;
 
   services.resolved = {
     enable = true;
@@ -25,6 +24,7 @@
 
   services.dae.enable = true;
   services.dae.configFile = "/var/lib/dae/config.dae";
+  systemd.services.dae.after = lib.mkIf (config.networking.networkmanager.enable) [ "NetworkManager-wait-online.service" ];
 
   custom.sing-box = {
     enable = false;
@@ -45,12 +45,6 @@
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
   # Use nftables to manager firewall
   networking.nftables.enable = true;
-
-  # Add gsconnect, open firewall
-  programs.kdeconnect = {
-    enable = true;
-    package = pkgs.gnomeExtensions.gsconnect;
-  };
 
   programs.wireshark = {
     enable = true;

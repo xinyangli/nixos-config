@@ -4,7 +4,9 @@
   lib,
   ...
 }:
-
+let
+  inherit (lib) mkForce getExe;
+in
 {
   imports = [
     # Include the results of the hardware scan.
@@ -14,7 +16,6 @@
   ];
 
   commonSettings = {
-    auth.enable = true;
     nix = {
       enableMirrors = true;
       signing.enable = true;
@@ -43,7 +44,7 @@
     # TPM2TOOLS_TCTI and TPM2_PKCS11_TCTI env variables
     tctiEnvironment.enable = true;
   };
-  services.gnome.gnome-keyring.enable = lib.mkForce false;
+  # services.gnome.gnome-keyring.enable = lib.mkForce false;
   security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
   services.ssh-tpm-agent.enable = true;
 
@@ -98,14 +99,43 @@
     LC_TIME = "en_US.utf8";
   };
 
-  services.displayManager = {
-    enable = true;
-    defaultSession = "niri";
-  };
+  # ====== GUI ======
 
   programs.niri.enable = true;
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  security.pam.services.gtklock = { }; # Required by gtklock
 
-  services.xserver.displayManager.gdm.enable = true;
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-gnome
+    ];
+    configPackages = [ pkgs.niri ];
+  };
+
+  systemd.user.services.xdg-desktop-portal-gtk.after = [ "graphical-session.target" ];
+
+  services.greetd =
+    let
+      niri-login-config = pkgs.writeText "niri-login-config.kdl" ''
+        animations {
+          off
+        }
+        hotkey-overlay {
+          skip-at-startup
+        }
+      '';
+    in
+    {
+      enable = true;
+      vt = 1;
+      settings = {
+        default_session = {
+          command = "${pkgs.dbus}/bin/dbus-run-session -- ${getExe pkgs.niri} -c ${niri-login-config} -- ${getExe pkgs.greetd.gtkgreet} -l -c niri-session -s ${pkgs.magnetic-catppuccin-gtk}/share/themes/Catppuccin-GTK-Dark/gtk-3.0/gtk.css";
+        };
+      };
+    };
 
   # Keyboard mapping on internal keyboard
   services.keyd = {
@@ -229,7 +259,6 @@
     # IM
     element-desktop
     tdesktop
-    qq
 
     # Password manager
     bitwarden
@@ -311,7 +340,6 @@
   services.gvfs.enable = true;
 
   services.flatpak.enable = true;
-  xdg.portal.enable = true;
 
   # Fonts
   fonts = {
