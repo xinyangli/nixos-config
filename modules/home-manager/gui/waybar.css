@@ -49,7 +49,8 @@ window#waybar {
 #network,
 #backlight,
 #battery,
-#tray {
+#tray,
+#custom-notification {
   margin-right: 15px;
 }
 #clock {

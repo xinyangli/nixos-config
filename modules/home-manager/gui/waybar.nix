@@ -57,6 +57,8 @@ in
             "battery"
             "custom/separator"
             "tray"
+            "custom/separator"
+            "custom/notification"
           ];
           "niri/workspaces" = {
             all-outputs = true;
@@ -157,6 +159,27 @@ in
           tray = {
             icon-size = 18;
             spacing = 14;
+          };
+
+          "custom/notification" = {
+            escape = true;
+            exec = "swaync-client -swb";
+            exec-if = "which swaync-client";
+            format = "{icon}";
+            format-icons = {
+              dnd-inhibited-none = "";
+              dnd-inhibited-notification = "<span foreground='red'><sup></sup></span>";
+              dnd-none = "";
+              dnd-notification = "<span foreground='red'><sup></sup></span>";
+              inhibited-none = "";
+              inhibited-notification = "<span foreground='red'><sup></sup></span>";
+              none = "";
+              notification = "<span foreground='red'><sup></sup></span>";
+            };
+            on-click = "swaync-client -t -sw";
+            on-click-right = "swaync-client -d -sw";
+            return-type = "json";
+            tooltip = false;
           };
         };
       };

@@ -62,7 +62,14 @@ in
           str
           path
         ];
-        default = "";
+        default = pkgs.writeText "gtklock-style.css" ''
+          window {
+            background-image: url("${config.custom-hm.gui.wallpaper}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+          }
+        '';
         description = ''
           The css file to be used for gtklock.
         '';
@@ -79,7 +86,9 @@ in
 
       modules = mkOption {
         type = listOf (either package str);
-        default = [ ];
+        default = [
+          # "${pkgs.gtklock-playerctl-module.outPath}/lib/gtklock/playerctl-module.so"
+        ];
         description = ''
           A list of gtklock modulesto use. Can either be packages, absolute paths, or strings.
         '';

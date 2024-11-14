@@ -7,10 +7,7 @@
 let
   inherit (lib) mkIf mkEnableOption getExe;
   cfg = config.custom-hm.gui.niri;
-  wallpaper = pkgs.fetchurl {
-    url = "https://github.com/NixOS/nixos-artwork/blob/master/wallpapers/nixos-wallpaper-catppuccin-mocha.png?raw=true";
-    hash = "sha256-fmKFYw2gYAYFjOv4lr8IkXPtZfE1+88yKQ4vjEcax1s=";
-  };
+  wallpaper = config.custom-hm.gui.wallpaper;
   xwayland-satellite = pkgs.xwayland-satellite.overrideAttrs (drv: rec {
     src = pkgs.fetchFromGitHub {
       owner = "Supreeeme";
@@ -69,21 +66,14 @@ in
       };
     };
 
+    services.swaync = {
+      enable = true;
+    };
+
     custom-hm.gui.gtklock = {
       enable = true;
       config = {
         gtk-theme = "Catppuccin-GTK-Dark";
-        # style = pkgs.writeText "gtklock-style.css" ''
-        #   window {
-        #     background-size: cover;
-        #     background-repeat: no-repeat;
-        #     background-position: center;
-        #   }
-        # '';
-        # modules = [
-        #   "${pkgs.gtklock-playerctl-module}/lib/gtklock/playerctl-module.so"
-        #   "${pkgs.gtklock-userinfo-module}/lib/gtklock/userinfo-module.so"
-        # ];
       };
     };
 
@@ -93,10 +83,6 @@ in
       swayidle = {
         enable = true;
         timeouts = [
-          # {
-          #   timeout = 300;
-          #   command = "/run/
-          # }
           {
             timeout = 900;
             command = "/run/current-system/systemd/bin/systemctl suspend";

@@ -21,6 +21,7 @@ in
           fields = "filename,name,exec,generic";
       	  y-margin = 30;
           width = 40;
+          font = "Ubuntu";
           use-bold = true;
           line-height = 30;
         };

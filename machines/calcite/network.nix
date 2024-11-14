@@ -50,4 +50,9 @@
     enable = true;
     package = pkgs.wireshark-qt;
   };
+
+  programs.kdeconnect = {
+    enable = true;
+    package = pkgs.valent;
+  };
 }
