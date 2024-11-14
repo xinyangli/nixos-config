@@ -73,8 +73,8 @@
     systems.oauth2 = {
       forgejo = {
         displayName = "ForgeJo";
-        originUrl = "https://git.xinyang.life/";
-        originLanding = "https://git.xinyang.life/user/oauth2/kandim";
+        originUrl = "https://git.xinyang.life/user/oauth2/kanidm/callback";
+        originLanding = "https://git.xinyang.life/user/oauth2/kanidm";
         allowInsecureClientDisablePkce = true;
         scopeMaps = {
           forgejo-access = [
@@ -96,8 +96,8 @@
       };
       gts = {
         displayName = "GoToSocial";
-        originUrl = "https://xinyang.life/";
-        originLanding = "https://xinyang.life/";
+        originUrl = "https://xinyang.life/auth/callback";
+        originLanding = "https://xinyang.life/auth/callback";
         allowInsecureClientDisablePkce = true;
         scopeMaps = {
           gts-users = [
@@ -133,7 +133,7 @@
 
       hedgedoc = {
         displayName = "HedgeDoc";
-        originUrl = "https://docs.xinyang.life/";
+        originUrl = "https://docs.xinyang.life/auth/oauth2/callback";
         originLanding = "https://docs.xinyang.life/auth/oauth2";
         allowInsecureClientDisablePkce = true;
         scopeMaps = {
@@ -147,9 +147,9 @@
       immich = {
         displayName = "Immich";
         originUrl = [
-          "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/"
-          "https://immich.xinyang.life:8000/auth/login/"
-          "https://immich.xinyang.life:8000/user-settings/"
+          "https://immich.xinyang.life:8000/api/oauth/mobile-redirect"
+          "https://immich.xinyang.life:8000/auth/login"
+          "https://immich.xinyang.life:8000/user-settings"
         ];
         originLanding = "https://immich.xinyang.life:8000/auth/login?autoLaunch=0";
         allowInsecureClientDisablePkce = true;
@@ -163,8 +163,9 @@
       };
       miniflux = {
         displayName = "Miniflux";
-        originUrl = "https://rss.xinyang.life/";
-        originLanding = "https://rss.xinyang.life/";
+        originUrl = "https://rss.xinyang.life/oauth2/oidc/callback";
+
+        originLanding = "https://rss.xinyang.life/oauth2/oidc/redirect";
         scopeMaps = {
           miniflux-users = [
             "openid"
@@ -175,7 +176,7 @@
       };
       grafana = {
         displayName = "Grafana";
-        originUrl = "https://grafana.xinyang.life/";
+        originUrl = "https://grafana.xinyang.life/login/generic_oauth";
         originLanding = "https://grafana.xinyang.life/";
         scopeMaps = {
           grafana-users = [

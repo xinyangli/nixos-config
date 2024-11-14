@@ -54,6 +54,10 @@
     git
   ];
 
+  # Disable docs on servers
+  documentation.nixos.enable = false;
+  documentation.man.enable = false;
+
   system.stateVersion = "22.11";
 
   networking = {

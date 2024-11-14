@@ -34,9 +34,7 @@
 
     colmena = {
       url = "github:zhaofengli/colmena";
-      inputs.stable.follows = "nixpkgs";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
     };
 
     nix-index-database = {
@@ -264,7 +262,7 @@
             packages = with pkgs; [
               nix
               git
-              colmena
+              inputs.colmena.packages.${system}.colmena
               sops
               nix-output-monitor
               nil
