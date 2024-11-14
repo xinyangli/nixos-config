@@ -105,6 +105,12 @@ in
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   security.pam.services.gtklock = { }; # Required by gtklock
 
+  catppuccin = {
+    enable = true;
+    accent = "rosewater";
+    flavor = "mocha";
+  };
+
   xdg.portal = {
     enable = true;
     extraPortals = [
@@ -328,8 +334,6 @@ in
     enable = true;
     exporters.blackbox.enable = true;
   };
-
-  custom.stylix.enable = false;
 
   services.ollama = {
     enable = true;

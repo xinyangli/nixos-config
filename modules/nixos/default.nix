@@ -8,7 +8,6 @@
     ./prometheus
     ./hedgedoc.nix
     ./sing-box.nix
-    ./stylix.nix
     ./kanidm-client.nix
     ./ssh-tpm-agent.nix # FIXME: Waiting for upstream merge
     ./forgejo-actions-runner.nix

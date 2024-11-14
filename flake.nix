@@ -52,12 +52,6 @@
     catppuccin = {
       url = "github:catppuccin/nix";
     };
-
-    stylix = {
-      url = "github:xinyangli/stylix";
-      # inputs.nixpkgs.follows = "nixpkgs";
-      # inputs.home-manager.follows = "home-manager";
-    };
   };
 
   outputs =
@@ -141,6 +135,7 @@
           modules = [
             self.nixosModules.default
             nur.nixosModules.nur
+            catppuccin.nixosModules.catppuccin
           ] ++ modules;
         };
     in
