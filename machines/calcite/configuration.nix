@@ -282,7 +282,6 @@ in
     zotero
     # onlyoffice-bin
     wpsoffice
-    zed-editor
 
     config.nur.repos.linyinfeng.wemeet
 
