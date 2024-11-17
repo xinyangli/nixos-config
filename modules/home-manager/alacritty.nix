@@ -21,7 +21,7 @@ in
             "alacritty-zellij"
           ];
         };
-        font.size = 10.0;
+        font.size = 12.0;
         window = {
           resize_increments = true;
           dynamic_padding = true;

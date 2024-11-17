@@ -78,6 +78,14 @@ in
     };
     neovim = {
       enable = true;
+      font = {
+        normal = [
+          "JetbrainsMono Nerd Font"
+          "Noto Sans Mono CJK SC"
+          "Ubuntu"
+        ];
+        size = 12.0;
+      };
     };
     vscode = {
       enable = true;

@@ -29,6 +29,7 @@ in
             unbind "Alt h" "Alt l" "Alt j" "Alt k"
           }
           unbind "Ctrl p" "Ctrl n"
+          unbind "Alt f"
       }
     '';
   };
