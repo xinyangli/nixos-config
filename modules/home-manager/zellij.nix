@@ -26,10 +26,9 @@ in
             bind "Ctrl l" { MoveFocusOrTab "Right"; }
             bind "Ctrl j" { MoveFocus "Down"; }
             bind "Ctrl k" { MoveFocus "Up"; }
-            unbind "Alt h" "Alt l" "Alt j" "Alt k"
+            unbind "Alt h" "Alt l" "Alt j" "Alt k" "Alt f"
           }
           unbind "Ctrl p" "Ctrl n"
-          unbind "Alt f"
       }
     '';
   };

@@ -38,6 +38,8 @@ in
     remmina
     qq
     wechat-uos
+    wpsoffice
+    ttf-wps-fonts
   ];
 
   # Theme

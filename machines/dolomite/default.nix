@@ -58,31 +58,8 @@ in
       exporters.blackbox.enable = true;
     };
 
-    custom.kanidm-client = {
-      enable = true;
-      uri = "https://auth.xinyang.life/";
-      asSSHAuth = {
-        enable = true;
-        allowedGroups = [ "linux_users" ];
-      };
-      sudoers = [ "xin@auth.xinyang.life" ];
-    };
-
-    services.openssh = {
-      settings = {
-        PasswordAuthentication = false;
-        KbdInteractiveAuthentication = false;
-        PermitRootLogin = lib.mkForce "no";
-        GSSAPIAuthentication = "no";
-        KerberosAuthentication = "no";
-      };
-    };
-    services.fail2ban.enable = true;
-    programs.mosh.enable = true;
-
-    security.sudo = {
-      execWheelOnly = true;
-      wheelNeedsPassword = false;
+    custom.commonSettings = {
+      auth.enable = true;
     };
 
     services.sing-box =

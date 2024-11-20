@@ -84,8 +84,12 @@ in
         enable = true;
         timeouts = [
           {
-            timeout = 900;
-            command = "/run/current-system/systemd/bin/systemctl suspend";
+            timeout = 600;
+            command = ''[ "$(${pkgs.tlp}/bin/tlp-stat -m)" == "battery" ] && /run/current-system/systemd/bin/systemctl suspend'';
+          }
+          {
+            timeout = 1200;
+            command = ''${getExe pkgs.niri} msg action power-off-monitors'';
           }
         ];
         events = [
