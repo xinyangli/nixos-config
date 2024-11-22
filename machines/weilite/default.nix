@@ -2,6 +2,7 @@
   inputs,
   config,
   pkgs,
+  lib,
   modulesPath,
   ...
 }:
@@ -150,6 +151,15 @@
       permitCertUid = "caddy";
     };
 
+    services.tailscale.derper = {
+      enable = true;
+      domain = "derper00.namely.icu";
+      openFirewall = true;
+      verifyClients = true;
+    };
+    # tailscale derper module use nginx for reverse proxy
+    services.nginx.enable = lib.mkForce false;
+
     services.caddy = {
       enable = true;
       package = pkgs.caddy.withPlugins {
@@ -165,6 +175,9 @@
         ];
         vendorHash = "sha256-OhOeU2+JiJyIW9WdCYq98OKckXQZ9Fn5zULz0aLsXMI=";
       };
+      virtualHosts."derper00.namely.icu:8443".extraConfig = ''
+        reverse_proxy 127.0.0.1:${toString config.services.tailscale.derper.port}
+      '';
       virtualHosts."weilite.coho-tet.ts.net:8080".extraConfig = ''
         reverse_proxy 127.0.0.1:${toString config.services.immich.port}
       '';
