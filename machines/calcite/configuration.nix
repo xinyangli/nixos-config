@@ -36,6 +36,11 @@ in
   boot.supportedFilesystems = [ "ntfs" ];
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
+  documentation = {
+    nixos.enable = false;
+    man.enable = false;
+  };
+
   security.tpm2 = {
     enable = true;
     # expose /run/current-system/sw/lib/libtpm2_pkcs11.so
@@ -156,6 +161,15 @@ in
           main = {
             capslock = "overload(control, esc)";
             leftcontrol = "capslock";
+          };
+        };
+      };
+      "logiM720" = {
+        ids = [ "046d:b015" ];
+        settings = {
+          main = {
+            mouse2 = "leftmeta";
+            # leftalt = "mouse1";
           };
         };
       };
