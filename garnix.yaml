@@ -1,0 +1,10 @@
+builds:
+  include:
+    - '*.x86_64-linux.*'
+    - defaultPackage.x86_64-linux
+    - devShell.x86_64-linux
+    - homeConfigurations.x86_64-linux.*
+    - homeConfigurations.aarch64-linux.*
+    - darwinConfigurations.*
+    - nixosConfigurations.*
+
