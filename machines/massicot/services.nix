@@ -101,7 +101,6 @@ in
 
   services.matrix-conduit = {
     enable = true;
-    # package = inputs.conduit.packages.${pkgs.system}.default;
     package = pkgs.matrix-conduit;
     settings.global = {
       server_name = "xinyang.life";

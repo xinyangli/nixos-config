@@ -219,6 +219,7 @@ in
   services.smartd.enable = true;
 
   # Allow unfree packages
+  nixpkgs.system = "x86_64-linux";
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.1.1w"

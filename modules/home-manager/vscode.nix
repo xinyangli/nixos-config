@@ -1,5 +1,4 @@
 {
-  inputs,
   config,
   lib,
   pkgs,
@@ -16,7 +15,7 @@ let
         nixd
         nixpkgs-fmt
       ];
-      extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
+      extension = with pkgs.vscode-marketplace; [
         jnoortheen.nix-ide
       ];
       settings = {
@@ -30,13 +29,16 @@ let
         clang-tools
         cmake-format
       ];
-      extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
-        llvm-vs-code-extensions.vscode-clangd
-        (ms-vscode.cmake-tools.overrideAttrs (_: {
-          sourceRoot = "extension";
-        }))
-        twxs.cmake
-      ] ++ (with pkgs.vscode-extensions; [ ms-vscode.cpptools ]);
+      extension =
+        with pkgs.vscode-marketplace;
+        [
+          llvm-vs-code-extensions.vscode-clangd
+          (ms-vscode.cmake-tools.overrideAttrs (_: {
+            sourceRoot = "extension";
+          }))
+          twxs.cmake
+        ]
+        ++ (with pkgs.vscode-extensions; [ ms-vscode.cpptools ]);
       settings = {
         "cmake.configureOnEdit" = false;
         "cmake.showOptionsMovedNotification" = false;
@@ -50,7 +52,7 @@ let
     };
     pythonPackages = {
       systemPackages = with pkgs; [ ];
-      extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
+      extension = with pkgs.vscode-marketplace; [
         ms-python.python
       ];
       settings = { };
@@ -60,7 +62,7 @@ let
         coursier
         metals
       ];
-      extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
+      extension = with pkgs.vscode-marketplace; [
         scala-lang.scala
         scalameta.metals
       ];
@@ -68,7 +70,7 @@ let
     };
     latexPackages = {
       systemPackages = with pkgs; [ texliveSmall ];
-      extension = with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
+      extension = with pkgs.vscode-marketplace; [
         james-yu.latex-workshop
       ];
       settings = {
@@ -184,7 +186,7 @@ in
       mutableExtensionsDir = false;
       extensions = lib.mkMerge (
         [
-          (with inputs.nix-vscode-extensions.extensions.${pkgs.system}.vscode-marketplace; [
+          (with pkgs.vscode-marketplace; [
             mkhl.direnv
 
             ms-azuretools.vscode-docker

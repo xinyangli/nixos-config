@@ -1,5 +1,4 @@
 {
-  inputs,
   config,
   pkgs,
   lib,
@@ -9,7 +8,6 @@
 
 {
   imports = [
-    inputs.sops-nix.nixosModules.sops
     (modulesPath + "/profiles/qemu-guest.nix")
     ./services
   ];

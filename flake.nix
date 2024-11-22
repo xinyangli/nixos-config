@@ -58,35 +58,56 @@
       home-manager,
       nixpkgs,
       nixos-hardware,
+      sops-nix,
       flake-utils,
       nur,
       catppuccin,
       my-nixvim,
+      nix-vscode-extensions,
+      colmena,
+      nix-index-database,
       ...
-    }@inputs:
+    }:
     let
-      nixvimOverlay = (final: prev: { nixvim = self.packages.${prev.stdenv.system}.nixvim; });
+      editorOverlay = (
+        final: prev: {
+          inherit (nix-vscode-extensions.extensions.${prev.stdenv.system}) vscode-marketplace;
+          inherit (self.packages.${prev.stdenv.system}) nixvim;
+        }
+      );
       overlayModule =
         { ... }:
         {
           nixpkgs.overlays = [
-            nixvimOverlay
+            editorOverlay
             (import ./overlays/add-pkgs.nix)
           ];
         };
       deploymentModule = {
         deployment.targetUser = "xin";
       };
-      sharedColmenaModules = [
-        self.nixosModules.default
-        deploymentModule
-      ];
       sharedHmModules = [
-        inputs.sops-nix.homeManagerModules.sops
-        inputs.nix-index-database.hmModules.nix-index
+        self.homeManagerModules.default
+        sops-nix.homeManagerModules.sops
+        nix-index-database.hmModules.nix-index
         catppuccin.homeManagerModules.catppuccin
-        self.homeManagerModules
       ];
+      sharedNixosModules = [
+        self.nixosModules.default
+        sops-nix.nixosModules.sops
+      ];
+      nodeNixosModules = {
+        calcite = [
+          nixos-hardware.nixosModules.asus-zephyrus-ga401
+          nur.nixosModules.nur
+          catppuccin.nixosModules.catppuccin
+          machines/calcite/configuration.nix
+          (mkHome "xin" "calcite")
+        ];
+      };
+      sharedColmenaModules = [
+        deploymentModule
+      ] ++ sharedNixosModules;
       mkHome =
         user: host:
         { ... }:
@@ -98,43 +119,29 @@
                 sharedModules = sharedHmModules;
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                extraSpecialArgs = {
-                  inherit inputs;
-                };
               };
               home-manager.users.${user} = (import ./home).${user}.${host};
             }
           ];
         };
-      mkHomeConfiguration = user: host: {
-        name = user;
-        value = home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs { system = "x86_64-linux"; };
-          modules = [
-            (import ./home).${user}.${host}
-            overlayModule
-          ] ++ sharedHmModules;
-          extraSpecialArgs = {
-            inherit inputs;
-          };
-        };
-      };
       mkNixos =
         {
-          system,
-          modules,
-          specialArgs ? { },
+          hostname,
+          system ? null,
         }:
         nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = specialArgs // {
-            inherit inputs system;
+          modules = sharedNixosModules ++ nodeNixosModules.${hostname};
+        };
+      # TODO:
+      mkColmenaHive =
+        {
+          hostname,
+        }:
+        colmena.lib.makeHive {
+          meta = {
+            # FIXME:
+            nixpkgs = import nixpkgs { system = "x86_64-linux"; };
           };
-          modules = [
-            self.nixosModules.default
-            nur.nixosModules.nur
-            catppuccin.nixosModules.catppuccin
-          ] ++ modules;
         };
     in
     {
@@ -145,16 +152,12 @@
           overlayModule
         ];
       };
-      homeManagerModules = import ./modules/home-manager;
+      homeManagerModules.default = import ./modules/home-manager;
 
-      homeConfigurations = builtins.listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
-
-      colmenaHive = inputs.colmena.lib.makeHive {
+      colmenaHive = colmena.lib.makeHive {
         meta = {
+          # FIXME:
           nixpkgs = import nixpkgs { system = "x86_64-linux"; };
-          specialArgs = {
-            inherit inputs;
-          };
         };
 
         massicot =
@@ -241,12 +244,7 @@
 
       nixosConfigurations = {
         calcite = mkNixos {
-          system = "x86_64-linux";
-          modules = [
-            nixos-hardware.nixosModules.asus-zephyrus-ga401
-            machines/calcite/configuration.nix
-            (mkHome "xin" "calcite")
-          ];
+          hostname = "calcite";
         };
       } // self.colmenaHive.nodes;
 
@@ -255,6 +253,17 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+
+        mkHomeConfiguration = user: host: {
+          name = user;
+          value = home-manager.lib.homeManagerConfiguration {
+            inherit pkgs;
+            modules = [
+              (import ./home).${user}.${host}
+              overlayModule
+            ] ++ sharedHmModules;
+          };
+        };
       in
       {
         devShells = {
@@ -262,15 +271,18 @@
             packages = with pkgs; [
               nix
               git
-              inputs.colmena.packages.${system}.colmena
+              colmena.packages.${system}.colmena
               sops
               nix-output-monitor
               nil
               nvd
               nh
+              (python3.withPackages (ps: with ps; [ requests ]))
             ];
           };
         };
+
+        homeConfigurations = builtins.listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
 
         packages = {
           nixvim = my-nixvim.packages.${system}.default;
