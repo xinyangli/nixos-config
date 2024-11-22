@@ -19,12 +19,6 @@
         singbox_jp_server = {
           owner = "root";
         };
-        singbox_password = {
-          owner = "root";
-        };
-        singbox_uuid = {
-          owner = "root";
-        };
         private_dns_address = {
           owner = "root";
         };

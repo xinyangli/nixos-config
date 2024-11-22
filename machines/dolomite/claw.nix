@@ -1,22 +1,14 @@
 {
-  config,
   lib,
   modulesPath,
   ...
 }:
-let
-  cfg = config.isClaw;
-in
 {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
   ];
 
-  options = {
-    isClaw = lib.mkEnableOption "Lightsail instance";
-  };
-
-  config = lib.mkIf cfg {
+  config = {
     boot.initrd.availableKernelModules = [
       "uhci_hcd"
       "virtio_blk"

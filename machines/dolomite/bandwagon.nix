@@ -1,21 +1,11 @@
 {
-  config,
-  lib,
-  pkgs,
   modulesPath,
   ...
 }:
-let
-  cfg = config.isBandwagon;
-in
 {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
 
-  options = {
-    isBandwagon = lib.mkEnableOption "Bandwagon instance";
-  };
-
-  config = lib.mkIf cfg {
+  config = {
     boot.initrd.availableKernelModules = [
       "ata_piix"
       "xhci_pci"

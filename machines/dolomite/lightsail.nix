@@ -1,11 +1,9 @@
 {
   config,
-  lib,
   pkgs,
   modulesPath,
   ...
 }:
-with lib;
 let
   cfg = config.ec2;
 in
@@ -20,11 +18,7 @@ in
     "${modulesPath}/virtualisation/amazon-init.nix"
   ];
 
-  options = {
-    isLightsail = mkEnableOption "Lightsail instance";
-  };
-
-  config = mkIf config.isLightsail {
+  config = {
     boot.loader.grub.device = "/dev/nvme0n1";
 
     # from nixpkgs amazon-image.nix

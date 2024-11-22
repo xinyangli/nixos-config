@@ -36,7 +36,9 @@ let
             users = [
               {
                 name = "proxy";
-                password = password;
+                password = {
+                  _secret = password;
+                };
               }
             ];
             tls = singTls;
@@ -51,8 +53,12 @@ let
           users = [
             {
               name = "proxy";
-              uuid = uuid;
-              password = password;
+              uuid = {
+                _secret = uuid;
+              };
+              password = {
+                _secret = password;
+              };
             }
           ];
           tls = singTls;
@@ -102,12 +108,6 @@ in
 {
   options.commonSettings.proxyServer = {
     enable = mkEnableOption "sing-box as a server";
-    uuidFile = mkOption {
-      type = types.path;
-    };
-    passwordFile = mkOption {
-      type = types.path;
-    };
   };
 
   config = mkIf cfg.enable {
@@ -117,19 +117,6 @@ in
     };
 
     networking.firewall.trustedInterfaces = [ "tun0" ];
-
-    sops = {
-      secrets = {
-        wg_private_key = {
-          owner = "root";
-          sopsFile = ./secrets + "/${config.networking.hostName}.yaml";
-        };
-        wg_ipv6_local_addr = {
-          owner = "root";
-          sopsFile = ./secrets + "/${config.networking.hostName}.yaml";
-        };
-      };
-    };
 
     security.acme = {
       acceptTerms = true;
@@ -157,8 +144,8 @@ in
     services.sing-box = {
       enable = true;
       settings = mkSingConfig {
-        uuid = cfg.uuidFile;
-        password = cfg.passwordFile;
+        uuid = config.sops.secrets."sing-box/uuid".path;
+        password = config.sops.secrets."sing-box/password".path;
       };
     };
   };

@@ -3,6 +3,7 @@
     ./common-settings/auth.nix
     ./common-settings/autoupgrade.nix
     ./common-settings/nix-conf.nix
+    ./common-settings/proxy-server.nix
     ./restic.nix
     ./vaultwarden.nix
     ./prometheus

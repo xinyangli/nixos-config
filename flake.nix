@@ -104,6 +104,18 @@
           machines/calcite/configuration.nix
           (mkHome "xin" "calcite")
         ];
+        hk-00 = [
+          ./machines/dolomite/claw.nix
+          ./machines/dolomite/common.nix
+        ];
+        la-00 = [
+          ./machines/dolomite/bandwagon.nix
+          ./machines/dolomite/common.nix
+        ];
+        tok-00 = [
+          ./machines/dolomite/lightsail.nix
+          ./machines/dolomite/common.nix
+        ];
       };
       sharedColmenaModules = [
         deploymentModule
@@ -175,7 +187,7 @@
         tok-00 =
           { ... }:
           {
-            imports = [ machines/dolomite ] ++ sharedColmenaModules;
+            imports = nodeNixosModules.tok-00 ++ sharedColmenaModules;
             nixpkgs.system = "x86_64-linux";
             networking.hostName = "tok-00";
             system.stateVersion = "23.11";
@@ -189,7 +201,7 @@
         la-00 =
           { ... }:
           {
-            imports = [ machines/dolomite ] ++ sharedColmenaModules;
+            imports = nodeNixosModules.la-00 ++ sharedColmenaModules;
             nixpkgs.system = "x86_64-linux";
             networking.hostName = "la-00";
             system.stateVersion = "21.05";
@@ -203,7 +215,7 @@
         hk-00 =
           { ... }:
           {
-            imports = [ machines/dolomite ] ++ sharedColmenaModules;
+            imports = nodeNixosModules.hk-00 ++ sharedColmenaModules;
             nixpkgs.system = "x86_64-linux";
             networking.hostName = "hk-00";
             system.stateVersion = "24.05";

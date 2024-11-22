@@ -24,6 +24,14 @@ creation_rules:
     - age:
       - *xin
       - *host-massicot
+  - path_regex: machines/dolomite/secrets/secrets.yaml
+    key_groups:
+    - age:
+      - *xin
+      - *host-sgp-00
+      - *host-tok-00
+      - *host-la-00
+      - *host-hk-00
   - path_regex: machines/dolomite/secrets/sgp-00.yaml
     key_groups:
     - age:
