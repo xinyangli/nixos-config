@@ -39,6 +39,13 @@ in
       fsType = "vfat";
     };
 
+    swapDevices = [
+      {
+        device = "/var/lib/swapfile";
+        size = 4 * 1024;
+      }
+    ];
+
     boot.extraModulePackages = [ config.boot.kernelPackages.ena ];
     boot.initrd.kernelModules = [ "xen-blkfront" ];
     boot.initrd.availableKernelModules = [ "nvme" ];

@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 {
   config = {
     sops = {
@@ -29,7 +29,9 @@
 
     commonSettings = {
       auth.enable = true;
-      proxyServer.enable = true;
+      proxyServer = {
+        enable = true;
+      };
     };
   };
 
