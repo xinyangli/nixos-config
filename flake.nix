@@ -116,6 +116,9 @@
           ./machines/dolomite/lightsail.nix
           ./machines/dolomite/common.nix
         ];
+        osmium = [
+          ./machines/osmium
+        ];
       };
       sharedColmenaModules = [
         deploymentModule
@@ -257,6 +260,10 @@
       nixosConfigurations = {
         calcite = mkNixos {
           hostname = "calcite";
+        };
+
+        osmium = mkNixos {
+          hostname = "osmium";
         };
       } // self.colmenaHive.nodes;
 

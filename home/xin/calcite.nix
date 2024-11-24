@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   homeDirectory = "/home/xin";
 in
@@ -59,6 +59,12 @@ in
   i18n.inputMethod = {
     enabled = "fcitx5";
     fcitx5.addons = with pkgs; [ fcitx5-rime ];
+  };
+
+  # Using wayland
+  home.sessionVariables = {
+    GTK_IM_MODULE = lib.mkForce "";
+    QT_IM_MODULE = lib.mkForce "";
   };
 
   custom-hm = {
