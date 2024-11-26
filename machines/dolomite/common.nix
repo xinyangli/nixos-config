@@ -23,7 +23,7 @@
     };
 
     custom.prometheus = {
-      enable = true;
+      enable = lib.mkDefault true;
       exporters.blackbox.enable = true;
     };
 

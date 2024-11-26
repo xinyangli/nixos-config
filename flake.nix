@@ -116,6 +116,10 @@
           ./machines/dolomite/lightsail.nix
           ./machines/dolomite/common.nix
         ];
+        fra-00 = [
+          ./machines/dolomite/fra.nix
+          ./machines/dolomite/common.nix
+        ];
         osmium = [
           ./machines/osmium
         ];
@@ -224,6 +228,20 @@
             system.stateVersion = "24.05";
             deployment = {
               targetHost = "hk-00.video.namely.icu";
+              buildOnTarget = false;
+              tags = [ "proxy" ];
+            };
+          };
+
+        fra-00 =
+          { ... }:
+          {
+            imports = nodeNixosModules.fra-00 ++ sharedColmenaModules;
+            nixpkgs.system = "x86_64-linux";
+            networking.hostName = "fra-00";
+            system.stateVersion = "24.05";
+            deployment = {
+              targetHost = "fra-00.video.namely.icu";
               buildOnTarget = false;
               tags = [ "proxy" ];
             };

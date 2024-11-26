@@ -9,6 +9,7 @@ let
     mkIf
     mkEnableOption
     mkOption
+    mkDefault
     types
     ;
 
@@ -127,7 +128,7 @@ in
     trojan = {
       port = mkOption {
         type = lib.types.port;
-        default = cfg.trojan.port;
+        default = 8080;
       };
     };
 
@@ -162,11 +163,6 @@ in
       cfg.trojan.port
     ];
     networking.firewall.allowedUDPPorts = [ ] ++ (lib.range 6311 6314);
-
-    custom.prometheus = {
-      enable = true;
-      exporters.blackbox.enable = true;
-    };
 
     services.sing-box = {
       enable = true;
