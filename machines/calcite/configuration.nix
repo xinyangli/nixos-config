@@ -105,6 +105,15 @@ in
     LC_TIME = "en_US.utf8";
   };
 
+  i18n.inputMethod = {
+    enable = true;
+    type = "fcitx5";
+    fcitx5 = {
+      addons = [ pkgs.fcitx5-rime ];
+      waylandFrontend = true;
+    };
+  };
+
   # ====== GUI ======
 
   programs.niri.enable = true;
@@ -113,7 +122,7 @@ in
 
   catppuccin = {
     enable = true;
-    accent = "rosewater";
+    accent = "peach";
     flavor = "mocha";
   };
 
