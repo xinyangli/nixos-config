@@ -129,6 +129,14 @@
         osmium = [
           ./machines/osmium
         ];
+        thorite = [
+          disko.nixosModules.disko
+          ./machines/thorite
+        ];
+        biotite = [
+          disko.nixosModules.disko
+          ./machines/biotite
+        ];
       };
       sharedColmenaModules = [
         deploymentModule
@@ -279,6 +287,19 @@
             };
             nixpkgs.system = "x86_64-linux";
           };
+        thorite =
+          { ... }:
+          {
+            imports = nodeNixosModules.thorite ++ sharedColmenaModules;
+            deployment = {
+              buildOnTarget = false;
+            };
+          };
+        biotite =
+          { ... }:
+          {
+            imports = nodeNixosModules.biotite ++ sharedColmenaModules;
+          };
       };
 
       nixosConfigurations = {
@@ -289,6 +310,7 @@
         osmium = mkNixos {
           hostname = "osmium";
         };
+
       } // self.colmenaHive.nodes;
 
     }
