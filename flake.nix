@@ -50,6 +50,11 @@
     catppuccin = {
       url = "github:catppuccin/nix";
     };
+
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -66,6 +71,7 @@
       nix-vscode-extensions,
       colmena,
       nix-index-database,
+      disko,
       ...
     }:
     let
