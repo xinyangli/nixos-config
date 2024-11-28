@@ -182,6 +182,17 @@ in
           };
         };
       };
+      "keydous" = {
+        ids = [
+          "25a7:fa14"
+          "3151:4002"
+        ];
+        settings = {
+          main = {
+            capslock = "overload(control, esc)";
+          };
+        };
+      };
     };
   };
 
@@ -324,16 +335,12 @@ in
   '';
 
   sops.secrets = {
-    restic_repo_calcite_password = {
+    "restic/repo_url" = {
       owner = "xin";
       sopsFile = ./secrets.yaml;
     };
-    restic_repo_calcite = {
+    "restic/repo_password" = {
       owner = "xin";
-      sopsFile = ./secrets.yaml;
-    };
-    sing_box_url = {
-      owner = "root";
       sopsFile = ./secrets.yaml;
     };
     "gitea/envfile" = {
@@ -341,9 +348,14 @@ in
       sopsFile = ./secrets.yaml;
     };
   };
-  custom.restic.enable = true;
-  custom.restic.repositoryFile = config.sops.secrets.restic_repo_calcite.path;
-  custom.restic.passwordFile = config.sops.secrets.restic_repo_calcite_password.path;
+
+  custom.restic = {
+    enable = true;
+    paths = [
+      "/backup/rootfs/var/lib"
+      "/backup/home"
+    ];
+  };
 
   custom.forgejo-actions-runner = {
     enable = false;

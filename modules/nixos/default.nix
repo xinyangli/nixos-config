@@ -4,6 +4,7 @@
     ./common-settings/autoupgrade.nix
     ./common-settings/nix-conf.nix
     ./common-settings/proxy-server.nix
+    ./disk-partitions
     ./restic.nix
     ./vaultwarden.nix
     ./prometheus

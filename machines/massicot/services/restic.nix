@@ -12,21 +12,25 @@ let
 in
 {
   sops.secrets = {
-    "restic/repo" = {
+    "restic/repo_url" = {
       sopsFile = ../secrets.yaml;
     };
-    "restic/password" = {
+    "restic/repo_password" = {
       sopsFile = ../secrets.yaml;
     };
   };
 
   custom.restic = {
     enable = true;
-    repositoryFile = config.sops.secrets."restic/repo".path;
-    passwordFile = config.sops.secrets."restic/password".path;
     paths = [
       "/backup"
       "/mnt/storage"
+    ];
+    backupPrepareCommand = [
+      (sqliteBackup "/var/lib/hedgedoc/db.sqlite" "/backup/hedgedoc" "db.sqlite")
+      (sqliteBackup "/var/lib/bitwarden_rs/db.sqlite3" "/backup/bitwarden_rs" "db.sqlite3")
+      (sqliteBackup "/var/lib/gotosocial/database.sqlite" "/backup/gotosocial" "database.sqlite")
+      (sqliteBackup "/var/lib/kanidm/kanidm.db" "/backup/kanidm" "kanidm.db")
     ];
   };
 
@@ -38,12 +42,6 @@ in
   };
 
   services.restic.backups.${config.networking.hostName} = {
-    backupPrepareCommand = builtins.concatStringsSep "\n" [
-      (sqliteBackup "/var/lib/hedgedoc/db.sqlite" "/backup/hedgedoc" "db.sqlite")
-      (sqliteBackup "/var/lib/bitwarden_rs/db.sqlite3" "/backup/bitwarden_rs" "db.sqlite3")
-      (sqliteBackup "/var/lib/gotosocial/database.sqlite" "/backup/gotosocial" "database.sqlite")
-      (sqliteBackup "/var/lib/kanidm/kanidm.db" "/backup/kanidm" "kanidm.db")
-    ];
     extraBackupArgs = [
       "--limit-upload=1024"
     ];
