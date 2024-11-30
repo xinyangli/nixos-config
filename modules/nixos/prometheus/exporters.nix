@@ -10,6 +10,11 @@ let
 in
 {
   config = {
+    systemd.services.tailscaled.after =
+      (lib.optional cfg.node.enable "prometheus-node-exporters.service")
+      ++ (lib.optional cfg.blackbox.enable "prometheus-blackbox-exporters.service")
+      ++ (lib.optional config.services.caddy.enable "caddy.service");
+
     services.prometheus.exporters.node = mkIf cfg.node.enable {
       enable = true;
       enabledCollectors = [
