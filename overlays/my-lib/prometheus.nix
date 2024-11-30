@@ -7,6 +7,7 @@ in
     {
       name,
       address,
+      passwordFile ? null,
       port ? 443,
       scheme ? "https",
       ...
@@ -16,6 +17,15 @@ in
       scheme = scheme;
       static_configs = [ { targets = [ "${address}${mkPort port}" ]; } ];
     }
+    // (
+      if isNull null then
+        { }
+      else
+        {
+          basic_auth.username = "prom";
+          basic_auth.password_file = passwordFile;
+        }
+    )
   );
 
   mkCaddyScrapes = mkFunction (

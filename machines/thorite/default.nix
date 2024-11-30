@@ -30,7 +30,6 @@
 
     commonSettings = {
       auth.enable = true;
-      autoupgrade.enable = true;
     };
 
     nixpkgs.system = "x86_64-linux";

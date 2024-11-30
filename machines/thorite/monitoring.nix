@@ -41,6 +41,7 @@ with my-lib;
           "45.142.178.32:22"
           "home.xinyang.life:8000"
         ];
+        passwordFile = config.sops.secrets."prometheus/metrics_password".path;
       in
       (mkScrapes [
         {
@@ -50,18 +51,22 @@ with my-lib;
           port = 8082;
         }
         {
+          inherit passwordFile;
           name = "gotosocial";
           address = "xinyang.life";
         }
         {
+          inherit passwordFile;
           name = "miniflux";
           address = "rss.xinyang.life";
         }
         {
+          inherit passwordFile;
           name = "ntfy";
           address = "ntfy.xinyang.life";
         }
         {
+          inherit passwordFile;
           name = "grafana-eu";
           address = "grafana.xinyang.life";
         }

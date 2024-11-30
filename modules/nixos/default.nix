@@ -7,7 +7,7 @@
     ./disk-partitions
     ./restic.nix
     ./vaultwarden.nix
-    ./prometheus
+    ./monitor
     ./hedgedoc.nix
     ./sing-box.nix
     ./kanidm-client.nix
