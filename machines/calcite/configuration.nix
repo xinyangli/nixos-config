@@ -368,8 +368,7 @@ in
   };
 
   custom.prometheus = {
-    enable = true;
-    exporters.blackbox.enable = true;
+    exporters.node.enable = true;
   };
 
   services.ollama = {

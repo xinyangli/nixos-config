@@ -60,8 +60,8 @@
   outputs =
     {
       self,
-      home-manager,
       nixpkgs,
+      home-manager,
       nixos-hardware,
       sops-nix,
       flake-utils,
@@ -84,6 +84,7 @@
       overlayModule =
         { ... }:
         {
+          _module.args.my-lib = import ./overlays/my-lib;
           nixpkgs.overlays = [
             editorOverlay
             (import ./overlays/add-pkgs.nix)
@@ -116,10 +117,6 @@
         ];
         la-00 = [
           ./machines/dolomite/bandwagon.nix
-          ./machines/dolomite/common.nix
-        ];
-        tok-00 = [
-          ./machines/dolomite/lightsail.nix
           ./machines/dolomite/common.nix
         ];
         fra-00 = [
@@ -178,7 +175,6 @@
         };
     in
     {
-      nixpkgs = nixpkgs;
       nixosModules.default = {
         imports = [
           ./modules/nixos
@@ -190,7 +186,9 @@
       colmenaHive = colmena.lib.makeHive {
         meta = {
           # FIXME:
-          nixpkgs = import nixpkgs { system = "x86_64-linux"; };
+          nixpkgs = import nixpkgs {
+            system = "x86_64-linux";
+          };
         };
 
         massicot =
@@ -203,20 +201,6 @@
               { nixpkgs.system = "aarch64-linux"; }
               machines/massicot
             ] ++ sharedColmenaModules;
-          };
-
-        tok-00 =
-          { ... }:
-          {
-            imports = nodeNixosModules.tok-00 ++ sharedColmenaModules;
-            nixpkgs.system = "x86_64-linux";
-            networking.hostName = "tok-00";
-            system.stateVersion = "23.11";
-            deployment = {
-              targetHost = "video01.namely.icu";
-              buildOnTarget = false;
-              tags = [ "proxy" ];
-            };
           };
 
         la-00 =
@@ -310,7 +294,6 @@
         osmium = mkNixos {
           hostname = "osmium";
         };
-
       } // self.colmenaHive.nodes;
 
     }

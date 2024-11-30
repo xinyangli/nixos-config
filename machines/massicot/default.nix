@@ -24,10 +24,6 @@
       hedgedoc_env = {
         owner = "hedgedoc";
       };
-      grafana_cloud_api = {
-        owner = "prometheus";
-        sopsFile = ../secrets.yaml;
-      };
       grafana_oauth_secret = {
         owner = "grafana";
       };
@@ -61,6 +57,8 @@
   networking = {
     hostName = "massicot";
   };
+
+  services.tailscale.enable = true;
 
   commonSettings = {
     auth.enable = true;

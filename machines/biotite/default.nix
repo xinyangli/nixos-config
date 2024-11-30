@@ -12,11 +12,12 @@
   networking.useNetworkd = true;
   systemd.network.enable = true;
   systemd.network.networks."10-wan" = {
-    matchConfig.MACAddress = "00:16:3e:0a:ec:45";
-    networkConfig.DHCP = "ipv4";
-    dhcpV4Config = {
-      UseDNS = true;
+    matchConfig.MACAddress = "b6:20:0d:9a:6c:34";
+    networkConfig = {
+      DHCP = "ipv4";
+      IPv6SendRA = true;
     };
+    address = [ "2a03:4000:4a:148::1/64" ];
   };
 
   commonSettings = {

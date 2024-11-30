@@ -16,7 +16,6 @@
     networking.hostName = "weilite";
     commonSettings = {
       auth.enable = true;
-      autoupgrade.enable = true;
       nix = {
         enable = true;
         enableMirrors = true;
@@ -61,8 +60,14 @@
       };
     };
 
-    custom.prometheus = {
+    custom.prometheus.exporters = {
       enable = true;
+      blackbox = {
+        enable = true;
+      };
+      node = {
+        enable = true;
+      };
     };
 
     systemd.mounts = [

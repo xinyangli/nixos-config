@@ -21,11 +21,19 @@
         };
       };
     };
+    swapDevices = [
+      {
+        device = "/swapfile";
+        size = 2 * 1024;
+      }
+    ];
 
-    custom.prometheus = {
-      enable = lib.mkDefault true;
-      exporters.blackbox.enable = true;
+    custom.prometheus.exporters = {
+      enable = true;
+      node.enable = true;
     };
+
+    services.tailscale.enable = true;
 
     commonSettings = {
       auth.enable = true;

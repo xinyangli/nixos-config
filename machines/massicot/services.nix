@@ -43,10 +43,14 @@ in
     environmentFile = config.sops.secrets.hedgedoc_env.path;
   };
 
-  custom.prometheus = {
+  custom.prometheus.exporters = {
     enable = true;
-    exporters.blackbox.enable = true;
-    exporters.miniflux.enable = true;
+    blackbox = {
+      enable = true;
+    };
+    node = {
+      enable = true;
+    };
   };
 
   security.acme = {

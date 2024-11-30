@@ -52,6 +52,12 @@
     networkConfig = {
       DHCP = "no";
       Gateway = "185.217.108.1";
+      DNSSEC = true;
+      DNSOverTLS = true;
+      DNS = [
+        "8.8.8.8#dns.google"
+        "8.8.4.4#dns.google"
+      ];
     };
     address = [ "185.217.108.59/24" ];
   };

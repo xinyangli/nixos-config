@@ -3,17 +3,26 @@ let
   cfg = config.custom.prometheus;
 in
 {
-  config = lib.mkIf (cfg.enable && cfg.exporters.restic.enable) {
+  config = {
     services.restic.server.prometheus = true;
 
-    services.prometheus.scrapeConfigs = [
-      (lib.mkIf cfg.exporters.restic.enable {
-        job_name = "restic";
-        static_configs = [ { targets = [ config.services.restic.server.listenAddress ]; } ];
-      })
-    ];
+    custom.prometheus.templates.scrape.mkResticScrapes =
+      {
+        address,
+        port ? null,
+        ...
+      }:
+      let
+        portStr = if port then ":${toString port}" else "";
+      in
+      [
+        (lib.mkIf cfg.exporters.restic.enable {
+          job_name = "restic";
+          static_configs = [ { targets = [ "${address}${portStr}" ]; } ];
+        })
+      ];
 
-    custom.prometheus.ruleModules = [
+    custom.prometheus.templates.rules.mkResticRules = [
       {
         name = "restic_alerts";
         rules = [
