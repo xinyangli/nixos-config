@@ -61,12 +61,10 @@ with my-lib;
           address = "rss.xinyang.life";
         }
         {
-          inherit passwordFile;
           name = "ntfy";
           address = "ntfy.xinyang.life";
         }
         {
-          inherit passwordFile;
           name = "grafana-eu";
           address = "grafana.xinyang.life";
         }

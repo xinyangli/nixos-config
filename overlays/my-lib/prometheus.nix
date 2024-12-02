@@ -18,7 +18,7 @@ in
       static_configs = [ { targets = [ "${address}${mkPort port}" ]; } ];
     }
     // (
-      if isNull null then
+      if isNull passwordFile then
         { }
       else
         {

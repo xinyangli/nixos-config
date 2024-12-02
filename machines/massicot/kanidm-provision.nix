@@ -108,6 +108,20 @@
           ];
         };
       };
+      gotosocial = {
+        displayName = "GoToSocial";
+        originUrl = "https://gts.xiny.li/auth/callback";
+        originLanding = "https://gts.xiny.li/auth/callback";
+        allowInsecureClientDisablePkce = true;
+        scopeMaps = {
+          gts-users = [
+            "openid"
+            "email"
+            "profile"
+            "groups"
+          ];
+        };
+      };
       # It's used for all the clients. I'm too lazy to change the name.
       owncloud-android = {
         displayName = "ownCloud Apps";
@@ -147,7 +161,7 @@
       immich = {
         displayName = "Immich";
         originUrl = [
-          "https://immich.xinyang.life:8000/api/oauth/mobile-redirect"
+          "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/"
           "https://immich.xinyang.life:8000/auth/login"
           "https://immich.xinyang.life:8000/user-settings"
         ];

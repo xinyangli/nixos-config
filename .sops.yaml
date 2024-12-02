@@ -17,6 +17,7 @@ creation_rules:
       - *host-calcite
       - *host-massicot
       - *host-thorite
+      - *host-biotite
   - path_regex: machines/calcite/secrets.yaml
     key_groups:
     - age:
@@ -32,6 +33,11 @@ creation_rules:
     - age:
       - *xin
       - *host-massicot
+  - paht_regex: machines/biotite/secrets.yaml
+    key_groups:
+    - age:
+      - *xin
+      - *host-biotite
   - path_regex: machines/thorite/secrets.yaml
     key_groups:
     - age:
