@@ -70,6 +70,11 @@ with my-lib;
           name = "grafana-eu";
           address = "grafana.xinyang.life";
         }
+        {
+          name = "loki";
+          address = "thorite.coho-tet.ts.net";
+          port = 3100;
+        }
       ])
       ++ (mkCaddyScrapes [
         { address = "thorite.coho-tet.ts.net"; }
