@@ -78,6 +78,7 @@ in
     }
   ];
 
+  programs.vim.enable = true;
   programs.vim.defaultEditor = true;
 
   # Keep this even if enabled in home manager
@@ -307,13 +308,7 @@ in
     bitwarden
 
     # Browser
-    (chromium.override {
-      commandLineArgs = [
-        "--ozone-platform-hint=auto"
-        "--enable-wayland-ime"
-      ];
-    })
-    brave
+    chromium
 
     # Writting
     zotero
@@ -379,15 +374,12 @@ in
   # Fonts
   fonts = {
     packages = with pkgs; [
-      (nerdfonts.override {
-        fonts = [
-          "FiraCode"
-          "FiraMono"
-          "JetBrainsMono"
-          "RobotoMono"
-          "Ubuntu"
-        ];
-      })
+      nerd-fonts.ubuntu-sans
+      nerd-fonts.ubuntu
+      nerd-fonts.fira-code
+      nerd-fonts.fira-mono
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.roboto-mono
       noto-fonts
       noto-fonts-emoji
       liberation_ttf
