@@ -18,7 +18,6 @@
       auth.enable = true;
       nix = {
         enable = true;
-        enableMirrors = true;
       };
     };
 

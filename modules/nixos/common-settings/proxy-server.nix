@@ -9,8 +9,6 @@ let
     mkIf
     mkEnableOption
     mkOption
-    mkDefault
-    types
     ;
 
   cfg = config.commonSettings.proxyServer;
@@ -26,6 +24,9 @@ let
   mkSingConfig =
     { uuid, password, ... }:
     {
+      log = {
+        level = "warn";
+      };
       inbounds =
         [
           {

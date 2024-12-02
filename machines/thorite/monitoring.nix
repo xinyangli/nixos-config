@@ -14,6 +14,8 @@ with my-lib;
 
     custom.monitoring = {
       grafana.enable = true;
+      loki.enable = true;
+      promtail.enable = true;
     };
 
     services.caddy.virtualHosts."https://grafana.xinyang.life".extraConfig =

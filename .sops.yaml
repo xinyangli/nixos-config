@@ -18,6 +18,9 @@ creation_rules:
       - *host-massicot
       - *host-thorite
       - *host-biotite
+      - *host-hk-00
+      - *host-fra-00
+      - *host-la-00
   - path_regex: machines/calcite/secrets.yaml
     key_groups:
     - age:
@@ -33,7 +36,7 @@ creation_rules:
     - age:
       - *xin
       - *host-massicot
-  - paht_regex: machines/biotite/secrets.yaml
+  - path_regex: machines/biotite/secrets.yaml
     key_groups:
     - age:
       - *xin
@@ -45,11 +48,11 @@ creation_rules:
       - *host-thorite
   - path_regex: machines/dolomite/secrets/secrets.yaml
     key_groups:
-    - age:
+    - age: 
       - *xin
-      - *host-la-00
       - *host-hk-00
       - *host-fra-00
+      - *host-la-00
   - path_regex: machines/dolomite/secrets/la-00.yaml
     key_groups:
     - age:
@@ -60,7 +63,6 @@ creation_rules:
     - age:
       - *xin
       - *host-hk-00
-
   - path_regex: machines/dolomite/secrets/fra-00.yaml
     key_groups:
     - age:

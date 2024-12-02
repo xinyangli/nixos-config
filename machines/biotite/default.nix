@@ -1,12 +1,13 @@
 {
-  config,
   lib,
-  pkgs,
   ...
 }:
 
 {
-  imports = [ ./hardware-configurations.nix ];
+  imports = [
+    ./hardware-configurations.nix
+    ./services/gotosocial.nix
+  ];
 
   networking.hostName = "biotite";
   networking.useNetworkd = true;
@@ -20,10 +21,27 @@
     address = [ "2a03:4000:4a:148::1/64" ];
   };
 
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
+  ];
+
   commonSettings = {
     auth.enable = true;
     autoupgrade.enable = true;
   };
+
+  custom.monitoring = {
+    promtail.enable = true;
+  };
+
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  };
+
+  services.caddy.enable = true;
+  services.tailscale.enable = true;
 
   users.users.root.hashedPassword = "$y$j9T$NToEZWJBONjSgRnMd9Ur9/$o6n7a9b8eUILQz4d37oiHCCVnDJ8hZTZt.c.37zFfU.";
 

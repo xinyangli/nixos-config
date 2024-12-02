@@ -28,6 +28,7 @@ in
   imports = [
     ./exporters.nix
     ./grafana.nix
+    ./loki.nix
   ];
 
   options = {

@@ -18,7 +18,6 @@ in
   commonSettings = {
     auth.enable = true;
     nix = {
-      enableMirrors = true;
       signing.enable = true;
     };
   };
@@ -329,10 +328,6 @@ in
 
   system.switch.enable = false;
   system.switch.enableNg = true;
-
-  nix.extraOptions = ''
-    !include "${config.sops.secrets.github_public_token.path}"
-  '';
 
   sops.secrets = {
     "restic/repo_url" = {

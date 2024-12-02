@@ -2,6 +2,7 @@
 {
   config = {
     sops = {
+      age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       secrets = {
         wg_private_key = {
           owner = "root";
@@ -31,6 +32,10 @@
     custom.prometheus.exporters = {
       enable = true;
       node.enable = true;
+    };
+
+    custom.monitoring = {
+      promtail.enable = true;
     };
 
     services.tailscale.enable = true;

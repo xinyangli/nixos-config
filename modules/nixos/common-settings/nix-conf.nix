@@ -21,7 +21,6 @@ in
       default = true;
       type = types.bool;
     };
-    enableMirrors = mkEnableOption "cache.nixos.org mirrors in Mainland China";
     signing = {
       enable = mkEnableOption "Sign locally-built paths";
       keyFile = mkOption {
@@ -53,10 +52,6 @@ in
       substituters = [
         "https://nix-community.cachix.org"
         "https://cache.garnix.io"
-      ];
-
-      extra-substituters = mkIf cfg.enableMirrors [
-        "https://mirrors.cernet.edu.cn/nix-channels/store?priority=20"
       ];
 
       trusted-public-keys = [

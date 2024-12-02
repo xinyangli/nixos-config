@@ -62,7 +62,5 @@
     address = [ "185.217.108.59/24" ];
   };
 
-  custom.prometheus.enable = false;
-
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }

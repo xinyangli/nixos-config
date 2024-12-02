@@ -9,7 +9,7 @@
   imports = [ ./hass.nix ];
 
   commonSettings = {
-    nix.enableMirrors = true;
+    nix.enable = true;
     auth.enable = true;
   };
 

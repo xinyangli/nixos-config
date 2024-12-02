@@ -43,6 +43,10 @@ in
     environmentFile = config.sops.secrets.hedgedoc_env.path;
   };
 
+  custom.monitoring = {
+    promtail.enable = true;
+  };
+
   custom.prometheus.exporters = {
     enable = true;
     blackbox = {
