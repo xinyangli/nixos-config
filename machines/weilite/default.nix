@@ -56,6 +56,9 @@
           owner = "immich";
           mode = "400";
         };
+        "restic/localpass" = {
+          owner = "restic";
+        };
       };
     };
 

@@ -35,6 +35,8 @@ in
   services.restic.backups = builtins.listToAttrs [
     (mkPrune "xin" "calcite")
     (mkPrune "xin" "massicot")
+    (mkPrune "xin" "biotite")
+    (mkPrune "xin" "thorite")
   ];
 
   networking.firewall.allowedTCPPorts = [ 8443 ];
