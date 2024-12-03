@@ -18,11 +18,11 @@ with my-lib;
         enable = true;
         rules = {
           sshd_closed = {
-            condition = ''count_over_time({unit="sshd.service"} |~ "Connection closed by authenticating user" [15m]) > 25'';
-            description = "More then 25 users have tried logging in the last 15 min without success";
+            expr = ''count_over_time({unit="sshd.service"} |~ "Connection closed by authenticating user" [15m]) > 25'';
+            description = "More then 25 login attemps in last 15 min without success";
           };
           unusual_log_volume = {
-            condition = ''sum by (unit) (rate({unit=~".+"}[5m])) > 80'';
+            expr = ''sum by (unit) (rate({unit=~".+"}[5m])) > 80'';
             description = "Unit {{ $labels.unit }} is logging at an unusually high rate";
           };
         };

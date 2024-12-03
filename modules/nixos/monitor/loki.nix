@@ -29,7 +29,7 @@ in
           type = types.attrsOf (
             types.submodule {
               options = {
-                condition = mkOption {
+                expr = mkOption {
                   type = types.str;
                   description = ''
                     Loki alert expression.
@@ -85,7 +85,7 @@ in
               name = "alerting-rules";
               rules = lib.mapAttrsToList (name: opts: {
                 alert = name;
-                inherit (opts) condition labels;
+                inherit (opts) expr labels;
                 for = opts.time;
                 annotations.description = opts.description;
               }) cfg.loki.rules;
@@ -137,20 +137,22 @@ in
             ruler = {
               storage = {
                 type = "local";
-                local.directory = "${config.services.loki.dataDir}/ruler";
+                local.directory = "${config.services.loki.dataDir}/rules";
               };
-              rule_path = "${config.services.loki.dataDir}/rules";
+              rule_path = "${config.services.loki.dataDir}/rules-temp";
+              enable_api = true;
               alertmanager_url = "http://127.0.0.1:${toString alertmanagerPort}";
             };
           };
         };
         systemd.tmpfiles.rules = [
           "d /var/lib/loki 0700 loki loki - -"
-          "d /var/lib/loki/ruler 0700 loki loki - -"
+          "d /var/lib/loki/rules-temp 0700 loki loki - -"
           "d /var/lib/loki/rules 0700 loki loki - -"
-          "L /var/lib/loki/ruler/ruler.yml - - - - ${rulerFile}"
+          "d /var/lib/loki/rules/fake 0700 loki loki - -"
+          "L /var/lib/loki/rules/fake/ruler.yml - - - - ${rulerFile}"
         ];
-        systemd.services.loki.reloadTriggers = [ rulerFile ];
+        systemd.services.loki.restartTriggers = [ rulerFile ];
       }
     )
     (mkIf cfg.promtail.enable {
