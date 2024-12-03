@@ -15,6 +15,7 @@ creation_rules:
     - age:
       - *xin
       - *host-calcite
+      - *host-weilite
       - *host-massicot
       - *host-thorite
       - *host-biotite

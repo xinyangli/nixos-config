@@ -109,26 +109,74 @@ in
           };
         }
         {
-          alert = "HighTransmitTraffic";
-          expr = "rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m]) > 100000000";
-          for = "1m";
-          labels = {
-            severity = "warning";
-          };
-          annotations = {
-            summary = "High network transmit traffic on {{ $labels.instance }} ({{ $labels.device }})";
-            description = "The network interface {{ $labels.device }} on {{ $labels.instance }} is transmitting data at a rate exceeding 100 MB/s for the last 1 minute.";
-          };
-        }
-        {
           alert = "NetworkTrafficExceedLimit";
-          expr = ''increase(node_network_transmit_bytes_total{device!="lo",device!~"tailscale.*",device!~"wg.*",device!~"br.*"}[30d]) > 322122547200'';
-          for = "0m";
+          expr = ''sum by(instance) (increase(node_network_transmit_bytes_total{device!="lo", device!~"tailscale.*", device!~"wg.*", device!~"br.*"}[30d])) > 322122547200'';
+          for = "1m";
           labels = {
             severity = "critical";
           };
           annotations = {
             summary = "Outbound network traffic exceed 300GB for last 30 day";
+          };
+        }
+        {
+          alert = "HighDiskUsage";
+          expr = ''(1 - node_filesystem_free_bytes{fstype!~"vfat|ramfs"} / node_filesystem_size_bytes) * 100 > 85'';
+          for = "5m";
+          labels = {
+            severity = "warning";
+          };
+          annotations = {
+            summary = "High disk usage on {{ $labels.instance }}";
+          };
+        }
+        {
+          alert = "DiskWillFull";
+          expr = ''predict_linear(node_filesystem_free_bytes{fstype!~"vfat|ramfs"}[1h], 12 * 3600) < (node_filesystem_size_bytes * 0.05)'';
+
+          for = "3m";
+          labels = {
+            severity = "critical";
+          };
+          annotations = {
+            summary = "Disk usage will exceed 95% in 12 hours on {{ $labels.instance }}";
+            description = "Disk {{ $labels.mountpoint }} is predicted to exceed 92% usage within 12 hours at current growth rate";
+          };
+        }
+        {
+          alert = "HighSwapUsage";
+          expr = ''(1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80'';
+          for = "5m";
+          labels = {
+            severity = "warning";
+          };
+          annotations = {
+            summary = "High swap usage on {{ $labels.instance }}";
+            description = "Swap usage is above 80% for 5 minutes\n Current value: {{ $value }}%";
+          };
+        }
+        {
+          alert = "OOMKillDetected";
+          expr = ''increase(node_vmstat_oom_kill[5m]) > 0'';
+          for = "1m";
+          labels = {
+            severity = "critical";
+          };
+          annotations = {
+            summary = "OOM kill detected on {{ $labels.instance }}";
+            description = "Out of memory killer was triggered in the last 5 minutes";
+          };
+        }
+        {
+          alert = "HighMemoryUsage";
+          expr = ''(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90'';
+          for = "5m";
+          labels = {
+            severity = "warning";
+          };
+          annotations = {
+            summary = "High memory usage on {{ $labels.instance }}";
+            description = "Memory usage is above 90% for 5 minutes\n Current value: {{ $value }}%";
           };
         }
       ];
@@ -152,6 +200,9 @@ in
       static_configs = [
         {
           targets = targetAddresses;
+          labels = {
+            from = hostAddress;
+          };
         }
       ];
       relabel_configs = [
@@ -187,23 +238,25 @@ in
             severity = "warning";
           };
           annotations = {
-            summary = "High request latency on {{ $labels.instance }}";
-            description = "Request latency is above 0.5 seconds for the last 3 minutes.";
+            summary = "High request latency from {{ $labels.from }} to {{ $labels.instance }}";
+            description = "Request latency is above 0.5 seconds for the last 2 minutes.";
           };
         }
         {
           alert = "VeryHighProbeLatency";
-          expr = "probe_duration_seconds > 1";
+          expr = "probe_duration_seconds > 2";
           for = "3m";
           labels = {
             severity = "critical";
           };
           annotations = {
-            summary = "High request latency on {{ $labels.instance }}";
-            description = "Request latency is above 0.5 seconds for the last 3 minutes.";
+            summary = "Very high request latency from {{ $labels.from }} to {{ $labels.instance }}";
+            description = "Request latency is above 2 seconds for the last 2 minutes.";
           };
         }
       ];
     }
   );
+
+  # mkResticScrapes = mkFunction () ;
 }
