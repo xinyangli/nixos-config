@@ -45,6 +45,9 @@
       miniflux-users = {
         members = [ "xin" ];
       };
+      synapse-users = {
+        members = [ "xin" ];
+      };
       idm_people_self_mail_write = {
         members = [ ];
       };
@@ -209,6 +212,17 @@
               grafana-editors = [ "Editor" ];
             };
           };
+        };
+      };
+      synapse = {
+        displayName = "Synapse";
+        originUrl = "https://synapse.xiny.li/_synapse/client/oidc/callback";
+        originLanding = "https://synapse.xiny.li/";
+        scopeMaps = {
+          synapse-users = [
+            "openid"
+            "profile"
+          ];
         };
       };
     };

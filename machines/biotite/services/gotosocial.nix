@@ -27,6 +27,7 @@
       oidc-client-id = "gotosocial";
       oidc-link-existing = true;
     };
+    setupPostgresqlDB = true;
     environmentFile = config.sops.templates."gotosocial.env".path;
   };
 
