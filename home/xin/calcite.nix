@@ -125,7 +125,8 @@ in
     profiles.default = {
       isDefault = true;
       userChrome = ''
-        #titlebar {
+
+        #TabsToolbar {
           display: none;
         }
 
@@ -136,7 +137,7 @@ in
         [titlepreface*="."] #sidebar-header {
           visibility: collapse !important;
         }
-        [titlepreface*="."] #titlebar {
+        [titlepreface*="."] #TabsToolbar {
           visibility: collapse;
         }
 
@@ -148,7 +149,7 @@ in
           min-width: var(--uc-sidebar-width) !important;
           width: var(--uc-sidebar-width) !important;
           max-width: var(--uc-sidebar-width) !important;
-          z-index:1;
+          z-index: calc(var(--browser-area-z-index-tabbox) + 1);
         }
 
         #sidebar-box[positionend]{ direction: rtl }
@@ -190,12 +191,12 @@ in
           transition-delay: 0ms !important;
         }
 
-        .sidebar-panel{
-          background-color: transparent !important;
+        .sidebar-placeTree {
+          /* background-color: transparent !important; */
           color: var(--newtab-text-primary-color) !important;
         }
 
-        .sidebar-panel #search-box{
+        .sidebar-placeTree #search-box{
           -moz-appearance: none !important;
           background-color: rgba(249,249,250,0.1) !important;
           color: inherit !important;
