@@ -2,6 +2,7 @@
   imports = [
     ./hardware-configurations.nix
     ./monitoring.nix
+    ./restic.nix
   ];
 
   config = {

@@ -14,7 +14,19 @@ with my-lib;
 
     custom.monitoring = {
       grafana.enable = true;
-      loki.enable = true;
+      loki = {
+        enable = true;
+        rules = {
+          sshd_closed = {
+            condition = ''count_over_time({unit="sshd.service"} |~ "Connection closed by authenticating user" [15m]) > 25'';
+            description = "More then 25 users have tried logging in the last 15 min without success";
+          };
+          unusual_log_volume = {
+            condition = ''sum by (unit) (rate({unit=~".+"}[5m])) > 80'';
+            description = "Unit {{ $labels.unit }} is logging at an unusually high rate";
+          };
+        };
+      };
       promtail.enable = true;
     };
 
@@ -30,7 +42,10 @@ with my-lib;
         blackbox.enable = true;
         node.enable = true;
       };
-      ruleModules = (mkCaddyRules [ { host = "thorite"; } ]) ++ (mkNodeRules [ { host = "thorite"; } ]);
+      ruleModules =
+        (mkCaddyRules [ { host = "thorite"; } ])
+        ++ (mkNodeRules [ { host = "thorite"; } ])
+        ++ (mkBlackboxRules [ { host = "thorite"; } ]);
     };
 
     services.prometheus.scrapeConfigs =
@@ -39,8 +54,6 @@ with my-lib;
           "la-00.video.namely.icu:8080"
           "fre-00.video.namely.icu:8080"
           "hk-00.video.namely.icu:8080"
-          "49.13.13.122:443"
-          "45.142.178.32:22"
           "home.xinyang.life:8000"
         ];
         passwordFile = config.sops.secrets."prometheus/metrics_password".path;
@@ -51,6 +64,11 @@ with my-lib;
           scheme = "http";
           address = "weilite.coho-tet.ts.net";
           port = 8082;
+        }
+        {
+          name = "restic_rest_server";
+          address = "backup.xinyang.life";
+          port = 8443;
         }
         {
           inherit passwordFile;
@@ -72,6 +90,7 @@ with my-lib;
         }
         {
           name = "loki";
+          scheme = "http";
           address = "thorite.coho-tet.ts.net";
           port = 3100;
         }
@@ -90,11 +109,11 @@ with my-lib;
       ++ (mkBlackboxScrapes [
         {
           hostAddress = "thorite.coho-tet.ts.net";
-          targetAddresses = probeList;
+          targetAddresses = probeList ++ [ "49.13.13.122:22" ];
         }
         {
           hostAddress = "massicot.coho-tet.ts.net";
-          targetAddresses = probeList;
+          targetAddresses = probeList ++ [ "45.142.178.32:22" ];
         }
         {
           hostAddress = "weilite.coho-tet.ts.net";
