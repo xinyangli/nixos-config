@@ -39,7 +39,7 @@ let
         echo "Creating snapshot for ${rootDir}"
         subvolumes=$(${pkgs.btrfs-progs}/bin/btrfs subvolume list -o "${rootDir}" | ${awk} '{print $NF}')
         mkdir -p "${backupDir}"
-        ${pkgs.btrfs-progs}/bin/btrfs subvolume snapshot -r "${rootDir}" "${backupDir}/rootfs"
+        ${pkgs.btrfs-progs}/bin/btrfs subvolume snapshot -r "${rootDir}" "${backupDir}/rootDirectory"
         for subvol in $subvolumes; do
             ${continueIfInExclude}
             [[ /"$subvol" == "${backupDir}"* ]] && continue

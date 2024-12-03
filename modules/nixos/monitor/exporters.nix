@@ -71,7 +71,7 @@ in
 
     services.restic.server.prometheus = true;
 
-    # miniflux 
+    # miniflux
     sops.templates."miniflux_metrics_env" = {
       content = ''
         METRICS_COLLECTOR=1
