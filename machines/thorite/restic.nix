@@ -36,7 +36,7 @@ in
     btrfsRoots = [ ];
   };
 
-  services.postgresqlBackup = {
+  services.postgresqlBackup = lib.mkIf config.services.postgresql.enable {
     enable = true;
     compression = "zstd";
     compressionLevel = 9;

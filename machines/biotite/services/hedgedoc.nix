@@ -30,6 +30,7 @@ in
         scope = "openid email profile";
         clientID = "hedgedoc";
       };
+      enableStatsApi = true;
       allowAnonymous = false;
       defaultPermission = "private";
     };

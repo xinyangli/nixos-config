@@ -1,5 +1,19 @@
-{ config, my-lib, ... }:
+{
+  config,
+  lib,
+  my-lib,
+  ...
+}:
 with my-lib;
+let
+  inherit (my-lib.settings)
+    minifluxUrl
+    gotosocialUrl
+    hedgedocDomain
+    forgejoDomain
+    ;
+  removeHttps = s: lib.removePrefix "https://" s;
+in
 {
   config = {
     sops = {
@@ -73,16 +87,24 @@ with my-lib;
         {
           inherit passwordFile;
           name = "gotosocial";
-          address = "gts.xiny.li";
+          address = removeHttps gotosocialUrl;
         }
         {
           inherit passwordFile;
           name = "miniflux";
-          address = "rss.xiny.li";
+          address = removeHttps minifluxUrl;
+        }
+        {
+          name = "hedgedoc";
+          address = hedgedocDomain;
+        }
+        {
+          name = "forgejo";
+          address = forgejoDomain;
         }
         {
           name = "ntfy";
-          address = "ntfy.xiny.li";
+          address = "ntfy.xinyang.life";
         }
         {
           name = "grafana-eu";
@@ -109,11 +131,11 @@ with my-lib;
       ++ (mkBlackboxScrapes [
         {
           hostAddress = "thorite.coho-tet.ts.net";
-          targetAddresses = probeList ++ [ "49.13.13.122:22" ];
+          targetAddresses = probeList ++ [ "49.13.13.122:443" ];
         }
         {
           hostAddress = "massicot.coho-tet.ts.net";
-          targetAddresses = probeList ++ [ "45.142.178.32:22" ];
+          targetAddresses = probeList ++ [ "45.142.178.32:443" ];
         }
         {
           hostAddress = "weilite.coho-tet.ts.net";

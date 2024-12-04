@@ -38,6 +38,9 @@ let
       UPDATE_AVATAR = false;
       OPENID_CONNECT_SCOPES = "openid profile email groups";
     };
+    metrics = {
+      ENABLED = true;
+    };
     other = {
       SHOW_FOOTER_VERSION = false;
     };
