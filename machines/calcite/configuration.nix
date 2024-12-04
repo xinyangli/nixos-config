@@ -51,7 +51,6 @@ in
   };
   # services.gnome.gnome-keyring.enable = lib.mkForce false;
   security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
-  services.ssh-tpm-agent.enable = true;
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
 
@@ -65,18 +64,6 @@ in
       enable = true;
     };
   };
-
-  programs.oidc-agent.enable = true;
-  programs.oidc-agent.providers = [
-    {
-      issuer = "https://home.xinyang.life:9201";
-      pubclient = {
-        client_id = "xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69";
-        client_secret = "UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh";
-        scope = "openid offline_access profile email";
-      };
-    }
-  ];
 
   programs.vim.enable = true;
   programs.vim.defaultEditor = true;

@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   imports = [ ];
@@ -24,16 +29,9 @@
 
   services.dae.enable = true;
   services.dae.configFile = "/var/lib/dae/config.dae";
-  systemd.services.dae.after = lib.mkIf (config.networking.networkmanager.enable) [ "NetworkManager-wait-online.service" ];
-
-  custom.sing-box = {
-    enable = false;
-    configFile = {
-      urlFile = config.sops.secrets.sing_box_url.path;
-      hash = "6ca5bc8a16f8c413227690aceeee2c12c02cab09473c216b849af1e854b98588";
-    };
-    overrideSettings.experimental.clash_api.external_ui = "${config.nur.repos.linyinfeng.yacd}";
-  };
+  systemd.services.dae.after = lib.mkIf (config.networking.networkmanager.enable) [
+    "NetworkManager-wait-online.service"
+  ];
 
   # Open ports in the firewall.
   networking.firewall.enable = true;
