@@ -1,6 +1,6 @@
-{ config, my-lib, ... }:
+{ config, pkgs, ... }:
 let
-  inherit (my-lib.settings) idpUrl minifluxUrl;
+  inherit (config.my-lib.settings) idpUrl minifluxUrl;
 in
 {
   sops = {

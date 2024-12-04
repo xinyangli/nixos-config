@@ -1,6 +1,6 @@
-{ config, my-lib, ... }:
+{ config, pkgs, ... }:
 let
-  inherit (my-lib.settings) vaultwardenUrl;
+  inherit (config.my-lib.settings) vaultwardenUrl;
 in
 {
   services.vaultwarden = {

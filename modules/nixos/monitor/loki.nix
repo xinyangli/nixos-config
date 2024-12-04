@@ -2,7 +2,6 @@
   pkgs,
   config,
   lib,
-  my-lib,
   ...
 }:
 let
@@ -14,7 +13,7 @@ let
     types
     literalExpression
     ;
-  inherit (my-lib.settings)
+  inherit (config.my-lib.settings)
     alertmanagerPort
     ;
   cfg = config.custom.monitoring;

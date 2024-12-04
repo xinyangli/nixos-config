@@ -2,12 +2,11 @@
   config,
   pkgs,
   lib,
-  my-lib,
   ...
 }:
 let
   inherit (lib) getExe;
-  inherit (my-lib.settings) idpUrl forgejoDomain forgejoGitDomain;
+  inherit (config.my-lib.settings) idpUrl forgejoDomain forgejoGitDomain;
   settings = {
     service.DISABLE_REGISTRATION = true;
     server = {

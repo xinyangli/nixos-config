@@ -1,6 +1,6 @@
-{ config, my-lib, ... }:
+{ config, pkgs, ... }:
 let
-  inherit (my-lib.settings) hedgedocDomain idpUrl;
+  inherit (config.my-lib.settings) hedgedocDomain idpUrl;
 in
 {
   sops.secrets."hedgedoc/client_secret" = { };

@@ -84,11 +84,16 @@
       overlayModule =
         { ... }:
         {
-          _module.args.my-lib = import ./overlays/my-lib;
-          nixpkgs.overlays = [
-            editorOverlay
-            (import ./overlays/add-pkgs.nix)
-          ];
+          options.my-lib = nixpkgs.lib.mkOption {
+            type = nixpkgs.lib.types.freeformType;
+            default = import ./overlays/my-lib;
+          };
+          config = {
+            nixpkgs.overlays = [
+              editorOverlay
+              (import ./overlays/add-pkgs.nix)
+            ];
+          };
         };
       deploymentModule = {
         deployment.targetUser = "xin";
@@ -109,7 +114,7 @@
           nur.nixosModules.nur
           catppuccin.nixosModules.catppuccin
           machines/calcite/configuration.nix
-          (mkHome "xin" "calcite")
+          # (mkHome "xin" "calcite")
         ];
         hk-00 = [
           ./machines/dolomite/claw.nix
@@ -142,17 +147,15 @@
         user: host:
         { ... }:
         {
-          imports = [
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                sharedModules = sharedHmModules;
-                useGlobalPkgs = true;
-                useUserPackages = true;
-              };
-              home-manager.users.${user} = (import ./home).${user}.${host};
-            }
-          ];
+          imports = [ home-manager.nixosModules.home-manager ];
+          config = {
+            home-manager = {
+              sharedModules = sharedHmModules;
+              useGlobalPkgs = true;
+              useUserPackages = true;
+            };
+            home-manager.users.${user} = (import ./home).${user}.${host};
+          };
         };
       mkNixos =
         {

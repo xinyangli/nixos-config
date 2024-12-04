@@ -1,12 +1,12 @@
 {
   config,
   lib,
-  my-lib,
+  pkgs,
   ...
 }:
-with my-lib;
+with config.my-lib;
 let
-  inherit (my-lib.settings)
+  inherit (config.my-lib.settings)
     minifluxUrl
     gotosocialUrl
     hedgedocDomain
