@@ -73,16 +73,16 @@ with my-lib;
         {
           inherit passwordFile;
           name = "gotosocial";
-          address = "xinyang.life";
+          address = "gts.xiny.li";
         }
         {
           inherit passwordFile;
           name = "miniflux";
-          address = "rss.xinyang.life";
+          address = "rss.xiny.li";
         }
         {
           name = "ntfy";
-          address = "ntfy.xinyang.life";
+          address = "ntfy.xiny.li";
         }
         {
           name = "grafana-eu";

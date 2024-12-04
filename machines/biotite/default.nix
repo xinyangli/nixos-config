@@ -10,6 +10,10 @@
     ./services/gotosocial.nix
     ./services/synapse.nix
     ./services/restic.nix
+    ./services/miniflux.nix
+    ./services/hedgedoc.nix
+    ./services/forgejo.nix
+    ./services/vaultwarden.nix
   ];
 
   networking.hostName = "biotite";

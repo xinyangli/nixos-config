@@ -21,12 +21,6 @@
       gts_env = {
         owner = "gotosocial";
       };
-      hedgedoc_env = {
-        owner = "hedgedoc";
-      };
-      grafana_oauth_secret = {
-        owner = "grafana";
-      };
       "miniflux/oauth2_secret" = {
         owner = "root";
       };

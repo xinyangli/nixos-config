@@ -1,4 +1,12 @@
-{ config, lib, ... }:
+{ my-lib, ... }:
+let
+  inherit (my-lib.settings)
+    gotosocialUrl
+    minifluxUrl
+    hedgedocDomain
+    forgejoDomain
+    ;
+in
 {
   services.kanidm.provision = {
     enable = true;
@@ -76,8 +84,8 @@
     systems.oauth2 = {
       forgejo = {
         displayName = "ForgeJo";
-        originUrl = "https://git.xinyang.life/user/oauth2/kanidm/callback";
-        originLanding = "https://git.xinyang.life/user/oauth2/kanidm";
+        originUrl = "https://${forgejoDomain}/user/oauth2/kanidm/callback";
+        originLanding = "https://${forgejoDomain}/user/oauth2/kanidm";
         allowInsecureClientDisablePkce = true;
         scopeMaps = {
           forgejo-access = [
@@ -113,8 +121,8 @@
       };
       gotosocial = {
         displayName = "GoToSocial";
-        originUrl = "https://gts.xiny.li/auth/callback";
-        originLanding = "https://gts.xiny.li/auth/callback";
+        originUrl = "${gotosocialUrl}/auth/callback";
+        originLanding = "${gotosocialUrl}/auth/callback";
         allowInsecureClientDisablePkce = true;
         scopeMaps = {
           gts-users = [
@@ -150,8 +158,8 @@
 
       hedgedoc = {
         displayName = "HedgeDoc";
-        originUrl = "https://docs.xinyang.life/auth/oauth2/callback";
-        originLanding = "https://docs.xinyang.life/auth/oauth2";
+        originUrl = "https://${hedgedocDomain}/auth/oauth2/callback";
+        originLanding = "https://${hedgedocDomain}/auth/oauth2";
         allowInsecureClientDisablePkce = true;
         scopeMaps = {
           hedgedoc-users = [
@@ -180,9 +188,8 @@
       };
       miniflux = {
         displayName = "Miniflux";
-        originUrl = "https://rss.xinyang.life/oauth2/oidc/callback";
-
-        originLanding = "https://rss.xinyang.life/oauth2/oidc/redirect";
+        originUrl = "${minifluxUrl}/oauth2/oidc/callback";
+        originLanding = "${minifluxUrl}/oauth2/oidc/redirect";
         scopeMaps = {
           miniflux-users = [
             "openid"

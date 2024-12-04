@@ -59,8 +59,6 @@ in
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
         PermitRootLogin = lib.mkForce "no";
-        GSSAPIAuthentication = "no";
-        KerberosAuthentication = "no";
       };
     };
 
