@@ -85,7 +85,7 @@
         { ... }:
         {
           options.my-lib = nixpkgs.lib.mkOption {
-            type = nixpkgs.lib.types.freeformType;
+            type = nixpkgs.lib.types.attrs;
             default = import ./overlays/my-lib;
           };
           config = {

@@ -38,7 +38,7 @@ let
       OPENID_CONNECT_SCOPES = "openid profile email groups";
     };
     metrics = {
-      ENABLED = true;
+      # ENABLED = true;
     };
     other = {
       SHOW_FOOTER_VERSION = false;

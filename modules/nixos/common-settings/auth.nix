@@ -9,8 +9,6 @@ let
   inherit (lib)
     mkIf
     mkEnableOption
-    mkOption
-    types
     ;
 
   cfg = config.commonSettings.auth;
@@ -21,25 +19,43 @@ in
   };
 
   config = mkIf cfg.enable {
-    custom.kanidm-client = {
-      enable = true;
-      uri = "https://auth.xinyang.life";
-      asSSHAuth = {
-        enable = true;
-        allowedGroups = [ "linux_users" ];
+    services.kanidm = {
+      enableClient = true;
+      clientSettings = {
+        uri = "https://auth.xinyang.life";
       };
-      sudoers = [ "xin@auth.xinyang.life" ];
+      enablePam = true;
+      unixSettings = {
+        pam_allowed_login_groups = [ "linux_users" ];
+        default_shell = "/bin/sh";
+      };
     };
 
     services.openssh = {
+      enable = true;
+      authorizedKeysCommand = "/etc/ssh/auth %u";
+      authorizedKeysCommandUser = "kanidm-ssh-runner";
       settings = {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
-        PermitRootLogin = "no";
-        GSSAPIAuthentication = "no";
-        KerberosAuthentication = "no";
+        PermitRootLogin = lib.mkForce "no";
       };
     };
+
+    environment.etc."ssh/auth" = {
+      mode = "0555";
+      text = ''
+        #!${pkgs.stdenv.shell}
+        ${pkgs.kanidm}/bin/kanidm_ssh_authorizedkeys $1
+      '';
+    };
+    users.groups.wheel.members = [ "xin@auth.xinyang.life" ];
+    users.groups.kanidm-ssh-runner = { };
+    users.users.kanidm-ssh-runner = {
+      isSystemUser = true;
+      group = "kanidm-ssh-runner";
+    };
+
     services.fail2ban.enable = true;
 
     security.sudo = {

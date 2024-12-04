@@ -52,10 +52,6 @@
           owner = "caddy";
           mode = "400";
         };
-        "immich/oauth_client_secret" = {
-          owner = "immich";
-          mode = "400";
-        };
         "restic/localpass" = {
           owner = "restic";
         };
@@ -70,6 +66,10 @@
       node = {
         enable = true;
       };
+    };
+
+    custom.monitoring = {
+      loki.enable = true;
     };
 
     systemd.mounts = [
@@ -107,43 +107,6 @@
       22
       2222
     ];
-
-    services.immich = {
-      enable = true;
-      mediaLocation = "/mnt/XinPhotos/immich";
-      host = "127.0.0.1";
-      port = 3001;
-      openFirewall = true;
-      machine-learning.enable = true;
-      environment = {
-        IMMICH_MACHINE_LEARNING_ENABLED = "true";
-      };
-      database.enable = true;
-    };
-
-    custom.immich.jsonSettings = {
-      oauth = {
-        enabled = true;
-        issuerUrl = "https://auth.xinyang.life/oauth2/openid/immich/";
-        clientId = "immich";
-        clientSecret = {
-          _secret = config.sops.secrets."immich/oauth_client_secret".path;
-        };
-        scope = "openid email profile";
-        signingAlgorithm = "ES256";
-        storageLabelClaim = "email";
-        buttonText = "Login with Kanidm";
-        autoLaunch = true;
-        mobileOverrideEnabled = true;
-        mobileRedirectUri = "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/";
-      };
-      passwordLogin = {
-        enabled = false;
-      };
-      newVersionCheck = {
-        enabled = false;
-      };
-    };
 
     services.dae = {
       enable = true;

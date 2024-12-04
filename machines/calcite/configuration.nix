@@ -334,16 +334,16 @@ in
     ];
   };
 
-  custom.forgejo-actions-runner = {
-    enable = false;
-    tokenFile = config.sops.secrets."gitea/envfile".path;
-    settings = {
-      runner.capacity = 2;
-      runner.fetch_timeout = "120s";
-      runner.fetch_interval = "30s";
-    };
-  };
-
+  # custom.forgejo-actions-runner = {
+  #   enable = false;
+  #   tokenFile = config.sops.secrets."gitea/envfile".path;
+  #   settings = {
+  #     runner.capacity = 2;
+  #     runner.fetch_timeout = "120s";
+  #     runner.fetch_interval = "30s";
+  #   };
+  # };
+  #
   custom.prometheus = {
     exporters.node.enable = true;
   };
