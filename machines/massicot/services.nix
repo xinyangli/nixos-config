@@ -46,18 +46,6 @@ in
     };
   };
 
-  services.ntfy-sh = {
-    enable = true;
-    group = "caddy";
-    settings = {
-      listen-unix = "/var/run/ntfy-sh/ntfy.sock";
-      listen-unix-mode = 432; # octal 0660
-      base-url = "https://ntfy.xinyang.life";
-    };
-  };
-
-  systemd.services.ntfy-sh.serviceConfig.RuntimeDirectory = "ntfy-sh";
-
   services.kanidm = {
     package = pkgs.kanidm.withSecretProvisioning;
     enableServer = true;
@@ -98,15 +86,6 @@ in
 
   services.caddy = {
     enable = true;
-    virtualHosts."xinyang.life:443".extraConfig = ''
-      tls internal
-      encode zstd gzip
-      reverse_proxy /.well-known/matrix/* localhost:6167
-      reverse_proxy * http://localhost:8080 {
-          flush_interval -1
-      }
-    '';
-
     virtualHosts."http://auth.xinyang.life:80".extraConfig = ''
       reverse_proxy ${config.security.acme.certs."auth.xinyang.life".listenHTTP}
     '';
@@ -118,16 +97,6 @@ in
               tls_server_name ${config.services.kanidm.serverSettings.domain}
           }
       }
-    '';
-
-    virtualHosts."https://ntfy.xinyang.life".extraConfig = ''
-      reverse_proxy unix/${config.services.ntfy-sh.settings.listen-unix}
-      @httpget {
-        protocol http
-        method GET
-        path_regexp ^/([-_a-z0-9]{0,64}$|docs/|static/)
-      }
-      redir @httpget https://{host}{uri}
     '';
   };
 }
