@@ -10,7 +10,8 @@ let
     minifluxUrl
     gotosocialUrl
     hedgedocDomain
-    forgejoDomain
+    grafanaUrl
+    ntfyUrl
     ;
   removeHttps = s: lib.removePrefix "https://" s;
 in
@@ -44,7 +45,7 @@ in
       promtail.enable = true;
     };
 
-    services.caddy.virtualHosts."https://grafana.xinyang.life".extraConfig =
+    services.caddy.virtualHosts.${grafanaUrl}.extraConfig =
       with config.services.grafana.settings.server; ''
         reverse_proxy http://${http_addr}:${toString http_port}
       '';
@@ -99,16 +100,12 @@ in
           address = hedgedocDomain;
         }
         {
-          name = "forgejo";
-          address = forgejoDomain;
-        }
-        {
           name = "ntfy";
-          address = "ntfy.xinyang.life";
+          address = removeHttps ntfyUrl;
         }
         {
           name = "grafana-eu";
-          address = "grafana.xinyang.life";
+          address = removeHttps grafanaUrl;
         }
         {
           name = "loki";

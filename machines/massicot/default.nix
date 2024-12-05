@@ -15,17 +15,8 @@
     defaultSopsFile = ./secrets.yaml;
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     secrets = {
-      storage_box_mount = {
-        owner = "root";
-      };
       gts_env = {
         owner = "gotosocial";
-      };
-      "miniflux/oauth2_secret" = {
-        owner = "root";
-      };
-      "forgejo/env" = {
-        owner = "forgejo";
       };
     };
   };

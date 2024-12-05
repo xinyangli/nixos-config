@@ -1,5 +1,6 @@
 { config, lib, ... }:
 let
+  inherit (config.my-lib.settings) grafanaUrl idpUrl;
   cfg = config.custom.monitoring.grafana;
 in
 {
@@ -13,17 +14,17 @@ in
         server = {
           http_addr = "127.0.0.1";
           http_port = 3003;
-          root_url = "https://grafana.xinyang.life";
-          domain = "grafana.xinyang.life";
+          root_url = grafanaUrl;
+          domain = lib.removePrefix "https://" grafanaUrl;
         };
         "auth.generic_oauth" = {
           enabled = true;
           name = "Kanidm";
           client_id = "grafana";
           scopes = "openid,profile,email,groups";
-          auth_url = "https://auth.xinyang.life/ui/oauth2";
-          token_url = "https://auth.xinyang.life/oauth2/token";
-          api_url = "https://auth.xinyang.life/oauth2/openid/grafana/userinfo";
+          auth_url = "${idpUrl}/ui/oauth2";
+          token_url = "${idpUrl}/oauth2/token";
+          api_url = "${idpUrl}/oauth2/openid/grafana/userinfo";
           use_pkce = true;
           use_refresh_token = true;
           allow_sign_up = true;

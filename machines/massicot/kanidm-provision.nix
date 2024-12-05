@@ -1,10 +1,12 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 let
   inherit (config.my-lib.settings)
     gotosocialUrl
     minifluxUrl
     hedgedocDomain
     forgejoDomain
+    grafanaUrl
+    synapseDelegateUrl
     ;
 in
 {
@@ -200,8 +202,8 @@ in
       };
       grafana = {
         displayName = "Grafana";
-        originUrl = "https://grafana.xinyang.life/login/generic_oauth";
-        originLanding = "https://grafana.xinyang.life/";
+        originUrl = "${grafanaUrl}/login/generic_oauth";
+        originLanding = "${grafanaUrl}/";
         scopeMaps = {
           grafana-users = [
             "openid"
@@ -223,8 +225,8 @@ in
       };
       synapse = {
         displayName = "Synapse";
-        originUrl = "https://synapse.xiny.li/_synapse/client/oidc/callback";
-        originLanding = "https://synapse.xiny.li/";
+        originUrl = "${synapseDelegateUrl}/_synapse/client/oidc/callback";
+        originLanding = "${synapseDelegateUrl}/";
         scopeMaps = {
           synapse-users = [
             "openid"

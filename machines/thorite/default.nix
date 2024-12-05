@@ -3,6 +3,7 @@
     ./hardware-configurations.nix
     ./monitoring.nix
     ./restic.nix
+    ./ntfy.nix
   ];
 
   config = {

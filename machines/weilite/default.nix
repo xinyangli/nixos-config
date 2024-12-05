@@ -69,7 +69,7 @@
     };
 
     custom.monitoring = {
-      loki.enable = true;
+      promtail.enable = true;
     };
 
     systemd.mounts = [

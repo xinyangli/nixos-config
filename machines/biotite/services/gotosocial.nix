@@ -1,4 +1,7 @@
 { config, ... }:
+let
+  inherit (config.my-lib.settings) idpUrl;
+in
 {
   sops.secrets."gotosocial/oidc_client_secret" = {
     owner = "gotosocial";
@@ -23,7 +26,7 @@
       instance-expose-public-timeline = true;
       oidc-enabled = true;
       oidc-idp-name = "Kanidm";
-      oidc-issuer = "https://auth.xinyang.life/oauth2/openid/gotosocial";
+      oidc-issuer = "${idpUrl}/oauth2/openid/gotosocial";
       oidc-client-id = "gotosocial";
       oidc-link-existing = true;
     };

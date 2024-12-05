@@ -35,7 +35,6 @@
 
   commonSettings = {
     auth.enable = true;
-    autoupgrade.enable = true;
   };
 
   custom.monitoring = {

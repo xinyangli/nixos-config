@@ -1,5 +1,11 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
+  inherit (config.my-lib.settings) idpUrl synapseDelegateUrl synapseUrl;
   port-synapse = 6823;
 in
 {
@@ -27,7 +33,7 @@ in
     enable = true;
     settings = {
       server_name = "xiny.li";
-      public_baseurl = "https://synapse.xiny.li";
+      public_baseurl = synapseDelegateUrl;
       database = {
         name = "psycopg2";
         args = {
@@ -71,11 +77,11 @@ in
       oidc_providers = [
         {
           idp_id = "Kanidm";
-          idp_name = "auth.xinyang.life";
-          issuer = "https://auth.xinyang.life/oauth2/openid/synapse";
-          authorization_endpoint = "https://auth.xinyang.life/ui/oauth2";
-          token_endpoint = "https://auth.xinyang.life/oauth2/token";
-          userinfo_endpoint = "https://auth.xinyang.life/oauth2/openid/synapse/userinfo";
+          idp_name = lib.removePrefix "https://" idpUrl;
+          issuer = "${idpUrl}/oauth2/openid/synapse";
+          authorization_endpoint = "${idpUrl}/ui/oauth2";
+          token_endpoint = "${idpUrl}/oauth2/token";
+          userinfo_endpoint = "${idpUrl}/oauth2/openid/synapse/userinfo";
           client_id = "synapse";
           client_secret_path = config.sops.secrets."synapse/oidc_client_secret".path;
           scopes = [
@@ -95,13 +101,13 @@ in
   };
 
   services.caddy = {
-    virtualHosts."https://xiny.li".extraConfig = ''
+    virtualHosts.${synapseUrl}.extraConfig = ''
       header /.well-known/matrix/* Content-Type application/json
       header /.well-known/matrix/* Access-Control-Allow-Origin *
       respond /.well-known/matrix/server `{"m.server":"synapse.xiny.li:443"}`
-      respond /.well-known/matrix/client `{"m.homeserver":{"base_url":"https://synapse.xiny.li/"}}`
+      respond /.well-known/matrix/client `{"m.homeserver":{"base_url":"${synapseDelegateUrl}"}}`
     '';
-    virtualHosts."https://synapse.xiny.li".extraConfig = ''
+    virtualHosts.${synapseDelegateUrl}.extraConfig = ''
       reverse_proxy /_matrix/* 127.0.0.1:${toString port-synapse}
       reverse_proxy /_synapse/client/* 127.0.0.1:${toString port-synapse}
     '';

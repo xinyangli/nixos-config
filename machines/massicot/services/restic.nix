@@ -34,13 +34,6 @@ in
     ];
   };
 
-  services.postgresqlBackup = {
-    enable = true;
-    compression = "zstd";
-    compressionLevel = 9;
-    location = "/backup/postgresql";
-  };
-
   services.restic.backups.${config.networking.hostName} = {
     extraBackupArgs = [
       "--limit-upload=1024"

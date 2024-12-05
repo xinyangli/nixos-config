@@ -11,6 +11,7 @@ let
     mkMerge
     types
     ;
+  inherit (config.my-lib.settings) ntfyUrl;
   cfg = config.custom.prometheus;
 
   mkRulesOption = mkOption {
@@ -121,12 +122,11 @@ in
                 name = "ntfy";
                 webhook_configs = [
                   {
-                    url = "https://ntfy.xinyang.life/prometheus-alerts?tpl=yes&m=${lib.escapeURL ''
-                      Alert {{.status}}
-                      {{range .alerts}}-----{{range $k,$v := .labels}}
+                    url = "${ntfyUrl}/prometheus-alerts?tpl=yes&m=${lib.escapeURL ''
+                      {{range .alerts}}[{{ if eq .status "resolved" }}✅ RESOLVED{{ else }}{{ if eq .status "firing" }}🔥 FIRING{{end}}{{end}}]{{range $k,$v := .labels}}
                       {{$k}}={{$v}}{{end}}
-                      {{end}}
-                    ''}";
+
+                      {{end}}''}";
                     send_resolved = true;
                   }
                 ];
