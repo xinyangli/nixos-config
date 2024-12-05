@@ -116,6 +116,8 @@ in
       ])
       ++ (mkCaddyScrapes [
         { address = "thorite.coho-tet.ts.net"; }
+        { address = "biotite.coho-tet.ts.net"; }
+        { address = "weilite.coho-tet.ts.net"; }
       ])
       ++ (mkNodeScrapes [
         { address = "thorite.coho-tet.ts.net"; }

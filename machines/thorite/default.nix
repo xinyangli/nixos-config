@@ -1,3 +1,4 @@
+{ config, ... }:
 {
   imports = [
     ./hardware-configurations.nix
@@ -29,6 +30,10 @@
       80
       443
     ];
+
+    services.tailscale.enable = true;
+
+    services.caddy.enable = true;
 
     commonSettings = {
       auth.enable = true;

@@ -5,7 +5,8 @@
   ...
 }:
 let
-  inherit (lib) mkIf;
+  inherit (lib) mkIf concatStringsSep;
+  inherit (config.my-lib.settings) prometheusCollectors;
   cfg = config.custom.prometheus.exporters;
 in
 {
@@ -95,8 +96,28 @@ in
         metrics
       }
 
-      admin ${config.networking.hostName}.coho-tet.ts.net:2019 {
+      admin unix//var/run/caddy/admin.sock {
+        origins 127.0.0.1 ${config.networking.hostName}.coho-tet.ts.net:2019
       }
     '';
+
+    systemd.services.caddy.serviceConfig = {
+      RuntimeDirectory = "caddy";
+      RuntimeDirectoryMode = "0700";
+    };
+
+    services.tailscale = {
+      permitCertUid = config.services.caddy.user;
+      openFirewall = true;
+    };
+
+    services.caddy = {
+      virtualHosts."https://${config.networking.hostName}.coho-tet.ts.net:2019".extraConfig = ''
+        handle /metrics {
+        	reverse_proxy unix//var/run/caddy/admin.sock
+        }
+        respond 403
+      '';
+    };
   };
 }

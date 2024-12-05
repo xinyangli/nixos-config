@@ -31,6 +31,7 @@ in
 
   services.matrix-synapse = {
     enable = true;
+    withJemalloc = true;
     settings = {
       server_name = "xiny.li";
       public_baseurl = synapseDelegateUrl;

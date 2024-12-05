@@ -241,17 +241,42 @@ in
               ];
             }
             # {
-            #   job_name = "caddy-access";
-            #   file_sd_configs = {
-            #     files = [
-            #       "/var/log/caddy/*.log"
-            #     ];
-            #     refresh_interval = "5m";
-            #   };
+            #   job_name = "caddy";
+            #   static_configs = [
+            #     {
+            #       targets = [ "localhost" ];
+            #       labels = {
+            #         job = "caddy";
+            #         __path__ = "/var/log/caddy/*log";
+            #         agent = "caddy-promtail";
+            #       };
+            #     }
+            #   ];
+            #   pipeline_stages = [
+            #     {
+            #       json = {
+            #         expressions = {
+            #           duration = "duration";
+            #           status = "status";
+            #         };
+            #       };
+            #     }
+            #     {
+            #       labels = {
+            #         duration = null;
+            #         status = null;
+            #       };
+            #     }
+            #   ];
             # }
           ];
         };
       };
+
+      services.caddy.logFormat = ''
+        format json
+        level INFO
+      '';
     })
   ];
 }

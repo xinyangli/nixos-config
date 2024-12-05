@@ -12,5 +12,9 @@
     grafanaUrl = "https://grafana.xiny.li";
     synapseUrl = "https://xiny.li";
     synapseDelegateUrl = "https://synapse.xiny.li";
+
+    prometheusCollectors = [
+      "thorite.coho-tet.ts.net"
+    ];
   };
 }

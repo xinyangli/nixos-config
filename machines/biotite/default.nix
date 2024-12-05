@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }:
 
@@ -41,13 +42,18 @@
     promtail.enable = true;
   };
 
+  custom.prometheus.exporters = {
+    enable = true;
+  };
+
+  services.tailscale.enable = true;
+
+  services.caddy.enable = true;
+
   sops = {
     defaultSopsFile = ./secrets.yaml;
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   };
-
-  services.caddy.enable = true;
-  services.tailscale.enable = true;
 
   services.postgresql = {
     enable = true;

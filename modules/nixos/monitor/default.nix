@@ -82,19 +82,9 @@ in
       ];
     }
     (mkIf cfg.enable {
-
-      services.tailscale = {
-        enable = true;
-        permitCertUid = config.services.caddy.user;
-        openFirewall = true;
-      };
-
-      services.caddy = {
-        enable = true;
-        virtualHosts."${config.networking.hostName}.coho-tet.ts.net".extraConfig = ''
-          reverse_proxy 127.0.0.1:${toString config.services.prometheus.port}
-        '';
-      };
+      services.caddy.virtualHosts."${config.networking.hostName}.coho-tet.ts.net".extraConfig = ''
+        reverse_proxy 127.0.0.1:${toString config.services.prometheus.port}
+      '';
       services.prometheus = mkIf cfg.enable {
         enable = true;
         port = 9091;

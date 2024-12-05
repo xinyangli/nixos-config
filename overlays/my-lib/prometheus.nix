@@ -28,17 +28,21 @@ in
     )
   );
 
-  mkCaddyScrapes = mkFunction (
+  mkCaddyScrapes = targets: [
     {
-      address,
-      port ? 2019,
-      ...
-    }:
-    {
-      job_name = "caddy_${address}";
-      static_configs = [ { targets = [ "${address}${mkPort port}" ]; } ];
+      job_name = "caddy";
+      scheme = "https";
+      static_configs = map (
+        {
+          address,
+          port ? 2019,
+        }:
+        {
+          targets = [ "${address}${mkPort port}" ];
+        }
+      ) targets;
     }
-  );
+  ];
 
   mkCaddyRules = mkFunction (
     {
@@ -63,17 +67,20 @@ in
     }
   );
 
-  mkNodeScrapes = mkFunction (
+  mkNodeScrapes = targets: [
     {
-      address,
-      port ? 9100,
-      ...
-    }:
-    {
-      job_name = "node_${address}";
-      static_configs = [ { targets = [ "${address}${mkPort port}" ]; } ];
+      job_name = "node_exporter";
+      static_configs = map (
+        {
+          address,
+          port ? 9100,
+        }:
+        {
+          targets = [ "${address}${mkPort port}" ];
+        }
+      ) targets;
     }
-  );
+  ];
 
   mkNodeRules = mkFunction (
     {
