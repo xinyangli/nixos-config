@@ -67,9 +67,17 @@ in
       let
         probeList = [
           "la-00.video.namely.icu:8080"
-          "fre-00.video.namely.icu:8080"
+          "fra-00.video.namely.icu:8080"
           "hk-00.video.namely.icu:8080"
           "home.xinyang.life:8000"
+        ];
+        chinaTargets = [
+          "bj-cu-v4.ip.zstaticcdn.com:80"
+          "bj-cm-v4.ip.zstaticcdn.com:80"
+          "bj-ct-v4.ip.zstaticcdn.com:80"
+          "sh-cu-v4.ip.zstaticcdn.com:80"
+          "sh-cm-v4.ip.zstaticcdn.com:80"
+          "sh-ct-v4.ip.zstaticcdn.com:80"
         ];
         passwordFile = config.sops.secrets."prometheus/metrics_password".path;
       in
@@ -123,6 +131,7 @@ in
         { address = "thorite.coho-tet.ts.net"; }
         { address = "massicot.coho-tet.ts.net"; }
         { address = "weilite.coho-tet.ts.net"; }
+        { address = "biotite.coho-tet.ts.net"; }
         { address = "hk-00.coho-tet.ts.net"; }
         { address = "la-00.coho-tet.ts.net"; }
         { address = "fra-00.coho-tet.ts.net"; }
@@ -140,9 +149,21 @@ in
           hostAddress = "weilite.coho-tet.ts.net";
           targetAddresses = [
             "la-00.video.namely.icu:8080"
-            "fre-00.video.namely.icu:8080"
+            "fra-00.video.namely.icu:8080"
             "hk-00.video.namely.icu:8080"
           ];
+        }
+        {
+          hostAddress = "la-00.coho-tet.ts.net";
+          targetAddresses = chinaTargets;
+        }
+        {
+          hostAddress = "hk-00.coho-tet.ts.net";
+          targetAddresses = chinaTargets;
+        }
+        {
+          hostAddress = "fra-00.coho-tet.ts.net";
+          targetAddresses = chinaTargets;
         }
       ]);
 

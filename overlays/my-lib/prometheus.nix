@@ -238,6 +238,17 @@ in
       inherit name;
       rules = [
         {
+          alert = "ProbeError";
+          expr = "probe_success != 1";
+          for = "3m";
+          labels = {
+            severity = "critical";
+          };
+          annotations = {
+            summary = "Probing {{ $labels.instance }} from {{ $labels.from }} failed";
+          };
+        }
+        {
           alert = "HighProbeLatency";
           expr = "probe_duration_seconds > 0.5";
           for = "3m";

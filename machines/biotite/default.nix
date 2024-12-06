@@ -44,6 +44,7 @@
 
   custom.prometheus.exporters = {
     enable = true;
+    node.enable = true;
   };
 
   services.tailscale.enable = true;
