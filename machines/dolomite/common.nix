@@ -3,6 +3,7 @@
   config = {
     sops = {
       age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      defaultSopsFile = ./secrets/secrets.yaml;
       secrets = {
         wg_private_key = {
           owner = "root";
@@ -11,14 +12,6 @@
         wg_ipv6_local_addr = {
           owner = "root";
           sopsFile = ./secrets + "/${config.networking.hostName}.yaml";
-        };
-        "sing-box/password" = {
-          owner = "root";
-          sopsFile = ./secrets/secrets.yaml;
-        };
-        "sing-box/uuid" = {
-          owner = "root";
-          sopsFile = ./secrets/secrets.yaml;
         };
       };
     };
@@ -32,6 +25,7 @@
     custom.prometheus.exporters = {
       enable = true;
       node.enable = true;
+      blackbox.enable = true;
     };
 
     custom.monitoring = {
@@ -44,6 +38,11 @@
       auth.enable = true;
       proxyServer = {
         enable = true;
+        users = [
+          "wyj"
+          "yhb"
+          "xin"
+        ];
       };
     };
   };
