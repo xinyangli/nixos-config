@@ -111,7 +111,6 @@
       nodeNixosModules = {
         calcite = [
           nixos-hardware.nixosModules.asus-zephyrus-ga401
-          nur.nixosModules.nur
           catppuccin.nixosModules.catppuccin
           machines/calcite/configuration.nix
           (mkHome "xin" "calcite")

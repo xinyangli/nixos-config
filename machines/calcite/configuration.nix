@@ -301,7 +301,7 @@ in
     zotero
     # onlyoffice-bin
 
-    config.nur.repos.linyinfeng.wemeet
+    wemeet
 
     virt-manager
     wineWowPackages.waylandFull
