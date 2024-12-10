@@ -57,6 +57,13 @@ in
             default = "${config.networking.hostName}.coho-tet.ts.net";
           };
         };
+        v2ray = {
+          enable = mkEnableOption "blackbox exporter";
+          listenAddress = mkOption {
+            type = types.str;
+            default = "${config.networking.hostName}.coho-tet.ts.net";
+          };
+        };
       };
     };
   };

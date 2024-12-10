@@ -26,6 +26,7 @@
       enable = true;
       node.enable = true;
       blackbox.enable = true;
+      v2ray.enable = true;
     };
 
     custom.monitoring = {

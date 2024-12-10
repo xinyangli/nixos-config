@@ -47,6 +47,13 @@ in
       );
     };
 
+    services.prometheus.exporters.v2ray = mkIf cfg.v2ray.enable {
+      enable = true;
+      listenAddress = cfg.v2ray.listenAddress;
+      port = 9516;
+      v2rayEndpoint = config.services.sing-box.settings.experimental.v2ray_api.listen;
+    };
+
     # gotosocial
     sops.templates."gotosocial_metrics.env" = {
       content = ''

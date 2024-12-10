@@ -28,6 +28,36 @@ in
     )
   );
 
+  mkV2rayScrapes = targets: [
+    {
+      job_name = "v2ray-exporter";
+      scheme = "http";
+      static_configs = map (
+        {
+          address,
+          port ? 9516,
+        }:
+        {
+          targets = [ "${address}${mkPort port}" ];
+        }
+      ) targets;
+    }
+    {
+      job_name = "singbox_stat";
+      scheme = "http";
+      metrics_path = "/scrape";
+      static_configs = map (
+        {
+          address,
+          port ? 9516,
+        }:
+        {
+          targets = [ "${address}${mkPort port}" ];
+        }
+      ) targets;
+    }
+  ];
+
   mkCaddyScrapes = targets: [
     {
       job_name = "caddy";

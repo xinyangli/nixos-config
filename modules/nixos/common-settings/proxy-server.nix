@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   lib,
   ...
 }:
@@ -114,7 +115,24 @@ let
           }
         ]);
     };
+    experimental = {
+      v2ray_api = {
+        listen = "127.0.0.1:15175";
+        stats = {
+          users = map (u: u.name) users;
+          enabled = true;
+          inbounds = map (p: "sg" + toString p) (lib.range 0 4);
+        };
+      };
+    };
   };
+  sing-box = pkgs.sing-box.overrideAttrs (
+    finalAttrs: previousAttrs: {
+      tags = previousAttrs.tags ++ [
+        "with_v2ray_api"
+      ];
+    }
+  );
 in
 {
   options.commonSettings.proxyServer = {
@@ -166,6 +184,7 @@ in
 
       services.sing-box = {
         enable = true;
+        package = sing-box;
         settings = (
           mkSingConfig (
             map (n: {

@@ -165,6 +165,11 @@ in
           hostAddress = "fra-00.coho-tet.ts.net";
           targetAddresses = chinaTargets;
         }
+      ])
+      ++ (mkV2rayScrapes [
+        { address = "la-00.coho-tet.ts.net"; }
+        { address = "hk-00.coho-tet.ts.net"; }
+        { address = "fra-00.coho-tet.ts.net"; }
       ]);
 
   };
