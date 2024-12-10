@@ -25,8 +25,9 @@ in
       };
     };
   };
-  config = {
-    programs.git = mkIf cfg.enable {
+  config = mkIf cfg.enable {
+    home.packages = [ pkgs.git-absorb ];
+    programs.git = {
       enable = true;
       delta.enable = true;
       userName = "Xinyang Li";
@@ -41,6 +42,10 @@ in
       signing = mkIf cfg.signing.enable {
         signByDefault = true;
         key = cfg.signing.keyFile;
+      };
+      extraConfig.absorb = {
+        oneFixupPerCommit = true;
+        maxStack = 20;
       };
       extraConfig.user = mkIf cfg.signing.enable { signingkey = cfg.signing.keyFile; };
       extraConfig.gpg = mkIf cfg.signing.enable { format = "ssh"; };

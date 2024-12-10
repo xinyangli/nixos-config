@@ -5,13 +5,12 @@
   ...
 }:
 {
-  imports = [ ];
+  imports = [
+    ./modern-unix.nix
+  ];
 
   home.packages = with pkgs; [
     dig
-    du-dust # du + rust
-    zoxide # autojumper
-    ripgrep
     file
     man-pages
     unar
@@ -19,7 +18,6 @@
     wget
     tmux
     ffmpeg
-    tealdeer
     rclone
     wl-clipboard
 
