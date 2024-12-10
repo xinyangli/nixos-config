@@ -16,7 +16,7 @@ in
   ];
 
   commonSettings = {
-    auth.enable = true;
+    # auth.enable = true;
     nix = {
       signing.enable = true;
     };
@@ -304,7 +304,12 @@ in
     config.nur.repos.linyinfeng.wemeet
 
     virt-manager
+    wineWowPackages.waylandFull
+    winetricks
   ];
+
+  services.esphome.enable = true;
+  users.groups.dialout.members = [ "xin" ];
 
   system.stateVersion = "22.05";
 

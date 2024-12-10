@@ -114,7 +114,7 @@
           nur.nixosModules.nur
           catppuccin.nixosModules.catppuccin
           machines/calcite/configuration.nix
-          # (mkHome "xin" "calcite")
+          (mkHome "xin" "calcite")
         ];
         hk-00 = [
           ./machines/dolomite/claw.nix
