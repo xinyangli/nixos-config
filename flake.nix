@@ -55,6 +55,11 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    comin = {
+      url = "github:xinyangli/comin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -72,6 +77,7 @@
       colmena,
       nix-index-database,
       disko,
+      comin,
       ...
     }:
     let
@@ -114,6 +120,7 @@
           catppuccin.nixosModules.catppuccin
           machines/calcite/configuration.nix
           (mkHome "xin" "calcite")
+          comin.nixosModules.comin
         ];
         hk-00 = [
           ./machines/dolomite/claw.nix

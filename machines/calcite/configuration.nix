@@ -15,6 +15,18 @@ in
     ../sops.nix
   ];
 
+  services.comin = {
+    enable = true;
+    remotes = [
+      {
+        name = "origin";
+        url = "https://github.com/xinyangli/nixos-config.git";
+        branches.main.name = "deploy-comin-eval";
+      }
+    ];
+    hostname = config.networking.hostName;
+  };
+
   commonSettings = {
     # auth.enable = true;
     nix = {
@@ -176,7 +188,7 @@ in
         ];
         settings = {
           main = {
-            capslock = "overload(control, esc)";
+            leftcontrol = "overload(control, esc)";
           };
         };
       };
