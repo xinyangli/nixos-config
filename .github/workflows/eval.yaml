@@ -1,0 +1,51 @@
+name: Eval NixOS Configurations
+
+on:
+  push:
+    branches:
+      - deploy
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: deploy
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v25
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: Process Configurations
+        run: |
+          git checkout -b deploy-comin-eval
+          mkdir -p eval
+          hosts=$(nix flake show --json | jq -r '.nixosConfigurations | keys[]')
+          echo "Found hosts: $hosts"
+
+          for host in $hosts; do
+            echo "Eval derivation for $host"
+            if ! nix show-derivation -L ".#nixosConfigurations.$host.config.system.build.toplevel" > "eval/$host.json"; then
+              echo "❌ Failed to evaluate $host"
+            else
+              echo "✅ Successfully evaluated $host"
+            fi
+          done
+
+          echo "Total hosts: $(echo "$hosts" | wc -w)"
+          echo "Failed hosts: $failed_hosts" 
+          
+          git add eval/
+          git commit -m "Update deployment configurations for all hosts"
+          
+          git push origin deploy-comin-eval
