@@ -43,7 +43,7 @@
     };
 
     my-nixvim = {
-      url = "git+https://git.xinyang.life/xin/nixvim";
+      url = "git+https://git.xiny.li/xin/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -286,15 +286,21 @@
           {
             imports = nodeNixosModules.biotite ++ sharedColmenaModules;
           };
+
+        osmium =
+          { ... }:
+          {
+            deployment = {
+              targetHost = "osmium.coho-tet.ts.net";
+              buildOnTarget = false;
+            };
+            imports = nodeNixosModules.osmium ++ sharedColmenaModules;
+          };
       };
 
       nixosConfigurations = {
         calcite = mkNixos {
           hostname = "calcite";
-        };
-
-        osmium = mkNixos {
-          hostname = "osmium";
         };
       } // self.colmenaHive.nodes;
 
@@ -305,7 +311,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         mkHomeConfiguration = user: host: {
-          name = user;
+          name = "${user}-${host}";
           value = home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
             modules = [

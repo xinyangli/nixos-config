@@ -382,11 +382,11 @@
         "rev": "a3709a89797ea094f82d38edeb4a538c07c8c3fa",
         "revCount": 20,
         "type": "git",
-        "url": "https://git.xinyang.life/xin/nixvim"
+        "url": "https://git.xiny.li/xin/nixvim"
       },
       "original": {
         "type": "git",
-        "url": "https://git.xinyang.life/xin/nixvim"
+        "url": "https://git.xiny.li/xin/nixvim"
       }
     },
     "nix-darwin": {
