@@ -108,9 +108,11 @@ in
 
   xdg.systemDirs.data = [
     "/usr/share"
-    "/var/lib/flatpak/exports/share"
-    "${homeDirectory}/.local/share/flatpak/exports/share"
   ];
+
+  xdg.configFile."distrobox/distrobox.conf".text = ''
+    container_additional_volumes="/nix/store:/nix/store:ro /etc/profiles/per-user:/etc/profiles/per-user:ro"
+  '';
 
   programs.man.generateCaches = false;
 
