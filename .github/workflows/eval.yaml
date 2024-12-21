@@ -36,7 +36,7 @@ jobs:
           failed_hosts=""
           for host in $hosts; do
             echo "Eval derivation for $host"
-            if ! nix show-derivation -L ".#nixosConfigurations.$host.config.system.build.toplevel" > "eval/$host.json"; then
+            if ! nix derivation show ".#nixosConfigurations.$host.config.system.build.toplevel" > "eval/$host.json"; then
               echo "❌ Failed to evaluate $host"
               failed_hosts+="$host "
               rm "eval/$host.json"
