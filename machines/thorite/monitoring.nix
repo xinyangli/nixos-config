@@ -59,7 +59,22 @@ in
         node.enable = true;
       };
       ruleModules =
-        (mkCaddyRules [ { host = "thorite"; } ])
+        [
+          {
+            name = "comin_rules";
+            rules = [
+              {
+                alert = "CominBuildFailed";
+                expr = "comin_build_info != 1";
+                for = "1m";
+                labels = {
+                  severity = "critical";
+                };
+              }
+            ];
+          }
+        ]
+        ++ (mkCaddyRules [ { host = "thorite"; } ])
         ++ (mkNodeRules [ { host = "thorite"; } ])
         ++ (mkBlackboxRules [ { host = "thorite"; } ]);
     };
