@@ -53,3 +53,7 @@ jobs:
           git commit -m "Update deployment configurations for all hosts"
           
           git push origin deploy-comin-eval
+
+          # After success, reset deploy-comin to new deploy
+          git checkout -b deploy-comin 
+          git reset --hard deploy
