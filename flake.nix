@@ -334,7 +334,6 @@
             packages = with pkgs; [
               nix
               git
-              colmena.packages.${system}.colmena
               sops
               nix-output-monitor
               nil
