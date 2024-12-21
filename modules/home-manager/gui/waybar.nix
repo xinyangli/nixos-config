@@ -44,8 +44,6 @@ in
           modules-right = [
             "network#speed"
             "custom/separator"
-            "network#if"
-            "custom/separator"
             "pulseaudio"
             "custom/separator"
             "memory"
@@ -119,22 +117,6 @@ in
           };
           memory = {
             format = "  {percentage}%";
-          };
-
-          "network#if" = {
-            format = "{ifname}";
-            format-disconnected = "󰌙";
-            format-ethernet = "󰌘";
-            format-linked = "{ifname} (No IP)  󰈁";
-            format-wifi = "{icon}";
-            format-icons = [
-              "󰤯"
-              "󰤟"
-              "󰤢"
-              "󰤥"
-              "󰤨"
-            ];
-            interval = 10;
           };
 
           "network#speed" = {

@@ -13,6 +13,10 @@
         name = "Catppuccin-GTK-Dark";
         package = pkgs.magnetic-catppuccin-gtk;
       };
+      iconTheme = {
+        name = "Qogir";
+        package = pkgs.qogir-icon-theme;
+      };
       gtk2.configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc";
     };
   };
