@@ -37,6 +37,7 @@
 
     commonSettings = {
       auth.enable = true;
+      comin.enable = true;
     };
 
     nixpkgs.system = "x86_64-linux";
