@@ -16,5 +16,7 @@
     prometheusCollectors = [
       "thorite.coho-tet.ts.net"
     ];
+
+    internalDomain = "coho-tet.ts.net";
   };
 }

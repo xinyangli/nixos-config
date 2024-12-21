@@ -12,6 +12,7 @@ let
     hedgedocDomain
     grafanaUrl
     ntfyUrl
+    internalDomain
     ;
   removeHttps = s: lib.removePrefix "https://" s;
 in
@@ -81,7 +82,24 @@ in
         ];
         passwordFile = config.sops.secrets."prometheus/metrics_password".path;
       in
-      (mkScrapes [
+      [
+        {
+          job_name = "comin";
+          scheme = "http";
+          static_configs = [
+            {
+              targets = map (host: "${host}.${internalDomain}:4243") [
+                "weilite"
+                "thorite"
+                "la-00"
+                "hk-00"
+                "fra-00"
+              ];
+            }
+          ];
+        }
+      ]
+      ++ (mkScrapes [
         {
           name = "immich";
           scheme = "http";
