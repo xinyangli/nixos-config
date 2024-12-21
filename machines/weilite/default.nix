@@ -19,6 +19,7 @@
       nix = {
         enable = true;
       };
+      comin.enable = true;
     };
 
     boot = {
@@ -38,7 +39,10 @@
 
     nixpkgs.config.allowUnfree = true;
 
-    environment.systemPackages = [ pkgs.virtiofsd ];
+    environment.systemPackages = [
+      pkgs.virtiofsd
+      pkgs.intel-gpu-tools
+    ];
 
     sops = {
       defaultSopsFile = ./secrets.yaml;
@@ -94,14 +98,31 @@
         options = "rw,nodev,nosuid";
         wantedBy = [ "restic-rest-server.service" ];
       }
+      # {
+      #   what = "ocis";
+      #   where = "/var/lib/ocis";
+      #   type = "virtiofs";
+      #   options = "rw,nodev,nosuid";
+      #   wantedBy = [ "ocis.service" ];
+      # }
       {
-        what = "ocis";
-        where = "/var/lib/ocis";
+        what = "media";
+        where = "/var/lib/jellyfin/media";
         type = "virtiofs";
         options = "rw,nodev,nosuid";
-        wantedBy = [ "ocis.service" ];
       }
     ];
+
+    hardware.graphics = {
+      enable = true;
+      extraPackages = with pkgs; [
+        intel-media-driver
+        intel-vaapi-driver
+        vaapiVdpau
+        intel-compute-runtime # OpenCL filter support (hardware tonemapping and subtitle burn-in)
+        intel-media-sdk # QSV up to 11th gen
+      ];
+    };
 
     services.openssh.ports = [
       22

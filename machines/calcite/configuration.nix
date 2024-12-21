@@ -15,23 +15,12 @@ in
     ../sops.nix
   ];
 
-  services.comin = {
-    enable = true;
-    remotes = [
-      {
-        name = "origin";
-        url = "https://github.com/xinyangli/nixos-config.git";
-        branches.main.name = "deploy-comin-eval";
-      }
-    ];
-    hostname = config.networking.hostName;
-  };
-
   commonSettings = {
     # auth.enable = true;
     nix = {
       signing.enable = true;
     };
+    comin.enable = true;
   };
 
   # Bootloader.

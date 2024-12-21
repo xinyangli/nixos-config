@@ -1,10 +1,8 @@
 name: Eval NixOS Configurations
 
 on:
-  push:
-    branches:
-      - deploy
-  workflow_dispatch:
+  check_suite:
+    types: [completed]
 
 permissions:
   contents: write

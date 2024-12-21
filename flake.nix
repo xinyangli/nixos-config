@@ -113,6 +113,7 @@
       sharedNixosModules = [
         self.nixosModules.default
         sops-nix.nixosModules.sops
+        comin.nixosModules.comin
       ];
       nodeNixosModules = {
         calcite = [
@@ -120,7 +121,6 @@
           catppuccin.nixosModules.catppuccin
           machines/calcite/configuration.nix
           (mkHome "xin" "calcite")
-          comin.nixosModules.comin
         ];
         hk-00 = [
           ./machines/dolomite/claw.nix
