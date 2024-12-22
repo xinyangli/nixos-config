@@ -11,7 +11,7 @@ let
 in
 {
   config = {
-    systemd.services.tailscaled.after =
+    systemd.services.tailscaled.before =
       (lib.optional cfg.node.enable "prometheus-node-exporters.service")
       ++ (lib.optional cfg.blackbox.enable "prometheus-blackbox-exporters.service")
       ++ (lib.optional config.services.caddy.enable "caddy.service");

@@ -34,7 +34,10 @@
         "usb_storage"
         "sd_mod"
       ];
-      kernelModules = [ "kvm-intel" ];
+      kernelModules = [
+        "kvm-intel"
+      ];
+      kernelPackages = pkgs.linuxPackages_6_12;
     };
 
     nixpkgs.config.allowUnfree = true;
@@ -42,6 +45,7 @@
     environment.systemPackages = [
       pkgs.virtiofsd
       pkgs.intel-gpu-tools
+      pkgs.pciutils
     ];
 
     sops = {
@@ -92,24 +96,37 @@
         wantedBy = [ "immich-server.service" ];
       }
       {
-        what = "restic";
-        where = "/var/lib/restic";
+        what = "nixos";
+        where = "/mnt/nixos";
         type = "virtiofs";
         options = "rw,nodev,nosuid";
-        wantedBy = [ "restic-rest-server.service" ];
-      }
-      {
-        what = "ocis";
-        where = "/var/lib/ocis";
-        type = "virtiofs";
-        options = "rw,nodev,nosuid";
-        wantedBy = [ "ocis.service" ];
       }
       {
         what = "media";
         where = "/var/lib/jellyfin/media";
         type = "virtiofs";
         options = "rw,nodev,nosuid";
+      }
+      {
+        what = "/mnt/nixos/ocis";
+        where = "/var/lib/ocis";
+        options = "bind";
+        after = [ "mnt-nixos.mount" ];
+        wantedBy = [ "ocis.service" ];
+      }
+      {
+        what = "/mnt/nixos/restic";
+        where = "/var/lib/restic";
+        options = "bind";
+        after = [ "mnt-nixos.mount" ];
+        wantedBy = [ "restic-rest-server.service" ];
+      }
+      {
+        what = "/mnt/nixos/immich";
+        where = "/var/lib/immich";
+        options = "bind";
+        after = [ "mnt-nixos.mount" ];
+        wantedBy = [ "immich-server.service" ];
       }
     ];
 

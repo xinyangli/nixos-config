@@ -46,7 +46,6 @@ in
 
     services.immich = {
       enable = true;
-      mediaLocation = "/mnt/XinPhotos/immich";
       host = "127.0.0.1";
       port = 3001;
       openFirewall = true;
