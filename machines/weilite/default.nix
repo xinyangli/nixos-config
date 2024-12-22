@@ -98,13 +98,13 @@
         options = "rw,nodev,nosuid";
         wantedBy = [ "restic-rest-server.service" ];
       }
-      # {
-      #   what = "ocis";
-      #   where = "/var/lib/ocis";
-      #   type = "virtiofs";
-      #   options = "rw,nodev,nosuid";
-      #   wantedBy = [ "ocis.service" ];
-      # }
+      {
+        what = "ocis";
+        where = "/var/lib/ocis";
+        type = "virtiofs";
+        options = "rw,nodev,nosuid";
+        wantedBy = [ "ocis.service" ];
+      }
       {
         what = "media";
         where = "/var/lib/jellyfin/media";
