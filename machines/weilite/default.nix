@@ -101,12 +101,7 @@
         type = "virtiofs";
         options = "rw,nodev,nosuid";
       }
-      {
-        what = "media";
-        where = "/var/lib/jellyfin/media";
-        type = "virtiofs";
-        options = "rw,nodev,nosuid";
-      }
+
       {
         what = "/mnt/nixos/ocis";
         where = "/var/lib/ocis";
@@ -127,6 +122,13 @@
         options = "bind";
         after = [ "mnt-nixos.mount" ];
         wantedBy = [ "immich-server.service" ];
+      }
+      {
+        what = "/mnt/nixos/media";
+        where = "/var/lib/jellyfin/media";
+        options = "bind";
+        after = [ "mnt-nixos.mount" ];
+        wantedBy = [ "jellyfin.service" ];
       }
     ];
 
