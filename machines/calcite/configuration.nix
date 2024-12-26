@@ -152,11 +152,14 @@ in
   services.keyd = {
     enable = true;
     keyboards = {
+      defualt = {
+        id = [ "*" ];
+        capslock = "overload(control, esc)";
+      };
       "internal" = {
         ids = [ "0b05:1866" ];
         settings = {
           main = {
-            capslock = "overload(control, esc)";
             leftcontrol = "capslock";
           };
         };
@@ -167,17 +170,6 @@ in
           main = {
             mouse2 = "leftmeta";
             # leftalt = "mouse1";
-          };
-        };
-      };
-      "keydous" = {
-        ids = [
-          "25a7:fa14"
-          "3151:4002"
-        ];
-        settings = {
-          main = {
-            leftcontrol = "overload(control, esc)";
           };
         };
       };
@@ -302,7 +294,8 @@ in
     zotero
     # onlyoffice-bin
 
-    wemeet
+    # wemeet
+    config.nur.repos.linyinfeng.wemeet
 
     virt-manager
     wineWowPackages.waylandFull
