@@ -12,6 +12,13 @@
     ./services
   ];
 
+  options = {
+    node = lib.mkOption {
+      type = lib.types.attrs;
+      default = { };
+    };
+  };
+
   config = {
     networking.hostName = "weilite";
     commonSettings = {
@@ -20,6 +27,9 @@
         enable = true;
       };
       comin.enable = true;
+    };
+    node = {
+      mediaDir = "/mnt/nixos/media";
     };
 
     boot = {
@@ -122,13 +132,6 @@
         options = "bind";
         after = [ "mnt-nixos.mount" ];
         wantedBy = [ "immich-server.service" ];
-      }
-      {
-        what = "/mnt/nixos/media";
-        where = "/var/lib/jellyfin/media";
-        options = "bind";
-        after = [ "mnt-nixos.mount" ];
-        wantedBy = [ "jellyfin.service" ];
       }
     ];
 

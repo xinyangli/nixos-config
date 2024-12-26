@@ -1,6 +1,15 @@
 { config, pkgs, ... }:
+let
+  cfg = config.services.jellyfin;
+in
 {
   services.jellyfin.enable = true;
+
+  systemd.services.jellyfin.serviceConfig = {
+    BindReadOnlyPaths = [
+      "/mnt/nixos/media:${cfg.dataDir}/media"
+    ];
+  };
 
   environment.systemPackages = with pkgs; [
     jellyfin
@@ -12,4 +21,5 @@
   '';
   networking.firewall.allowedTCPPorts = [ 8920 ]; # allow on lan
   users.users.jellyfin.extraGroups = [ "render" ];
+  users.groups.media.members = [ cfg.user ];
 }

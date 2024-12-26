@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   services.jackett = {
     enable = true;
@@ -27,4 +27,9 @@
   services.radarr = {
     enable = true;
   };
+
+  users.groups.media.members = [
+    config.services.sonarr.user
+    config.services.radarr.user
+  ];
 }
