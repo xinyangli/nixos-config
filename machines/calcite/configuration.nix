@@ -152,9 +152,13 @@ in
   services.keyd = {
     enable = true;
     keyboards = {
-      defualt = {
-        id = [ "*" ];
-        capslock = "overload(control, esc)";
+      default = {
+        ids = [ "*" ];
+        settings = {
+          main = {
+            capslock = "overload(control, esc)";
+          };
+        };
       };
       "internal" = {
         ids = [ "0b05:1866" ];
