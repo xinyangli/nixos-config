@@ -29,12 +29,15 @@ in
     '';
   };
 
+  # TODO: Waiting for https://github.com/NixOS/nixpkgs/issues/367976
+  nixpkgs.overlays = [
+    (final: prev: {
+      matrix-synapse-unwrapped = prev.matrix-synapse-unwrapped.overridePythonAttrs { doCheck = false; };
+    })
+  ];
+
   services.matrix-synapse = {
     enable = true;
-    # TODO: Waiting for https://github.com/NixOS/nixpkgs/issues/367976
-    package = pkgs.matrix-synapse.override {
-      matrix-synapse-unwrapped = pkgs.matrix-synapse-unwrapped.overridePythonAttrs { doCheck = false; };
-    };
     withJemalloc = true;
     settings = {
       server_name = "xiny.li";
