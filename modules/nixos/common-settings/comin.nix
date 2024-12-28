@@ -24,6 +24,7 @@ in
           name = "origin";
           url = "https://github.com/xinyangli/nixos-config.git";
           branches.main.name = "deploy-comin";
+          branches.testing.name = "deploy-comin";
         }
       ];
       hostname = config.networking.hostName;
