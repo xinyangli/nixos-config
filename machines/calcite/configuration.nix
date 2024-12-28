@@ -153,7 +153,7 @@ in
     enable = true;
     keyboards = {
       default = {
-        id = [ "*" ];
+        ids = [ "*" ];
         settings = {
           main = {
             capslock = "overload(control, esc)";
