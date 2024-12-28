@@ -295,7 +295,7 @@ in
     # onlyoffice-bin
 
     # wemeet
-    config.nur.repos.linyinfeng.wemeet
+    wemeet
 
     virt-manager
     wineWowPackages.waylandFull
