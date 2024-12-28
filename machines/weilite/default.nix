@@ -174,17 +174,11 @@
     services.caddy = {
       enable = true;
       package = pkgs.caddy.withPlugins {
-        caddyModules = [
-          {
-            repo = "github.com/caddy-dns/cloudflare";
-            version = "89f16b99c18ef49c8bb470a82f895bce01cbaece";
-          }
-          {
-            repo = "github.com/caddy-dns/dnspod";
-            version = "1fd4ce87e919f47db5fa029c31ae74b9737a58af";
-          }
+        plugins = [
+          "github.com/caddy-dns/cloudflare@v0.0.0-20240703190432-89f16b99c18e"
+          "github.com/caddy-dns/dnspod@v0.0.4"
         ];
-        vendorHash = "sha256-OhOeU2+JiJyIW9WdCYq98OKckXQZ9Fn5zULz0aLsXMI=";
+        hash = "sha256-StgQx4Aqumisk4MYN6f4S/QyAHa37yTmGTdrtEeMTHg=";
       };
       virtualHosts."derper00.namely.icu:8443".extraConfig = ''
         reverse_proxy 127.0.0.1:${toString config.services.tailscale.derper.port}
