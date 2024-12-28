@@ -621,6 +621,27 @@
         "type": "github"
       }
     },
+    "nixos-sbc": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1735186792,
+        "narHash": "sha256-XIIf8bU1khErw+dm66CdtHKQUGTMXuARWx08FtGNjqo=",
+        "owner": "nakato",
+        "repo": "nixos-sbc",
+        "rev": "0f6fe1d77b3fc2198aabf76453f0a5159c9835c5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nakato",
+        "ref": "main",
+        "repo": "nixos-sbc",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1731139594,
@@ -818,6 +839,7 @@
         "nix-index-database": "nix-index-database",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-hardware": "nixos-hardware",
+        "nixos-sbc": "nixos-sbc",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable_2",
         "nur": "nur",

@@ -62,6 +62,11 @@
       url = "github:xinyangli/comin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nixos-sbc = {
+      url = "github:nakato/nixos-sbc/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -80,6 +85,7 @@
       nix-index-database,
       disko,
       comin,
+      nixos-sbc,
       ...
     }:
     let
@@ -146,6 +152,11 @@
         biotite = [
           disko.nixosModules.disko
           ./machines/biotite
+        ];
+        baryte = [
+          nixos-sbc.nixosModules.default
+          nixos-sbc.nixosModules.boards.bananapi.bpir4
+          ./machines/baryte
         ];
       };
       sharedColmenaModules = [
@@ -310,6 +321,9 @@
       nixosConfigurations = {
         calcite = mkNixos {
           hostname = "calcite";
+        };
+        baryte = mkNixos {
+          hostname = "baryte";
         };
       } // self.colmenaHive.nodes;
 
