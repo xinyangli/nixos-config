@@ -5,6 +5,7 @@ in
 {
   imports = [
     ./common
+    ./common/gui/foot.nix
   ];
 
   programs.nix-index-database.comma.enable = true;
@@ -58,12 +59,6 @@ in
   xdg.enable = true;
 
   custom-hm = {
-    alacritty = {
-      enable = true;
-    };
-    cosmic-term = {
-      enable = true;
-    };
     direnv = {
       enable = true;
     };

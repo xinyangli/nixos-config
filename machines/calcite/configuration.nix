@@ -164,6 +164,7 @@ in
         ids = [ "0b05:1866" ];
         settings = {
           main = {
+            capslock = "overload(control, esc)";
             leftcontrol = "capslock";
           };
         };
