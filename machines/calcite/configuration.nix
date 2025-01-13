@@ -157,6 +157,7 @@ in
         settings = {
           main = {
             capslock = "overload(control, esc)";
+            control = "overload(control, esc)";
           };
         };
       };
