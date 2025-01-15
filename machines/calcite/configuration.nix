@@ -33,6 +33,7 @@ in
     "nvidia_modeset"
     "nvidia_uvm"
   ];
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.latest;
   boot.supportedFilesystems = [ "ntfs" ];
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
@@ -189,6 +190,10 @@ in
     pkgs.gutenprintBin
     pkgs.canon-cups-ufr2
   ];
+  hardware.sane = {
+    enable = true;
+    extraBackends = [ pkgs.hplipWithPlugin ];
+  };
 
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -211,6 +216,7 @@ in
       "wheel"
       "wireshark"
       "tss"
+      "scanner"
     ];
   };
 
