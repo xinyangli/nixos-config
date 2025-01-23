@@ -34,10 +34,6 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = with pkgs; [
-      cosmic-files
-    ];
-
     systemd.user.services.xwayland-satellite = {
       Install = {
         WantedBy = [ "graphical-session.target" ];

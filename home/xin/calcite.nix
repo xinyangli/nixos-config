@@ -5,7 +5,9 @@ in
 {
   imports = [
     ./common
+    ./common/pentesting.nix
     ./common/gui/foot.nix
+    ./common/gui/default.nix
   ];
 
   programs.nix-index-database.comma.enable = true;
@@ -114,6 +116,13 @@ in
   programs.atuin = {
     enable = true;
     flags = [ "--disable-up-arrow" ];
+  };
+
+  programs.zathura = {
+    enable = true;
+    options = {
+      recolor = false;
+    };
   };
 
   programs.firefox = {
