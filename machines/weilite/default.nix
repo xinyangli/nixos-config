@@ -92,13 +92,6 @@
 
     systemd.mounts = [
       {
-        what = "immich";
-        where = "/mnt/XinPhotos/immich";
-        type = "virtiofs";
-        options = "rw,nodev,nosuid";
-        wantedBy = [ "immich-server.service" ];
-      }
-      {
         what = "originals";
         where = "/mnt/XinPhotos/originals";
         type = "virtiofs";
@@ -111,7 +104,6 @@
         type = "virtiofs";
         options = "rw,nodev,nosuid";
       }
-
       {
         what = "/mnt/nixos/ocis";
         where = "/var/lib/ocis";
