@@ -170,7 +170,7 @@
           "github.com/caddy-dns/cloudflare@v0.0.0-20240703190432-89f16b99c18e"
           "github.com/caddy-dns/dnspod@v0.0.4"
         ];
-        hash = "sha256-StgQx4Aqumisk4MYN6f4S/QyAHa37yTmGTdrtEeMTHg=";
+        hash = "sha256-EmBKn6QV5JpLXpez7+Gu91tP/sUZxq2DkGPYoAe+2QM=";
       };
       virtualHosts."derper00.namely.icu:8443".extraConfig = ''
         reverse_proxy 127.0.0.1:${toString config.services.tailscale.derper.port}
