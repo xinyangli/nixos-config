@@ -1,6 +1,9 @@
 let
   mkFunction = f: (targets: (map f targets));
   mkPort = port: if isNull port then "" else ":${toString port}";
+
+  # get text before "." in the url
+  subdomain = url: builtins.elemAt (builtins.elemAt (builtins.split "([a-zA-Z0-9]+)\..*" url) 1) 0;
 in
 {
   mkScrapes = mkFunction (
@@ -228,7 +231,7 @@ in
       ...
     }:
     {
-      job_name = "blackbox(${hostAddress})";
+      job_name = "blackbox(${subdomain hostAddress})";
       scrape_interval = "1m";
       metrics_path = "/probe";
       params = {
@@ -268,14 +271,14 @@ in
       inherit name;
       rules = [
         {
-          alert = "ProbeError";
-          expr = "probe_success != 1";
+          alert = "ProbeToError";
+          expr = "sum by(instance) (probe_success != 1) > 0";
           for = "3m";
           labels = {
             severity = "critical";
           };
           annotations = {
-            summary = "Probing {{ $labels.instance }} from {{ $labels.from }} failed";
+            summary = "Probing {{ $labels.instance }} failed";
           };
         }
         {
