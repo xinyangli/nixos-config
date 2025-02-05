@@ -62,14 +62,6 @@
       defaultSopsFile = ./secrets.yaml;
       age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       secrets = {
-        cloudflare_dns_token = {
-          owner = "caddy";
-          mode = "400";
-        };
-        dnspod_dns_token = {
-          owner = "caddy";
-          mode = "400";
-        };
         "restic/localpass" = {
           owner = "restic";
         };
@@ -162,38 +154,6 @@
     };
     # tailscale derper module use nginx for reverse proxy
     services.nginx.enable = lib.mkForce false;
-
-    services.caddy = {
-      enable = true;
-      package = pkgs.caddy.withPlugins {
-        plugins = [
-          "github.com/caddy-dns/cloudflare@v0.0.0-20240703190432-89f16b99c18e"
-          "github.com/caddy-dns/dnspod@v0.0.4"
-        ];
-        hash = "sha256-EmBKn6QV5JpLXpez7+Gu91tP/sUZxq2DkGPYoAe+2QM=";
-      };
-      virtualHosts."derper00.namely.icu:8443".extraConfig = ''
-        reverse_proxy 127.0.0.1:${toString config.services.tailscale.derper.port}
-      '';
-      virtualHosts."weilite.coho-tet.ts.net:8080".extraConfig = ''
-        reverse_proxy 127.0.0.1:${toString config.services.immich.port}
-      '';
-      # API Token must be added in systemd environment file
-      virtualHosts."immich.xinyang.life:8000".extraConfig = ''
-        reverse_proxy 127.0.0.1:${toString config.services.immich.port}
-      '';
-      globalConfig = ''
-        acme_dns dnspod {env.DNSPOD_API_TOKEN}
-      '';
-    };
-
-    networking.firewall.allowedTCPPorts = [ 8000 ];
-
-    systemd.services.caddy = {
-      serviceConfig = {
-        EnvironmentFile = config.sops.secrets.dnspod_dns_token.path;
-      };
-    };
 
     time.timeZone = "Asia/Shanghai";
 

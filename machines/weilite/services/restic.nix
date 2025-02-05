@@ -42,6 +42,9 @@ in
   networking.firewall.allowedTCPPorts = [ 8443 ];
 
   services.caddy.virtualHosts."https://backup.xinyang.life:8443".extraConfig = ''
+    tls {
+      dns dnspod {env.DNSPOD_API_TOKEN}
+    }
     reverse_proxy ${config.services.restic.server.listenAddress}
   '';
 }
