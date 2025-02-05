@@ -158,7 +158,7 @@ in
                 severity = "critical";
               };
               annotations = {
-                summary = "Job {{ $labels.job }} down for 1m.";
+                summary = "Instance {{ $labels.instance }} of {{ $labels.job }} is down.";
               };
             }
           ];

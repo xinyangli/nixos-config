@@ -132,8 +132,7 @@ in
             severity = "critical";
           };
           annotations = {
-            summary = "Systemd has failed units on {{ $labels.instance }}";
-            description = "There are {{ $value }} failed units on {{ $labels.instance }}. Immediate attention required!";
+            summary = "{{ $labels.job }} failed on {{ $labels.instance }}.";
           };
         }
         {
@@ -144,7 +143,7 @@ in
             severity = "warning";
           };
           annotations = {
-            summary = "High load average detected on {{ $labels.instance }}";
+            summary = "High load average on {{ $labels.instance }}.";
             description = "The 1-minute load average ({{ $value }}) exceeds 80% the number of CPUs.";
           };
         }
@@ -167,7 +166,7 @@ in
             severity = "warning";
           };
           annotations = {
-            summary = "High disk usage on {{ $labels.instance }}";
+            summary = "Disk usage exceeeds 85% on {{ $labels.instance }}";
           };
         }
         {
@@ -180,7 +179,6 @@ in
           };
           annotations = {
             summary = "Disk usage will exceed 95% in 12 hours on {{ $labels.instance }}";
-            description = "Disk {{ $labels.mountpoint }} is predicted to exceed 92% usage within 12 hours at current growth rate";
           };
         }
         {
@@ -191,8 +189,7 @@ in
             severity = "warning";
           };
           annotations = {
-            summary = "High swap usage on {{ $labels.instance }}";
-            description = "Swap usage is above 80% for 5 minutes\n Current value: {{ $value }}%";
+            summary = "Swap usage above 80% on {{ $labels.instance }}";
           };
         }
         {
