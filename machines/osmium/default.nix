@@ -69,7 +69,7 @@
       neovim
       jq
       iptables
-      ebtables
+      nftables
       tcpdump
       busybox
       ethtool
@@ -88,15 +88,53 @@
 
     systemd.network = {
       enable = true;
-      networks."lan" = {
-        matchConfig.Name = "enu1";
-        networkConfig.DHCP = "no";
-        linkConfig.RequiredForOnline = "no";
-      };
       networks."wan" = {
         matchConfig.Name = "end0";
         networkConfig.DHCP = "yes";
-        linkConfig.RequiredForOnline = "yes";
+        linkConfig.RequiredForOnline = false;
+      };
+      networks."lan" = {
+        matchConfig.Name = "enu1";
+        networkConfig = {
+          DHCP = "no";
+          DHCPServer = "yes";
+          Address = "10.1.1.1/24";
+        };
+        dhcpServerConfig = {
+          ServerAddress = "10.1.1.1/24";
+          UplinkInterface = "end0";
+          EmitDNS = "yes";
+          DNS = [ "192.168.1.1" ];
+        };
+        linkConfig.RequiredForOnline = false;
+      };
+    };
+
+    networking.firewall.enable = false;
+    networking.nftables = {
+      enable = true;
+      tables = {
+        filter = {
+          family = "inet";
+          content = ''
+            chain forward {
+              iifname { "enu1" } oifname { "end0" } accept comment "Allow trusted LAN to WAN"
+              iifname { "end0" } oifname { "enu1" } ct state { established, related } accept comment "Allow established back to LANs"
+              iifname { "enu1" } oifname { "tailscale0" } accept comment "Allow LAN to Tailscale"
+            }
+          '';
+        };
+
+        nat = {
+          family = "ip";
+          content = ''
+            chain postrouting {
+              type nat hook postrouting priority 100; policy accept;
+              oifname "end0" masquerade
+              oifname "tailscale0" masquerade
+            }
+          '';
+        };
       };
     };
 
@@ -105,7 +143,11 @@
       configFile = "/var/lib/dae/config.dae";
     };
 
-    services.tailscale.enable = true;
-
+    services.tailscale = {
+      enable = true;
+      extraSetFlags = [
+        "--advertise-routes=10.1.1.0/24"
+      ];
+    };
   };
 }
