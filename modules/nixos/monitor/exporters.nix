@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (lib) mkIf concatStringsSep;
+  inherit (lib) mkIf getExe;
   inherit (config.my-lib.settings) prometheusCollectors;
   cfg = config.custom.prometheus.exporters;
 in
@@ -15,6 +15,30 @@ in
       (lib.optional cfg.node.enable "prometheus-node-exporters.service")
       ++ (lib.optional cfg.blackbox.enable "prometheus-blackbox-exporters.service")
       ++ (lib.optional config.services.caddy.enable "caddy.service");
+
+    systemd.services.tailscaled.serviceConfig.ExecStartPost =
+      pkgs.writers.writePython3Bin "tailscale-wait-online"
+        {
+          flakeIgnore = [
+            "E401" # import on one line
+            "E501" # line length limit
+          ];
+        }
+        ''
+          import subprocess, json, time
+
+          for _ in range(30):
+              status = json.loads(
+                  subprocess.run(
+                      ["${getExe config.services.tailscale.package}", "status", "--peers=false", "--json"], capture_output=True
+                  ).stdout
+              )["Self"]["Online"]
+              if status:
+                  exit(0)
+              time.sleep(1)
+
+          exit(1)
+        '';
 
     services.prometheus.exporters.node = mkIf cfg.node.enable {
       enable = true;
