@@ -17,7 +17,7 @@ in
       ++ (lib.optional config.services.caddy.enable "caddy.service");
 
     systemd.services.tailscaled.serviceConfig.ExecStartPost =
-      pkgs.writers.writePython3Bin "tailscale-wait-online"
+      pkgs.writers.writePython3 "tailscale-wait-online"
         {
           flakeIgnore = [
             "E401" # import on one line
