@@ -152,13 +152,13 @@ in
         {
           name = "loki";
           scheme = "http";
-          address = "thorite.coho-tet.ts.net";
+          address = "thorite.${internalDomain}";
           port = 3100;
         }
         {
           name = "transmission";
           scheme = "http";
-          address = transmissionExporterUrl;
+          address = "weilite.${internalDomain}";
           port = 19091;
         }
         {
