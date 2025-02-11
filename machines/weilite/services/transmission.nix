@@ -1,6 +1,12 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   cfg = config.services.transmission;
+  inherit (config.my-lib.settings) transmissionExporterUrl;
 in
 {
   sops.secrets = {
@@ -11,6 +17,12 @@ in
     content = builtins.toJSON {
       rpc-password = config.sops.placeholder."transmission/rpc-password";
     };
+  };
+
+  sops.templates."transmission-cred.env" = {
+    content = ''
+      TRANSMISSION_PASSWORD=${config.sops.placeholder."transmission/rpc-password"}
+    '';
   };
 
   services.transmission = {
@@ -64,6 +76,22 @@ in
   services.caddy.virtualHosts."https://weilite.coho-tet.ts.net:9091".extraConfig = ''
     reverse_proxy 127.0.0.1:${toString cfg.settings.rpc-port}
   '';
+
+  systemd.services.prometheus-transmission-exporter = {
+    enable = true;
+    wantedBy = [ "transmission.service" ];
+    environment = {
+      WEB_ADDR = transmissionExporterUrl;
+      TRANSMISSION_ADDR = "http://127.0.0.1:${toString cfg.settings.rpc-port}";
+      TRANSMISSION_USERNAME = "xin";
+    };
+    after = [ "tailscaled.service" ];
+    serviceConfig = {
+      ExecStart = "${lib.getExe pkgs.transmission-exporter}";
+      EnvironmentFile = config.sops.templates."transmission-cred.env".path;
+    };
+  };
+
   networking.firewall.allowedTCPPorts = [ 9091 ]; # allow on lan
   users.groups.media.members = [ cfg.user ];
 }

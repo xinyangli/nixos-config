@@ -1,5 +1,14 @@
 { config, pkgs, ... }:
+let
+  inherit (config.my-lib.settings)
+    internalDomain
+    ;
+in
 {
+  sops.secrets = {
+    "sonarr/api-key" = { };
+    "radarr/api-key" = { };
+  };
   services.jackett = {
     enable = true;
     openFirewall = false;
@@ -18,6 +27,22 @@
 
   services.radarr = {
     enable = true;
+  };
+
+  services.prometheus.exporters.exportarr-sonarr = {
+    enable = true;
+    url = "http://127.0.0.1:8989";
+    apiKeyFile = config.sops.secrets."sonarr/api-key".path;
+    listenAddress = "weilite.${internalDomain}";
+    port = 21560;
+  };
+
+  services.prometheus.exporters.exportarr-radarr = {
+    enable = true;
+    url = "http://127.0.0.1:7878";
+    apiKeyFile = config.sops.secrets."radarr/api-key".path;
+    listenAddress = "weilite.${internalDomain}";
+    port = 21561;
   };
 
   users.groups.media.members = [

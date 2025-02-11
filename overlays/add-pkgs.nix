@@ -9,4 +9,6 @@
       "idbloader.img"
     ];
   };
+
+  transmission-exporter = prev.callPackage ./pkgs/transmission-exporter.nix { };
 })
