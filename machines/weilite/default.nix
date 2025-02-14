@@ -20,7 +20,19 @@
   };
 
   config = {
-    networking.hostName = "weilite";
+    networking = {
+      hostName = "weilite";
+      useNetworkd = true;
+    };
+    systemd.network = {
+      enable = true;
+      networks = {
+        "10-wan" = {
+          matchConfig.MACAddress = "52:54:00:db:23:d0";
+          networkConfig.DHCP = "ipv4";
+        };
+      };
+    };
     commonSettings = {
       auth.enable = true;
       nix = {

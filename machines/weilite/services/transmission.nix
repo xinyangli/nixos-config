@@ -86,6 +86,7 @@ in
       TRANSMISSION_USERNAME = "xin";
     };
     after = [ "tailscaled.service" ];
+    wants = [ "tailscaled.service" ];
     serviceConfig = {
       ExecStart = "${lib.getExe pkgs.transmission-exporter}";
       EnvironmentFile = config.sops.templates."transmission-cred.env".path;
