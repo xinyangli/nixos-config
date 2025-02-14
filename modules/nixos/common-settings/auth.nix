@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  my-lib,
   ...
 }:
 
@@ -12,7 +11,7 @@ let
     mkEnableOption
     ;
 
-  inherit (my-lib) idpUrl;
+  inherit (config.my-lib.settings) idpUrl;
 
   cfg = config.commonSettings.auth;
 in
@@ -25,7 +24,7 @@ in
     services.kanidm = {
       enableClient = true;
       clientSettings = {
-        uri = "https://auth.xinyang.life";
+        uri = "https://${idpUrl}";
       };
       enablePam = true;
       unixSettings = {
@@ -48,11 +47,11 @@ in
     environment.etc."ssh/auth" = {
       mode = "0555";
       text = ''
-        #!${pkgs.stdenv.shell}
+        #!/bin/sh
         ${pkgs.kanidm}/bin/kanidm_ssh_authorizedkeys $1
       '';
     };
-    users.groups.wheel.members = [ "xin@auth.xinyang.life" ];
+    users.groups.wheel.members = [ "xin@${idpUrl}" ];
     users.groups.kanidm-ssh-runner = { };
     users.users.kanidm-ssh-runner = {
       isSystemUser = true;

@@ -6,6 +6,7 @@
 }:
 let
   inherit (lib) mkForce getExe;
+  inherit (config.my-lib.settings) idpUrl;
 in
 {
   imports = [
@@ -223,7 +224,7 @@ in
   services.kanidm = {
     enableClient = true;
     clientSettings = {
-      uri = "https://auth.xinyang.life";
+      uri = "https://${idpUrl}";
     };
   };
 
