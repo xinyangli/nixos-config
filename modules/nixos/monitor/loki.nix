@@ -15,6 +15,7 @@ let
     ;
   inherit (config.my-lib.settings)
     alertmanagerPort
+    internalDomain
     ;
   cfg = config.custom.monitoring;
   lokiPort = 3100;
@@ -94,16 +95,17 @@ in
         rulerFile = pkgs.writeText "ruler.yml" (builtins.toJSON rulerConfig);
       in
       mkIf cfg.loki.enable {
+        systemd.services.loki.serviceConfig.After = "tailscaled.service";
         services.loki = {
           enable = true;
           configuration = {
             auth_enabled = false;
-            server.http_listen_address = "${config.networking.hostName}.coho-tet.ts.net";
+            server.http_listen_address = "${config.networking.hostName}.${internalDomain}";
             server.http_listen_port = lokiPort;
 
             common = {
               ring = {
-                instance_addr = "${config.networking.hostName}.coho-tet.ts.net";
+                instance_addr = "${config.networking.hostName}.${internalDomain}";
                 kvstore.store = "inmemory";
               };
               replication_factor = 1;
@@ -160,7 +162,7 @@ in
         configuration = {
 
           server = {
-            http_listen_address = "${config.networking.hostName}.coho-tet.ts.net";
+            http_listen_address = "${config.networking.hostName}.${internalDomain}";
             http_listen_port = 28183;
             grpc_listen_port = 0;
           };
@@ -169,7 +171,7 @@ in
 
           clients = [
             {
-              url = "http://thorite.coho-tet.ts.net:${toString lokiPort}/loki/api/v1/push";
+              url = "http://thorite.${internalDomain}:${toString lokiPort}/loki/api/v1/push";
             }
           ];
 

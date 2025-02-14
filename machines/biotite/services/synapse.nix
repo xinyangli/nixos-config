@@ -85,11 +85,11 @@ in
       oidc_providers = [
         {
           idp_id = "Kanidm";
-          idp_name = lib.removePrefix "https://" idpUrl;
+          idp_name = idpUrl;
           issuer = "${idpUrl}/oauth2/openid/synapse";
-          authorization_endpoint = "${idpUrl}/ui/oauth2";
-          token_endpoint = "${idpUrl}/oauth2/token";
-          userinfo_endpoint = "${idpUrl}/oauth2/openid/synapse/userinfo";
+          authorization_endpoint = "https://${idpUrl}/ui/oauth2";
+          token_endpoint = "https://${idpUrl}/oauth2/token";
+          userinfo_endpoint = "https://${idpUrl}/oauth2/openid/synapse/userinfo";
           client_id = "synapse";
           client_secret_path = config.sops.secrets."synapse/oidc_client_secret".path;
           scopes = [

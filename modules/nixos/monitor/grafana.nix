@@ -22,9 +22,9 @@ in
           name = "Kanidm";
           client_id = "grafana";
           scopes = "openid,profile,email,groups";
-          auth_url = "${idpUrl}/ui/oauth2";
-          token_url = "${idpUrl}/oauth2/token";
-          api_url = "${idpUrl}/oauth2/openid/grafana/userinfo";
+          auth_url = "https://${idpUrl}/ui/oauth2";
+          token_url = "https://${idpUrl}/oauth2/token";
+          api_url = "https://${idpUrl}/oauth2/openid/grafana/userinfo";
           use_pkce = true;
           use_refresh_token = true;
           allow_sign_up = true;

@@ -69,28 +69,29 @@ in
   systemd.services.forgejo = {
     serviceConfig = {
       EnvironmentFile = config.sops.templates."forgejo/env".path;
-      preStart =
-        let
-          providerName = "kanidm";
-          args = lib.concatStringsSep " " [
-            "--name ${providerName}"
-            "--provider openidConnect"
-            "--key forgejo"
-            "--secret $CLIENT_SECRET"
-            "--icon-url ${idpUrl}/pkg/img/favicon.png"
-            "--group-claim-name forgejo_role --admin-group Admin"
-          ];
-          exe = getExe config.services.forgejo.package;
-        in
-        ''
-          provider_id=$(${exe} admin auth list | ${pkgs.gnugrep}/bin/grep -w '${providerName}' | cut -f1)
-          if [[ -z "$provider_id" ]]; then
-            ${exe} admin auth add-oauth ${args}
-          else
-            ${exe} admin auth update-oauth --id "$provider_id" ${args}
-          fi
-        '';
     };
+    preStart =
+      let
+        providerName = "kanidm";
+        args = lib.concatStringsSep " " [
+          "--name ${providerName}"
+          "--provider openidConnect"
+          "--key forgejo"
+          "--secret $CLIENT_SECRET"
+          "--auto-discover-url https://${idpUrl}/oauth2/openid/forgejo/.well-known/openid-configuration"
+          "--icon-url https://${idpUrl}/pkg/img/favicon.png"
+          "--group-claim-name forgejo_role --admin-group Admin"
+        ];
+        exe = getExe config.services.forgejo.package;
+      in
+      ''
+        provider_id=$(${exe} admin auth list | ${pkgs.gnugrep}/bin/grep -w '${providerName}' | cut -f1)
+        if [[ -z "$provider_id" ]]; then
+          ${exe} admin auth add-oauth ${args}
+        else
+          ${exe} admin auth update-oauth --id "$provider_id" ${args}
+        fi
+      '';
   };
 
   users.users.git = {

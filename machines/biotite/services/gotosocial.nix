@@ -26,7 +26,7 @@ in
       instance-expose-public-timeline = true;
       oidc-enabled = true;
       oidc-idp-name = "Kanidm";
-      oidc-issuer = "${idpUrl}/oauth2/openid/gotosocial";
+      oidc-issuer = "https://${idpUrl}/oauth2/openid/gotosocial";
       oidc-client-id = "gotosocial";
       oidc-link-existing = true;
     };

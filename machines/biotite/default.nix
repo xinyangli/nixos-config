@@ -15,6 +15,7 @@
     ./services/hedgedoc.nix
     ./services/forgejo.nix
     ./services/vaultwarden.nix
+    ./services/kanidm.nix
   ];
 
   networking.hostName = "biotite";

@@ -20,10 +20,10 @@ in
       email = false;
       allowEmailRegister = false;
       oauth2 = {
-        baseURL = "${idpUrl}/oauth2/openid/hedgedoc";
-        authorizationURL = "${idpUrl}/ui/oauth2";
-        tokenURL = "${idpUrl}/oauth2/token";
-        userProfileURL = "${idpUrl}/oauth2/openid/hedgedoc/userinfo";
+        baseURL = "https://${idpUrl}/oauth2/openid/hedgedoc";
+        authorizationURL = "https://${idpUrl}/ui/oauth2";
+        tokenURL = "https://${idpUrl}/oauth2/token";
+        userProfileURL = "https://${idpUrl}/oauth2/openid/hedgedoc/userinfo";
         userProfileEmailAttr = "email";
         userProfileUsernameAttr = "name";
         userProfileDisplayNameAttr = "preferred_name";

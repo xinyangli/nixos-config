@@ -3,11 +3,14 @@
   ...
 }:
 let
+  inherit (config.my-lib.settings) idpUrl;
+
   user = config.systemd.services.immich-server.serviceConfig.User;
+  immichUrl = "immich.xiny.li:8443";
   jsonSettings = {
     oauth = {
       enabled = true;
-      issuerUrl = "https://auth.xinyang.life/oauth2/openid/immich/";
+      issuerUrl = "https://${idpUrl}/oauth2/openid/immich/";
       clientId = "immich";
       clientSecret = config.sops.placeholder."immich/oauth_client_secret";
       scope = "openid email profile";
@@ -16,7 +19,7 @@ let
       buttonText = "Login with Kanidm";
       autoLaunch = true;
       mobileOverrideEnabled = true;
-      mobileRedirectUri = "https://immich.xinyang.life:8000/api/oauth/mobile-redirect/";
+      mobileRedirectUri = "https://${immichUrl}/api/oauth/mobile-redirect/";
     };
     passwordLogin = {
       enabled = false;

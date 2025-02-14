@@ -17,7 +17,7 @@ in
       OAUTH2_CLIENT_ID = "miniflux";
       OAUTH2_CLIENT_SECRET_FILE = "%d/oauth2_secret";
       OAUTH2_REDIRECT_URL = "${minifluxUrl}/oauth2/oidc/callback";
-      OAUTH2_OIDC_DISCOVERY_ENDPOINT = "${idpUrl}/oauth2/openid/miniflux";
+      OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://${idpUrl}/oauth2/openid/miniflux";
       OAUTH2_USER_CREATION = 1;
       CREATE_ADMIN = 0;
     };

@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  my-lib,
   ...
 }:
 
@@ -10,6 +11,8 @@ let
     mkIf
     mkEnableOption
     ;
+
+  inherit (my-lib) idpUrl;
 
   cfg = config.commonSettings.auth;
 in
