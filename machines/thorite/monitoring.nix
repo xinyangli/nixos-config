@@ -190,7 +190,7 @@ in
       ++ (mkBlackboxScrapes [
         {
           hostAddress = "thorite.coho-tet.ts.net";
-          targetAddresses = probeList ++ [ "49.13.13.122:443" ];
+          targetAddresses = probeList;
         }
         {
           hostAddress = "weilite.coho-tet.ts.net";
