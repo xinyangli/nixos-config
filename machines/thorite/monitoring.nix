@@ -181,7 +181,6 @@ in
       ])
       ++ (mkNodeScrapes [
         { address = "thorite.coho-tet.ts.net"; }
-        { address = "massicot.coho-tet.ts.net"; }
         { address = "weilite.coho-tet.ts.net"; }
         { address = "biotite.coho-tet.ts.net"; }
         { address = "hk-00.coho-tet.ts.net"; }
@@ -192,10 +191,6 @@ in
         {
           hostAddress = "thorite.coho-tet.ts.net";
           targetAddresses = probeList ++ [ "49.13.13.122:443" ];
-        }
-        {
-          hostAddress = "massicot.coho-tet.ts.net";
-          targetAddresses = probeList ++ [ "45.142.178.32:443" ];
         }
         {
           hostAddress = "weilite.coho-tet.ts.net";

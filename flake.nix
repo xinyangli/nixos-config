@@ -212,18 +212,6 @@
           };
         };
 
-        massicot =
-          { ... }:
-          {
-            deployment.targetHost = "49.13.13.122";
-            deployment.buildOnTarget = true;
-
-            imports = [
-              { nixpkgs.system = "aarch64-linux"; }
-              machines/massicot
-            ] ++ sharedColmenaModules;
-          };
-
         la-00 =
           { ... }:
           {
