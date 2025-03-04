@@ -23,10 +23,11 @@ in
         {
           name = "origin";
           url = "https://github.com/xinyangli/nixos-config.git";
-          branches.main.name = "deploy-comin";
+          branches.main.name = "deploy";
         }
       ];
       hostname = config.networking.hostName;
+      executor.type = "garnix";
     };
   };
 }
