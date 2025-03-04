@@ -123,6 +123,9 @@
         comin.nixosModules.comin
       ];
       nodeNixosModules = {
+        weilite = [
+          ./machines/weilite
+        ];
         calcite = [
           nixos-hardware.nixosModules.asus-zephyrus-ga401
           catppuccin.nixosModules.catppuccin
@@ -269,17 +272,6 @@
             ] ++ sharedColmenaModules;
           };
 
-        weilite =
-          { ... }:
-          {
-            imports = [ machines/weilite ] ++ sharedColmenaModules;
-            deployment = {
-              targetHost = "weilite.coho-tet.ts.net";
-              targetPort = 22;
-              buildOnTarget = false;
-            };
-            nixpkgs.system = "x86_64-linux";
-          };
         thorite =
           { ... }:
           {
@@ -309,6 +301,11 @@
         calcite = mkNixos {
           hostname = "calcite";
         };
+
+        weilite = mkNixos {
+          hostname = "weilite";
+        };
+
         baryte = mkNixos {
           hostname = "baryte";
         };
