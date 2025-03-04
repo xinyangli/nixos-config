@@ -86,7 +86,7 @@ in
         {
           idp_id = "Kanidm";
           idp_name = idpUrl;
-          issuer = "${idpUrl}/oauth2/openid/synapse";
+          issuer = "https://${idpUrl}/oauth2/openid/synapse";
           authorization_endpoint = "https://${idpUrl}/ui/oauth2";
           token_endpoint = "https://${idpUrl}/oauth2/token";
           userinfo_endpoint = "https://${idpUrl}/oauth2/openid/synapse/userinfo";
