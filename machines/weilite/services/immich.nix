@@ -1,5 +1,7 @@
 {
   config,
+  pkgs,
+  lib,
   ...
 }:
 let
@@ -21,6 +23,20 @@ let
       mobileOverrideEnabled = true;
       mobileRedirectUri = "https://${immichUrl}/api/oauth/mobile-redirect/";
     };
+    job = {
+      faceDetection = {
+        concurrency = 3;
+      };
+      backgroundTask = {
+        concurrency = 2;
+      };
+      metadataExtraction = {
+        concurrency = 2;
+      };
+      thumbnailGeneration = {
+        concurrency = 1;
+      };
+    };
     passwordLogin = {
       enabled = false;
     };
@@ -29,6 +45,21 @@ let
     };
     newVersionCheck = {
       enabled = false;
+    };
+    ffmpeg = {
+      accel = "qsv";
+      accelDecode = true;
+    };
+    machineLearning = {
+      enabled = true;
+      clip = {
+        enabled = true;
+        modelName = "XLM-Roberta-Large-ViT-H-14__frozen_laion5b_s13b_b90k";
+      };
+      facialRecognition = {
+        maxDistance = 0.35;
+        minFaces = 10;
+      };
     };
   };
 in
@@ -41,8 +72,46 @@ in
       content = builtins.toJSON jsonSettings;
     };
 
+    systemd.mounts = [
+      {
+        what = "originals";
+        where = "/mnt/immich/external-library/xin";
+        type = "virtiofs";
+        options = "ro,nodev,nosuid";
+        wantedBy = [ "immich-server.service" ];
+      }
+    ];
+
+    # systemd.timers.immich-auto-stack = {
+    #   enable = true;
+    #   wantedBy = [ "immich-server.service" ];
+    #   timerConfig = {
+    #     Unit = "immich-auto-stack.service";
+    #     OnCalendar = "*-*-* 4:00:00";
+    #   };
+    # };
+    #
+    systemd.services.immich-auto-stack =
+      let
+        python = pkgs.python3.withPackages (
+          ps: with ps; [
+            requests
+          ]
+        );
+      in
+      {
+        serviceConfig = {
+          ExecStart = "${lib.getExe python}";
+          # TODO:
+          environmentFile = "./.";
+        };
+      };
+
     systemd.services.immich-server = {
       serviceConfig = {
+        ReadWritePaths = [
+          "/mnt/immich/external-library/xin"
+        ];
         Environment = "IMMICH_CONFIG_FILE=${config.sops.templates."immich/config.json".path}";
       };
     };
@@ -53,13 +122,21 @@ in
       port = 3001;
       openFirewall = true;
       machine-learning.enable = true;
+      accelerationDevices = [
+        "/dev/dri/renderD128"
+        "/dev/dri/card0"
+      ];
       environment = {
         IMMICH_MACHINE_LEARNING_ENABLED = "true";
       };
       database.enable = true;
     };
 
-    # https://github.com/NixOS/nixpkgs/pull/324127/files#r1723763510
+    users.users.immich.extraGroups = [
+      "video"
+      "render"
+    ];
+
     services.immich.redis.host = "/run/redis-immich/redis.sock";
   };
 }

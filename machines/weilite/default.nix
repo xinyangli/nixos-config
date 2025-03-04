@@ -97,13 +97,6 @@
 
     systemd.mounts = [
       {
-        what = "originals";
-        where = "/mnt/XinPhotos/originals";
-        type = "virtiofs";
-        options = "rw,nodev,nosuid";
-        wantedBy = [ "immich-server.service" ];
-      }
-      {
         what = "nixos";
         where = "/mnt/nixos";
         type = "virtiofs";
