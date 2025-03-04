@@ -12,19 +12,41 @@
   networking = {
     networkmanager = {
       enable = true;
-      dns = "systemd-resolved";
+      dns = "default";
+      settings = {
+        main = {
+          rc-manager = "resolvconf";
+        };
+      };
     };
   };
 
-  services.resolved = {
+  networking.resolvconf = {
     enable = true;
+    dnsExtensionMechanism = false;
+    useLocalResolver = false;
+  };
+
+  services.kresd = {
+    enable = true;
+    listenPlain = [ ];
     extraConfig = ''
-      Cache=no
+      log_level("notice")
+      net.listen('127.0.0.1', 53)
+      modules = { 'hints > iterate', 'stats', 'predict' }
+      cache.size = 100 * MB
+      trust_anchors.remove(".")
+      policy.add(policy.all(policy.TLS_FORWARD( {
+        { "8.8.8.8", hostname="dns.google" } })))
     '';
+      # policy.add(policy.suffix(policy.FORWARD({ "100.100.100.100" }), policy.todnames({ 'coho-tet.ts.net' })))
   };
 
   # Enable Tailscale
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    extraUpFlags = [ "--accept-dns=false" ];
+  };
   # services.tailscale.useRoutingFeatures = "both";
 
   services.dae.enable = true;

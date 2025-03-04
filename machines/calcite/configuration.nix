@@ -188,8 +188,8 @@ in
   services.printing.enable = true;
   services.printing.drivers = [
     pkgs.hplip
+    pkgs.gutenprint
     pkgs.gutenprintBin
-    pkgs.canon-cups-ufr2
   ];
   hardware.sane = {
     enable = true;
