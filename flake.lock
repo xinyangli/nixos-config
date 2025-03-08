@@ -51,11 +51,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1741442113,
-        "narHash": "sha256-8PtIomyuBSxcpFk8v5vB09EwdfRGA2jY1rj6P/go9kU=",
+        "lastModified": 1741443658,
+        "narHash": "sha256-8S0vamzAe/KUDrZ1fQ5YuaoM0EOSJV5C/++TfTOx8ME=",
         "owner": "xinyangli",
         "repo": "comin",
-        "rev": "da976cc76ae498f4c87c052125d30277d28cd086",
+        "rev": "73bfd2308c0db17bbda61de3f782099882f4d713",
         "type": "github"
       },
       "original": {
