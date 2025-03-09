@@ -52,6 +52,10 @@ let
     };
     machineLearning = {
       enabled = true;
+      urls = [
+        "http://calcite.coho-tet.ts.net:3003"
+        "http://127.0.0.1:3003"
+      ];
       clip = {
         enabled = true;
         modelName = "XLM-Roberta-Large-ViT-H-14__frozen_laion5b_s13b_b90k";
