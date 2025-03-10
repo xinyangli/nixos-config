@@ -16,7 +16,7 @@ in
   config = mkIf cfg.enable {
     programs.waybar = {
       enable = true;
-      style = readFile ./waybar.css;
+      style = ./waybar.css;
       settings = {
         main = {
           margin = "2px 3px 2 3px";
