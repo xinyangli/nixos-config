@@ -83,7 +83,7 @@ in
       };
     };
     vscode = {
-      enable = true;
+      enable = false;
       languages = {
         cxx = true;
         python = true;
