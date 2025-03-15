@@ -11,14 +11,8 @@
   commonSettings = {
     nix.enable = true;
     auth.enable = true;
+    comin.enable = true;
   };
-
-  nixpkgs.overlays = [
-    # Workaround https://github.com/NixOS/nixpkgs/issues/126755#issuecomment-869149243
-    (final: super: {
-      makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
-    })
-  ];
 
   environment.systemPackages = with pkgs; [
     git
@@ -34,13 +28,10 @@
     interfaces.eth0.useDHCP = true;
   };
 
-  # boot.kernelPackages = pkgs.linuxPackages_stable;
+  time.timeZone = "Asia/Shanghai";
 
   # fileSystems."/".fsType = lib.mkForce "btrfs";
   boot.supportedFilesystems.zfs = lib.mkForce false;
-
-  services.dae.enable = true;
-  services.dae.configFile = "/var/lib/dae/config.dae";
 
   services.tailscale = {
     enable = true;
