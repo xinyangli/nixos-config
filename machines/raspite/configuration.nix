@@ -33,6 +33,8 @@
   # fileSystems."/".fsType = lib.mkForce "btrfs";
   boot.supportedFilesystems.zfs = lib.mkForce false;
 
+  services.dae.enable = false;
+
   services.tailscale = {
     enable = true;
     permitCertUid = config.services.caddy.user;

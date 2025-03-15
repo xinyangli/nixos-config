@@ -33,6 +33,7 @@ in
 
     services.dae = {
       enable = mkDefault true;
+      configFile = mkDefault "/var/lib/dae/config.dae";
     };
   };
 }
