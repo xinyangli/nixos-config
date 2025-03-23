@@ -3,6 +3,18 @@ let
   inherit (config.my-lib.settings) vaultwardenUrl;
 in
 {
+
+  sops.secrets."vaultwarden/admin_token" = {
+    owner = "vaultwarden";
+  };
+
+  sops.templates."vaultwarden.env" = {
+    owner = "vaultwarden";
+    content = ''
+      ADMIN_TOKEN=${config.sops.placeholder."vaultwarden/admin_token"}
+    '';
+  };
+
   services.vaultwarden = {
     enable = true;
     dbBackend = "sqlite";
@@ -15,6 +27,7 @@ in
 
       ROCKET_LOG = "normal";
     };
+    environmentFile = config.sops.templates."vaultwarden.env".path;
   };
 
   services.caddy = {
