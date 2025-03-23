@@ -22,7 +22,16 @@ in
       signing.enable = true;
     };
     comin.enable = true;
+    network.localdns.enable = true;
   };
+
+  nix.settings.substituters = [
+    "https://nix-community.cachix.org"
+  ];
+  nix.settings.trusted-public-keys = [
+    # Compare to the key published at https://nix-community.org/cache
+    "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -56,6 +65,7 @@ in
   security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
+  programs.gnupg.agent.pinentryPackage = pkgs.pinentry-gtk2;
 
   networking.hostName = "calcite";
 
@@ -198,6 +208,7 @@ in
 
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
+  services.avahi.enable = true;
   services.pipewire = {
     enable = true;
     wireplumber.enable = true;
@@ -206,6 +217,23 @@ in
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     jack.enable = true;
+
+    # Airplay client
+    raopOpenFirewall = true;
+    extraConfig.pipewire = {
+      "10-airplay" = {
+        "context.modules" = [
+          {
+            name = "libpipewire-module-raop-discover";
+
+            # increase the buffer size if you get dropouts/glitches
+            # args = {
+            #   "raop.latency.ms" = 500;
+            # };
+          }
+        ];
+      };
+    };
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.

@@ -4,11 +4,14 @@
   lib,
   ...
 }:
-
+let
+  inherit (config.my-lib.settings)
+    internalDomain
+    ;
+in
 {
   imports = [ ];
 
-  # Enable networking
   networking = {
     networkmanager = {
       enable = true;
@@ -19,27 +22,6 @@
         };
       };
     };
-  };
-
-  networking.resolvconf = {
-    enable = true;
-    dnsExtensionMechanism = false;
-    useLocalResolver = false;
-  };
-
-  services.kresd = {
-    enable = true;
-    listenPlain = [ ];
-    extraConfig = ''
-      log_level("notice")
-      net.listen('127.0.0.1', 53)
-      modules = { 'hints > iterate', 'stats', 'predict' }
-      cache.size = 100 * MB
-      trust_anchors.remove(".")
-      policy.add(policy.all(policy.TLS_FORWARD( {
-        { "8.8.8.8", hostname="dns.google" } })))
-    '';
-      # policy.add(policy.suffix(policy.FORWARD({ "100.100.100.100" }), policy.todnames({ 'coho-tet.ts.net' })))
   };
 
   # Enable Tailscale
