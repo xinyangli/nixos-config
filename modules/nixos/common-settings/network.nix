@@ -38,11 +38,11 @@ in
               (builtins.filter (s: s != [ ] && s != ""))
               (lib.strings.concatMapStrings (x: "'${x}',"))
             ];
-          chinaDomains = listToLuaTable (builtins.readFile ./china-domain.txt);
+          chinaDomains = listToLuaTable (builtins.readFile ./china-domains.txt);
           globalSettings = ''
             log_level("notice")
             modules = { 'hints > iterate', 'stats', 'predict' }
-            cache.size = ${cfg.localdns.cacheSize} * MB
+            cache.size = ${toString cfg.localdns.cacheSize} * MB
             trust_anchors.remove(".")
           '';
           tsSettings = ''
