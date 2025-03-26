@@ -6,7 +6,7 @@
 }:
 
 {
-  imports = [ ./hass.nix ];
+  imports = [ ./services/hass.nix ];
 
   commonSettings = {
     nix.enable = true;
