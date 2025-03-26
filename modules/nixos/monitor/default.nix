@@ -120,11 +120,12 @@ in
                 webhook_configs = [
                   {
                     url = "${ntfyUrl}/prometheus-alerts?tpl=yes&m=${lib.escapeURL ''
-                      {{range .alerts}}{{ if eq .status "resolved" }}✅{{ else }}{{ if eq .status "firing" }}🔥{{end}}{{end}}{{.labels.alertname}}
-                      {{.annotations.summary}}
-                      {{end}}''}";
+                                            {{ if eq .truncatedAlerts 0 }}{{ else }}{{.truncatedAlerts}} truncated
+                      		      {{end}}{{range .alerts}}{{ if eq .status "resolved" }}✅{{ else }}{{ if eq .status "firing" }}🔥{{end}}{{end}}{{.labels.alertname}}
+                                            {{.annotations.summary}}
+                                            {{end}}''}";
                     send_resolved = true;
-                    max_alerts = 5;
+                    max_alerts = 10;
                   }
                 ];
               }
