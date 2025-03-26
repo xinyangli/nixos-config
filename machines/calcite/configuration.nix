@@ -321,6 +321,7 @@ in
     vlc
     obs-studio
     spotify
+    spot
     # IM
     element-desktop
     tdesktop

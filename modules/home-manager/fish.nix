@@ -91,10 +91,6 @@ in
                   ${pkgs.comma}/bin/comma $argv
                 end
                 set -gx LS_COLORS (${lib.getExe pkgs.vivid} generate catppuccin-mocha)
-                alias ctlsp="systemctl stop"
-                alias ctlst="systemctl start"
-                alias ctlrt="systemctl restart"
-                alias ctls="systemctl status"
               ''
             else
               "";
