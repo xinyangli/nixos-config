@@ -4,12 +4,32 @@
     enable = true;
     openFirewall = false;
     config = {
-      default_config = { };
       http = {
         server_host = "127.0.0.1";
         use_x_forwarded_for = true;
         trusted_proxies = [ "127.0.0.1" ];
       };
+      assist_pipeline = { };
+      backup = { };
+      bluetooth = { };
+      config = { };
+      conversation = { };
+      history = { };
+      recorder = {
+        purge_keep_days = 14;
+      };
+      homeassistant_alerts = { };
+      image_upload = { };
+      logbook = { };
+      media_source = { };
+      mobile_app = { };
+      my = { };
+      ssdp = { };
+      stream = { };
+      sun = { };
+      usb = { };
+      webhook = { };
+      zeroconf = { };
     };
     extraPackages =
       python3Packages: with python3Packages; [
@@ -20,7 +40,12 @@
     extraComponents = [
       "mqtt"
       "roborock"
+      "openai_conversation"
     ];
+  };
+
+  systemd.services.home-assistant.environment = {
+    OPENAI_BASE_URL = "https://api.deepseek.com/v1";
   };
 
   services.esphome = {
