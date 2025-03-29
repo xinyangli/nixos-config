@@ -45,7 +45,7 @@
   };
 
   systemd.services.home-assistant.environment = {
-    OPENAI_BASE_URL = "https://api.deepseek.com/v1";
+    OPENAI_BASE_URL = "https://ark.cn-beijing.volces.com/api/v3";
   };
 
   services.esphome = {
