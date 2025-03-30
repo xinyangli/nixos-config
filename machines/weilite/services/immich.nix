@@ -82,7 +82,7 @@ in
     sops.templates."immich/auto_stack.env" = {
       owner = "immich_auto_stack";
       content = ''
-        API_KEY=${config.sops.placeholder."immich/auto_stack_apikey"};
+        API_KEY=${config.sops.placeholder."immich/auto_stack_apikey"}
       '';
     };
 
@@ -113,8 +113,8 @@ in
           ]
         );
         immich_auto_stack = pkgs.fetchurl {
-          url = "https://gist.github.com/xinyangli/39de5979e72d81af6fe9ddb7d1805df4";
-          hash = "sha256-izbzP+330tZUGPTfS3SdJnGS5uSn5uf8WmXd6ep8SQg=";
+          url = "https://gist.githubusercontent.com/xinyangli/39de5979e72d81af6fe9ddb7d1805df4/raw/7798ed8cef7bcd3d06ed005feb0dd01b4b603684/immich_auto_stack.py";
+          hash = "sha256-qE7TRJ+TLFdSJanBiuKP6fgijdE1NqAeSXWSzsfyEO0=";
         };
       in
       {
@@ -126,6 +126,8 @@ in
         serviceConfig = {
           ExecStart = "${lib.getExe python} ${immich_auto_stack}";
           EnvironmentFile = config.sops.templates."immich/auto_stack.env".path;
+          WorkingDirectory = "%t/immich-auto-stack";
+          RuntimeDirectory = "immich-auto-stack";
           User = "immich_auto_stack";
           Group = "immich_auto_stack";
         };
