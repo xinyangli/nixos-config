@@ -65,11 +65,21 @@ let
 in
 {
   config = {
-    sops.secrets."immich/oauth_client_secret" = { };
+    sops.secrets = {
+      "immich/oauth_client_secret" = { };
+      "immich/auto_stack_apikey" = { };
+    };
 
     sops.templates."immich/config.json" = {
       owner = user; # Read when running
       content = builtins.toJSON jsonSettings;
+    };
+
+    sops.templates."immich/auto_stack.env" = {
+      owner = "immich_auto_stack";
+      content = ''
+        API_KEY=${config.sops.placeholder."immich/auto_stack_apikey"};
+      '';
     };
 
     systemd.mounts = [
@@ -82,15 +92,15 @@ in
       }
     ];
 
-    # systemd.timers.immich-auto-stack = {
-    #   enable = true;
-    #   wantedBy = [ "immich-server.service" ];
-    #   timerConfig = {
-    #     Unit = "immich-auto-stack.service";
-    #     OnCalendar = "*-*-* 4:00:00";
-    #   };
-    # };
-    #
+    systemd.timers.immich-auto-stack = {
+      enable = true;
+      wantedBy = [ "immich-server.service" ];
+      timerConfig = {
+        Unit = "immich-auto-stack.service";
+        OnCalendar = "*-*-* 4:00:00";
+      };
+    };
+
     systemd.services.immich-auto-stack =
       let
         python = pkgs.python3.withPackages (
@@ -98,12 +108,22 @@ in
             requests
           ]
         );
+        immich_auto_stack = pkgs.fetchurl {
+          url = "https://gist.github.com/xinyangli/39de5979e72d81af6fe9ddb7d1805df4";
+          hash = "sha256-izbzP+330tZUGPTfS3SdJnGS5uSn5uf8WmXd6ep8SQg=";
+        };
       in
       {
+        environment = {
+          SKIP_MATCH_MISS = "true";
+          DRY_RUN = "false";
+          API_URL = "http://127.0.0.1:${toString config.services.immich.port}/api";
+        };
         serviceConfig = {
-          ExecStart = "${lib.getExe python}";
-          # TODO:
-          environmentFile = "./.";
+          ExecStart = "${lib.getExe python} ${immich_auto_stack}";
+          EnvironmentFile = config.sops.templates."immich/auto_stack.env".path;
+          User = "immich_auto_stack";
+          Group = "immich_auto_stack";
         };
       };
 
@@ -136,6 +156,12 @@ in
       "video"
       "render"
     ];
+
+    users.groups.immich_auto_stack = { };
+    users.users.immich_auto_stack = {
+      isSystemUser = true;
+      group = "immich_auto_stack";
+    };
 
     services.immich.redis.host = "/run/redis-immich/redis.sock";
   };
