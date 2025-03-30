@@ -4,6 +4,13 @@
     enable = true;
     openFirewall = false;
     config = {
+      logger = {
+        logs = {
+          homeassistant.helpers.llm = "debug";
+          homeassistant.components.conversation.chat_log = "debug";
+          homeassistant.components.openai_conversation = "debug";
+        };
+      };
       http = {
         server_host = "127.0.0.1";
         use_x_forwarded_for = true;
