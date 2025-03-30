@@ -7,4 +7,3 @@ builds:
       - homeConfigurations.aarch64-linux.*
       - darwinConfigurations.*
       - nixosConfigurations.*
-    branch: deploy
