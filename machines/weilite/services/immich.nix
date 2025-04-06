@@ -86,16 +86,6 @@ in
       '';
     };
 
-    systemd.mounts = [
-      {
-        what = "originals";
-        where = "/mnt/immich/external-library/xin";
-        type = "virtiofs";
-        options = "ro,nodev,nosuid";
-        wantedBy = [ "immich-server.service" ];
-      }
-    ];
-
     systemd.timers.immich-auto-stack = {
       enable = true;
       wantedBy = [ "immich-server.service" ];
@@ -135,8 +125,8 @@ in
 
     systemd.services.immich-server = {
       serviceConfig = {
-        ReadWritePaths = [
-          "/mnt/immich/external-library/xin"
+        BindReadOnlyPaths = [
+          "/mnt/photos/xin/originals:/mnt/immich/external-library/xin"
         ];
         Environment = "IMMICH_CONFIG_FILE=${config.sops.templates."immich/config.json".path}";
       };
@@ -161,7 +151,10 @@ in
     users.users.immich.extraGroups = [
       "video"
       "render"
+      "privimg"
     ];
+
+    users.groups.privimg = { };
 
     users.groups.immich_auto_stack = { };
     users.users.immich_auto_stack = {
