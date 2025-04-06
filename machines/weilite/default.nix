@@ -102,6 +102,13 @@
         type = "virtiofs";
         options = "rw,nodev,nosuid";
       }
+{
+        what = "originals";
+        where = "/mnt/photos/xin/originals";
+        type = "virtiofs";
+        options = "rw,nodev,nosuid";
+        wantedBy = [ "immich-server.service" ];
+      }
       {
         what = "/mnt/nixos/ocis";
         where = "/var/lib/ocis";

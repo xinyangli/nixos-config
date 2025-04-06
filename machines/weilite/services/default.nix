@@ -7,5 +7,6 @@
     ./immich.nix
     ./jellyfin.nix
     ./transmission.nix
+    ./webdav.nix
   ];
 }
