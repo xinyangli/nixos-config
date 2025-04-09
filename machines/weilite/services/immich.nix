@@ -112,6 +112,7 @@ in
           SKIP_MATCH_MISS = "true";
           DRY_RUN = "false";
           API_URL = "http://127.0.0.1:${toString config.services.immich.port}/api";
+          PARENT_PROMOTE = "hdr,edit,export,selects,output";
         };
         serviceConfig = {
           ExecStart = "${lib.getExe python} ${immich_auto_stack}";
