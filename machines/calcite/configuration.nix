@@ -317,6 +317,12 @@ in
     gthumb
     oculante
 
+    (epsonscan2.overrideAttrs (
+      finalAttrs: prevAttrs: {
+        patches = prevAttrs.patches ++ [ ./fix-crash.patch ];
+      }
+    ))
+
     # Multimedia
     vlc
     obs-studio
@@ -365,6 +371,26 @@ in
       owner = "root";
       sopsFile = ./secrets.yaml;
     };
+    "davfs2/photosync_password" = {
+      sopsFile = ./secrets.yaml;
+      mode = "0600";
+    };
+  };
+
+  sops.templates."davfs2.conf" = {
+    owner = config.services.davfs2.davUser;
+    content = ''
+      https://weilite.coho-tet.ts.net:6065/photosync photosync ${
+        config.sops.placeholder."davfs2/photosync_password"
+      }
+    '';
+  };
+
+  environment.etc = {
+    "davfs2/secrets" = {
+      source = config.sops.templates."davfs2.conf".path;
+      mode = "0600";
+    };
   };
 
   custom.restic = {
@@ -398,6 +424,32 @@ in
   services.gvfs.enable = true;
 
   services.flatpak.enable = true;
+
+  services.davfs2 = {
+    enable = true;
+    settings = {
+      globalSection = {
+        use_locks = 1;
+        gui_optimize = 1;
+        table_size = 4096;
+        cache_size = 10240;
+      };
+    };
+  };
+
+  fileSystems = {
+    "/media/photosync" = {
+      device = "https://weilite.coho-tet.ts.net:6065/photosync";
+      fsType = "davfs";
+      options = [
+        "rw"
+        "uid=1000"
+        "nodev"
+        "nosuid"
+        "nofail"
+      ];
+    };
+  };
 
   # Fonts
   fonts = {

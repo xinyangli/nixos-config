@@ -1,0 +1,36 @@
+diff -uNr a/src/Controller/Src/Finder/UsbFinder.cpp b/src/Controller/Src/Finder/UsbFinder.cpp
+--- a/src/Controller/Src/Finder/UsbFinder.cpp	2024-10-05 01:47:57.530027467 +0800
++++ b/src/Controller/Src/Finder/UsbFinder.cpp	2024-10-07 01:58:36.293405252 +0800
+@@ -119,14 +119,26 @@
+                                     sprintf(const_cast<char*>(devInfo.displayName), "%s", "DS-5500/DS-6500/DS-7500");
+                                     isValidDeviceInfo = true;
+                                 }
++                                else if (dd.idProduct == 0x14A)
++                                {
++                                    sprintf(const_cast<char*>(devInfo.displayName), "%s", "Perfection V37/V370");
++                                    isValidDeviceInfo = true;
++                                }
+                                 else
+                                 {
+-                                sprintf((char*)strDescWithAddress, "%s:%s", strDesc, serialNumber);
+-                                 strncpy(const_cast<char*>(devInfo.displayName),(const char*)strDescWithAddress, MAX_DISPLAYNAME - 1);
+-                                 if (strlen(devInfo.displayName) != 0 || searchSecondDevice)
+-                                 {
+-                                     isValidDeviceInfo = true;
+-                                 }
++                                    if (dd.iSerialNumber == 0)
++                                    {
++                                        sprintf((char*)strDescWithAddress, "%s", strDesc);
++                                    } 
++                                    else
++                                    {
++                                        sprintf((char*)strDescWithAddress, "%s:%s", strDesc, serialNumber);
++                                    }
++                                    strncpy(const_cast<char*>(devInfo.displayName),(const char*)strDescWithAddress, MAX_DISPLAYNAME - 1);
++                                    if (strlen(devInfo.displayName) != 0 || searchSecondDevice)
++                                    {
++                                        isValidDeviceInfo = true;
++                                    }
+                                 }
+                                 libusb_close (devHandle);
+                                 devHandle = nullptr;
