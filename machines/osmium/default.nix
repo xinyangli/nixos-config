@@ -139,11 +139,6 @@
       };
     };
 
-    services.dae = {
-      enable = true;
-      configFile = "/var/lib/dae/config.dae";
-    };
-
     services.tailscale = {
       enable = true;
       extraSetFlags = [
