@@ -39,6 +39,7 @@
         enable = true;
       };
       comin.enable = true;
+      network.localdns.enable = true;
     };
     node = {
       mediaDir = "/mnt/nixos/media";
@@ -102,7 +103,7 @@
         type = "virtiofs";
         options = "rw,nodev,nosuid";
       }
-{
+      {
         what = "originals";
         where = "/mnt/photos/xin/originals";
         type = "virtiofs";
@@ -147,11 +148,6 @@
       22
       2222
     ];
-
-    services.dae = {
-      enable = true;
-      configFile = "/var/lib/dae/config.dae";
-    };
 
     services.tailscale = {
       enable = true;
