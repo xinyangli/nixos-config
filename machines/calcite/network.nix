@@ -31,12 +31,12 @@ in
   };
   # services.tailscale.useRoutingFeatures = "both";
 
-  services.dae.enable = true;
-  services.dae.configFile = "/var/lib/dae/config.dae";
-  systemd.services.dae.after = lib.mkIf (config.networking.networkmanager.enable) [
-    "NetworkManager-wait-online.service"
-  ];
-
+  # services.dae.enable = true;
+  # services.dae.configFile = "/var/lib/dae/config.dae";
+  # systemd.services.dae.after = lib.mkIf (config.networking.networkmanager.enable) [
+  #   "NetworkManager-wait-online.service"
+  # ];
+  #
   # Open ports in the firewall.
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 3389 ];
