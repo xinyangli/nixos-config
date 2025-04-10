@@ -25,6 +25,12 @@ in
       useLocalResolver = true;
     };
 
+    services.resolved.enable = mkIf cfg.localdns.enable false;
+
+    services.tailscale = mkIf cfg.localdns.enable {
+      extraUpFlags = [ "--accept-dns=false" ];
+    };
+
     services.kresd = mkIf cfg.localdns.enable {
       enable = true;
       listenPlain = [ "127.0.0.1:53" ];
