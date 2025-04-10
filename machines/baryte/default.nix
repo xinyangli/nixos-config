@@ -9,13 +9,10 @@
 
     commonSettings = {
       auth.enable = true;
+      network.localdns.enable = true;
     };
 
     services.openssh.enable = true;
-    services.dae = {
-      enable = true;
-      configFile = "/var/lib/dae/config.dae";
-    };
     services.tailscale.enable = true;
     time.timeZone = "Asia/Shanghai";
   };

@@ -53,6 +53,7 @@
     commonSettings = {
       nix.enable = true;
       auth.enable = true;
+      network.localdns.enable = true;
     };
 
     documentation.enable = false;
