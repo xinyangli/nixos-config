@@ -35,7 +35,11 @@
     systemd.network.enable = true;
     systemd.network.networks."10-wan" = {
       matchConfig.MACAddress = "00:16:3e:0a:ec:45";
-      networkConfig.DHCP = "ipv4";
+      networkConfig = {
+        DHCP = "ipv4";
+        LinkLocalAddressing = "no";
+        IPv6AcceptRA = "no";
+      };
       dhcpV4Config = {
         UseDNS = true;
       };

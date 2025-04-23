@@ -133,26 +133,6 @@ in
             filter: name(regex: '^(fra)[0-9]+') [add_latency: -150ms]
             policy: min_moving_avg
           }
-          asia_group {
-            filter: name(regex: '^.*(hk).*')
-            filter: name(regex: '^.*(la).*') [add_latency: 5000ms]
-            filter: name(regex: '^.*(fra).*') [add_latency: 5000ms]
-            policy: min_moving_avg
-          }
-
-          europe_group {
-            filter: name(regex: '^.*(fra).*')
-            filter: name(regex: '^.*(la).*') [add_latency: 5000ms]
-            filter: name(regex: '^.*(hk).*') [add_latency: 5000ms]
-            policy: min_moving_avg
-          }
-
-          america_group {
-            filter: name(regex: '^.*(la).*')
-            filter: name(regex: '^.*(hk).*') [add_latency: 5000ms]
-            filter: name(regex: '^.*(fra).*') [add_latency: 5000ms]
-            policy: min_moving_avg
-          }
         }
 
         # See https://github.com/daeuniverse/dae/blob/main/docs/en/configuration/routing.md for full examples.
@@ -178,12 +158,6 @@ in
 
           # === Custom direct rules ===
           domain(geosite:cn) -> direct
-
-          domain(suffix:ipify.org) -> direct
-          domain(geosite:steam@cn) -> direct
-
-          domain(suffix:uk, suffix:it, suffix:de, suffix:eu, suffix:se, suffix:nl) -> europe_group
-          domain(suffix:jp, suffix:sg, suffix:hk, suffix:kr) -> asia_group
 
           dip(geoip:cn) -> direct
 
