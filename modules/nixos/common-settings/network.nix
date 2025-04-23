@@ -27,6 +27,9 @@ in
 
     services.resolved.enable = mkIf cfg.localdns.enable false;
 
+    networking.firewall.trustedInterfaces = [
+      config.services.tailscale.interfaceName
+    ];
     services.tailscale = mkIf cfg.localdns.enable {
       extraUpFlags = [ "--accept-dns=false" ];
     };
