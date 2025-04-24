@@ -58,7 +58,7 @@
     };
 
     comin = {
-      url = "github:xinyangli/comin";
+      url = "github:xinyangli/comin/garnix-executor";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

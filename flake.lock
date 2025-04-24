@@ -51,15 +51,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1743710531,
-        "narHash": "sha256-S9eMrwKmnWlNph9g0gszMp6nF/et/+P4gohN/bPrIwI=",
+        "lastModified": 1743515958,
+        "narHash": "sha256-KVRJFopEeIXROx0utbNeDINLGGJ2G2ET41Ccv9A1iow=",
         "owner": "xinyangli",
         "repo": "comin",
-        "rev": "864e94f8c3ead75195575405fff76de5e3b216fe",
+        "rev": "88e4f7cba2869acb8d738b1e8d15985a094f560f",
         "type": "github"
       },
       "original": {
         "owner": "xinyangli",
+        "ref": "garnix-executor",
         "repo": "comin",
         "type": "github"
       }
