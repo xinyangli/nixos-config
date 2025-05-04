@@ -22,6 +22,7 @@ in
 
   config = mkIf cfg.enable {
     services.kanidm = {
+      package = pkgs.kanidm_1_5;
       enableClient = true;
       clientSettings = {
         uri = "https://${idpUrl}";
@@ -37,6 +38,7 @@ in
       enable = true;
       authorizedKeysCommand = "/etc/ssh/auth %u";
       authorizedKeysCommandUser = "kanidm-ssh-runner";
+      openFirewall = true;
       settings = {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;

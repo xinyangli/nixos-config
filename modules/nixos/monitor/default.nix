@@ -119,12 +119,9 @@ in
                 name = "ntfy";
                 webhook_configs = [
                   {
-                    url = "${ntfyUrl}/prometheus-alerts?tpl=yes&m=${lib.escapeURL ''
-                      {{range .alerts}}{{ if eq .status "resolved" }}✅{{ else }}{{ if eq .status "firing" }}🔥{{end}}{{end}}{{.labels.alertname}}
-                      {{.annotations.summary}}
-                      {{end}}''}";
+                    url = "${ntfyUrl}/prometheus-alerts?tpl=yes&m=%7B%7Brange%20.alerts%7D%7D%7B%7B%20if%20eq%20.status%20%22resolved%22%20%7D%7D%E2%9C%85%7B%7B%20else%20%7D%7D%7B%7B%20if%20eq%20.status%20%22firing%22%20%7D%7D%F0%9F%94%A5%7B%7Bend%7D%7D%7B%7Bend%7D%7D%7B%7B.labels.alertname%7D%7D%0A%7B%7B.annotations.summary%7D%7D%0A%7B%7Bend%7D%7D";
                     send_resolved = true;
-                    max_alerts = 5;
+                    max_alerts = 10;
                   }
                 ];
               }

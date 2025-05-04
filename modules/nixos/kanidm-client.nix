@@ -38,6 +38,7 @@ in
   config = mkIf cfg.enable {
     services.kanidm = mkMerge [
       (mkIf cfg.enable {
+        package = pkgs.kanidm_1_5;
         enableClient = true;
         clientSettings = {
           uri = cfg.uri;
