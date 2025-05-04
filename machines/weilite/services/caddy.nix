@@ -33,7 +33,7 @@
           "github.com/caddy-dns/cloudflare@v0.0.0-20240703190432-89f16b99c18e"
           "github.com/caddy-dns/dnspod@v0.0.4"
         ];
-        hash = "sha256-9DZ58u/Y17njwQKvCZNys8DrCoRNsHQSBD2hV2cm8uU=";
+        hash = "sha256-/BxdY36MZriRNhh3peU+XjYRAuuYiKhLY+RwO45Q2Ws=";
       };
       virtualHosts."derper00.namely.icu:8443".extraConfig = ''
         ${acmeDnspod}
