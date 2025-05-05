@@ -7,3 +7,8 @@ builds:
       - homeConfigurations.aarch64-linux.*
       - darwinConfigurations.*
       - nixosConfigurations.*
+  - exclude:
+      - nixosConfigurations.osmium
+      - nixosConfigurations.raspite
+      - nixosConfigurations.agate
+      - nixosConfigurations.baryte

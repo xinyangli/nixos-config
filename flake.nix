@@ -126,6 +126,10 @@
         weilite = [
           ./machines/weilite
         ];
+        agate = [
+          disko.nixosModules.disko
+          ./machines/agate
+        ];
         calcite = [
           nixos-hardware.nixosModules.asus-zephyrus-ga401
           catppuccin.nixosModules.catppuccin
@@ -184,7 +188,17 @@
           system ? null,
         }:
         nixpkgs.lib.nixosSystem {
-          modules = sharedNixosModules ++ nodeNixosModules.${hostname};
+          modules =
+            sharedNixosModules
+            ++ nodeNixosModules.${hostname}
+            ++ [
+              (
+                { lib, ... }:
+                {
+                  networking.hostName = lib.mkDefault hostname;
+                }
+              )
+            ];
         };
       # TODO:
       mkColmenaHive =
@@ -304,6 +318,10 @@
 
         weilite = mkNixos {
           hostname = "weilite";
+        };
+
+        agate = mkNixos {
+          hostname = "agate";
         };
 
         baryte = mkNixos {
