@@ -329,6 +329,9 @@
         };
       } // self.colmenaHive.nodes;
 
+      hydraJobs = {
+        agate = self.nixosConfigurations.agate.config.system.build.toplevel;
+      };
     }
     // flake-utils.lib.eachDefaultSystem (
       system:
