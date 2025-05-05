@@ -86,6 +86,47 @@
           };
         };
       };
+
+      hdd1 = {
+        type = "disk";
+        device = "/dev/disk/by-id/ata-WUH721414ALE6L0_9KGEMPVL";
+        content = {
+          type = "gpt";
+          partitions = {
+            storage_p1 = {
+              size = "100%";
+            };
+          };
+        };
+      };
+      hdd2 = {
+        type = "disk";
+        device = "/dev/disk/by-id/ata-WUH721414ALE6L0_X1G14ZNL";
+        content = {
+          type = "gpt";
+          partitions = {
+            storage_p2 = {
+              size = "100%";
+              content = {
+                type = "btrfs";
+                extraArgs = [
+                  "-f"
+                  "-d raid1"
+                  "/dev/disk/by-partlabel/disk-hdd1-storage_p1"
+                ];
+                subvolumes = {
+                  "/storage" = {
+                    mountOptions = [
+                      "compress=zstd"
+                    ];
+                    mountpoint = "/storage";
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
     };
   };
 }
