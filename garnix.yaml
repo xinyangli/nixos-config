@@ -1,14 +1,30 @@
 builds:
   - include:
-      - '*.x86_64-linux.*'
-      - defaultPackage.x86_64-linux
-      - devShell.x86_64-linux
-      - homeConfigurations.x86_64-linux.*
-      - homeConfigurations.aarch64-linux.*
-      - darwinConfigurations.*
       - nixosConfigurations.*
-  - exclude:
+    exclude:
       - nixosConfigurations.osmium
       - nixosConfigurations.raspite
       - nixosConfigurations.agate
       - nixosConfigurations.baryte
+    branch: deploy
+  - include:
+      - nixosConfigurations.biotite
+    branch: testing-biotite
+  - include:
+      - nixosConfigurations.calcite
+    branch: testing-calcite
+  - include:
+      - nixosConfigurations.fra-00
+    branch: testing-fra-00
+  - include:
+      - nixosConfigurations.hk-00
+    branch: testing-hk-00
+  - include:
+      - nixosConfigurations.la-00
+    branch: testing-la-00
+  - include:
+      - nixosConfigurations.thorite
+    branch: testing-thorite
+  - include:
+      - nixosConfigurations.weilite
+    branch: testing-weilite
