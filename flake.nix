@@ -329,9 +329,21 @@
         };
       } // self.colmenaHive.nodes;
 
-      hydraJobs = {
-        agate = self.nixosConfigurations.agate.config.system.build.toplevel;
-      };
+      hydraJobs =
+        let
+          includeHosts = [
+            "agate"
+            "raspite"
+            "baryte"
+            "osmium"
+          ];
+        in
+        builtins.listToAttrs (
+          map (h: {
+            name = h;
+            value = self.nixosConfigurations.${h}.config.system.build.toplevel;
+          }) includeHosts
+        );
     }
     // flake-utils.lib.eachDefaultSystem (
       system:
