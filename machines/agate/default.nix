@@ -43,7 +43,11 @@
   nix.settings = {
     max-jobs = 8;
     cores = 16;
+    substituters = [ "https://cache.ngi0.nixos.org/" ];
+    trusted-public-keys = [ "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA=" ];
   };
+
+  nixpkgs.config.contentAddressedByDefault = true;
 
   services.tailscale = {
     enable = true;
