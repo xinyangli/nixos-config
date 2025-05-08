@@ -102,7 +102,7 @@ in
 
           upstream {
         	    globaldns: 'tls://dns.quad9.net'
-        	    cndns: 'h3://dns.alidns.com:443'
+        	    cndns: 'quic://dns.alidns.com:853'
         	    tsdns: 'udp://100.100.100.100'
         	    localdns: 'udp://127.0.0.1:53' 
           }
@@ -133,6 +133,11 @@ in
             filter: name(regex: '^(fra)[0-9]+') [add_latency: -150ms]
             policy: min_moving_avg
           }
+
+          clean_ip {
+            filter: name(regex: '^(fra)[0-9]+') [add_latency: -150ms]
+            policy: fixed(0)
+          }
         }
 
         # See https://github.com/daeuniverse/dae/blob/main/docs/en/configuration/routing.md for full examples.
@@ -156,9 +161,13 @@ in
 
           # === Force Proxy ===
           domain(geosite:linkedin) -> default_group
+          domain(full: sourceware.org) -> clean_ip
 
           # === Custom direct rules ===
           domain(geosite:cn) -> direct
+          domain(geosite:steam@cn) -> direct
+          domain(suffix:steamserver.net) -> direct
+          domain(suffix:test.steampowered.com) -> direct
 
           dip(geoip:cn) -> direct
 

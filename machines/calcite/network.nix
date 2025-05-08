@@ -24,10 +24,9 @@ in
     };
   };
 
-  # Enable Tailscale
   services.tailscale = {
     enable = true;
-    extraUpFlags = [ "--accept-dns=false" ];
+    extraUpFlags = [ "--accept-routes" ];
   };
   # services.tailscale.useRoutingFeatures = "both";
 

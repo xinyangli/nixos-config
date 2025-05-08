@@ -22,7 +22,9 @@ in
     networking.resolvconf = mkIf cfg.localdns.enable {
       enable = true;
       dnsExtensionMechanism = false;
-      useLocalResolver = true;
+      # We should disable local resolver if dae is enabled
+      # to let dns traffic go through dae
+      useLocalResolver = !config.commonSettings.network.enableProxy;
     };
 
     services.resolved.enable = mkIf cfg.localdns.enable false;
@@ -88,9 +90,13 @@ in
           '';
         in
         globalSettings
-        + (if config.services.dae.enable then proxySettings else "")
         + (if config.services.tailscale.enable then tsSettings else "")
-        + (if config.inMainland then mainlandSettings else overseaSettings);
+        + (
+          if config.commonSettings.network.enableProxy then
+            proxySettings + mainlandSettings
+          else
+            overseaSettings
+        );
     };
   };
 }
