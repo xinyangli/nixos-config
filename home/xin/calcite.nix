@@ -44,6 +44,40 @@ in
     wechat-uos
     wpsoffice
     ttf-wps-fonts
+
+    eudic
+
+    exiftool
+    darktable
+    kdePackages.kdenlive
+    inkscape
+    gimp3
+    gthumb
+    oculante
+
+    # Multimedia
+    vlc
+    obs-studio
+    spotify
+    spot
+    # IM
+    element-desktop
+    tdesktop
+
+    # Password manager
+    bitwarden
+
+    # Browser
+    chromium
+
+    # Writting
+    zotero
+
+    # wemeet
+    wemeet
+
+    imhex
+    oidc-agent
   ];
 
   # Theme

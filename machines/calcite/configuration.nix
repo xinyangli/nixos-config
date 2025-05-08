@@ -238,27 +238,6 @@ in
     "openssl-1.1.1w"
   ];
   environment.systemPackages = with pkgs; [
-    imhex
-    oidc-agent
-    # Filesystem
-    (owncloud-client.overrideAttrs (
-      finalAttrs: previousAttrs: {
-        src = pkgs.fetchFromGitHub {
-          owner = "xinyangli";
-          repo = "client";
-          rev = "780d1c4c8bf02be42e118c792ff833ab10c2fdcc";
-          hash = "sha256-pEwcGJI9sN9nooW/RQHmi52Du6yzofgZeB8PcjwPtZ8=";
-        };
-      }
-    ))
-    nfs-utils
-
-    # tesseract5 # ocr
-    ocrmypdf # pdfocr
-
-    gtkwave
-    bubblewrap
-
     # ==== Development ==== #
     (
       let
@@ -277,38 +256,13 @@ in
 
     # ==== GUI Softwares ==== #
 
-    eudic
-
     bibata-cursors
-    gthumb
-    oculante
 
     (epsonscan2.overrideAttrs (
       finalAttrs: prevAttrs: {
         patches = prevAttrs.patches ++ [ ./fix-crash.patch ];
       }
     ))
-
-    # Multimedia
-    vlc
-    obs-studio
-    spotify
-    spot
-    # IM
-    element-desktop
-    tdesktop
-
-    # Password manager
-    bitwarden
-
-    # Browser
-    chromium
-
-    # Writting
-    zotero
-
-    # wemeet
-    wemeet
 
     virt-manager
     wineWowPackages.waylandFull
