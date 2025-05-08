@@ -6,14 +6,19 @@
         owner = "caddy";
         mode = "400";
       };
-      "caddy/dnspod_dns_token" = {
+      "caddy/huawei_dns_access_key" = {
+        owner = "caddy";
+        mode = "400";
+      };
+      "caddy/huawei_dns_secret_key" = {
         owner = "caddy";
         mode = "400";
       };
     };
     templates."caddy.env".content = ''
       CF_API_TOKEN=${config.sops.placeholder."caddy/cf_dns_token"}
-      DNSPOD_API_TOKEN=${config.sops.placeholder."caddy/dnspod_dns_token"}
+      HUAWEICLOUD_ACCESS_KEY=${config.sops.placeholder."caddy/huawei_dns_access_key"}
+      HUAWEICLOUD_SECRET_KEY=${config.sops.placeholder."caddy/huawei_dns_secret_key"}
     '';
   };
 
@@ -22,27 +27,24 @@
       acmeCF = "tls {
         dns cloudflare {env.CF_API_TOKEN}
       }";
-      acmeDnspod = "tls {
-        dns dnspod {env.DNSPOD_API_TOKEN}
+      acmeHuawei = "tls {
+        dns huaweicloud  {
+          access_key_id {env.HUAWEICLOUD_ACCESS_KEY}
+          secret_access_key {env.HUAWEICLOUD_SECRET_KEY}
+        }
       }";
     in
     {
       enable = true;
       package = pkgs.caddy.withPlugins {
         plugins = [
-          "github.com/caddy-dns/cloudflare@v0.0.0-20240703190432-89f16b99c18e"
-          "github.com/caddy-dns/dnspod@v0.0.4"
+          "github.com/caddy-dns/cloudflare@v0.2.1"
         ];
-        hash = "sha256-/BxdY36MZriRNhh3peU+XjYRAuuYiKhLY+RwO45Q2Ws=";
+        hash = "sha256-saKJatiBZ4775IV2C5JLOmZ4BwHKFtRZan94aS5pO90=";
       };
       virtualHosts."derper00.namely.icu:8443".extraConfig = ''
-        ${acmeDnspod}
+        ${acmeCF}
         reverse_proxy 127.0.0.1:${toString config.services.tailscale.derper.port}
-      '';
-      # API Token must be added in systemd environment file
-      virtualHosts."immich.xinyang.life:8000".extraConfig = ''
-        ${acmeDnspod}
-        reverse_proxy 127.0.0.1:${toString config.services.immich.port}
       '';
       virtualHosts."immich.xiny.li:8443".extraConfig = ''
         ${acmeCF}

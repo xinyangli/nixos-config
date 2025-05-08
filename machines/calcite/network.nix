@@ -1,14 +1,7 @@
 {
-  config,
   pkgs,
-  lib,
   ...
 }:
-let
-  inherit (config.my-lib.settings)
-    internalDomain
-    ;
-in
 {
   imports = [ ];
 
@@ -28,14 +21,7 @@ in
     enable = true;
     extraUpFlags = [ "--accept-routes" ];
   };
-  # services.tailscale.useRoutingFeatures = "both";
 
-  # services.dae.enable = true;
-  # services.dae.configFile = "/var/lib/dae/config.dae";
-  # systemd.services.dae.after = lib.mkIf (config.networking.networkmanager.enable) [
-  #   "NetworkManager-wait-online.service"
-  # ];
-  #
   # Open ports in the firewall.
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 3389 ];

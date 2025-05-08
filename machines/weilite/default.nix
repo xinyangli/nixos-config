@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   lib,
   modulesPath,
@@ -11,13 +10,6 @@
     (modulesPath + "/profiles/qemu-guest.nix")
     ./services
   ];
-
-  options = {
-    node = lib.mkOption {
-      type = lib.types.attrs;
-      default = { };
-    };
-  };
 
   config = {
     networking = {
@@ -40,9 +32,6 @@
       };
       comin.enable = true;
       network.localdns.enable = true;
-    };
-    node = {
-      mediaDir = "/mnt/nixos/media";
     };
 
     boot = {
@@ -143,11 +132,6 @@
         intel-media-sdk # QSV up to 11th gen
       ];
     };
-
-    services.openssh.ports = [
-      22
-      2222
-    ];
 
     services.tailscale = {
       enable = true;

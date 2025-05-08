@@ -115,7 +115,7 @@
         self.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.hmModules.nix-index
-        catppuccin.homeManagerModules.catppuccin
+        catppuccin.homeModules.catppuccin
       ];
       sharedNixosModules = [
         self.nixosModules.default

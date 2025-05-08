@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (lib) mkForce getExe;
+  inherit (lib) getExe;
   inherit (config.my-lib.settings) idpUrl;
 in
 {
@@ -17,7 +17,7 @@ in
   ];
 
   commonSettings = {
-    # auth.enable = true;
+    auth.enable = true;
     nix = {
       signing.enable = true;
     };
@@ -37,7 +37,6 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelModules = [
     "nvidia"
     "nvidia_modeset"
@@ -61,7 +60,6 @@ in
     # TPM2TOOLS_TCTI and TPM2_PKCS11_TCTI env variables
     tctiEnvironment.enable = true;
   };
-  # services.gnome.gnome-keyring.enable = lib.mkForce false;
   security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
@@ -187,7 +185,6 @@ in
         settings = {
           main = {
             mouse2 = "leftmeta";
-            # leftalt = "mouse1";
           };
         };
       };
@@ -206,7 +203,6 @@ in
     extraBackends = [ pkgs.hplipWithPlugin ];
   };
 
-  hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.avahi.enable = true;
   services.pipewire = {
@@ -217,23 +213,6 @@ in
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     jack.enable = true;
-
-    # Airplay client
-    raopOpenFirewall = true;
-    extraConfig.pipewire = {
-      "10-airplay" = {
-        "context.modules" = [
-          {
-            name = "libpipewire-module-raop-discover";
-
-            # increase the buffer size if you get dropouts/glitches
-            # args = {
-            #   "raop.latency.ms" = 500;
-            # };
-          }
-        ];
-      };
-    };
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -249,13 +228,6 @@ in
     ];
   };
 
-  services.kanidm = {
-    enableClient = true;
-    clientSettings = {
-      uri = "https://${idpUrl}";
-    };
-  };
-
   # Smart services
   services.smartd.enable = true;
 
@@ -264,11 +236,7 @@ in
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.1.1w"
-    # FIXME: Waiting for https://github.com/NixOS/nixpkgs/pull/335753
-    "jitsi-meet-1.0.8043"
   ];
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
     imhex
     oidc-agent
@@ -292,8 +260,6 @@ in
     bubblewrap
 
     # ==== Development ==== #
-    # Python
-    # reference: https://nixos.wiki/wiki/Python
     (
       let
         my-python-packages =
@@ -340,7 +306,6 @@ in
 
     # Writting
     zotero
-    # onlyoffice-bin
 
     # wemeet
     wemeet
@@ -365,10 +330,6 @@ in
     };
     "restic/repo_password" = {
       owner = "xin";
-      sopsFile = ./secrets.yaml;
-    };
-    "gitea/envfile" = {
-      owner = "root";
       sopsFile = ./secrets.yaml;
     };
     "davfs2/photosync_password" = {
@@ -401,16 +362,6 @@ in
     ];
   };
 
-  # custom.forgejo-actions-runner = {
-  #   enable = false;
-  #   tokenFile = config.sops.secrets."gitea/envfile".path;
-  #   settings = {
-  #     runner.capacity = 2;
-  #     runner.fetch_timeout = "120s";
-  #     runner.fetch_interval = "30s";
-  #   };
-  # };
-  #
   custom.prometheus = {
     exporters.node.enable = true;
   };
