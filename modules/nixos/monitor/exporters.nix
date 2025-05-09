@@ -11,35 +11,9 @@ let
 in
 {
   config = {
-    systemd.services.tailscaled.before =
+    commonSettings.network.tailscale.before =
       (lib.optional cfg.node.enable "prometheus-node-exporters.service")
-      ++ (lib.optional cfg.blackbox.enable "prometheus-blackbox-exporters.service")
-      ++ (lib.optional config.services.caddy.enable "caddy.service");
-
-    systemd.services.tailscaled.serviceConfig.ExecStartPost =
-      pkgs.writers.writePython3 "tailscale-wait-online"
-        {
-          flakeIgnore = [
-            "E401" # import on one line
-            "E501" # line length limit
-          ];
-        }
-        ''
-          import subprocess, json, time
-
-          for _ in range(30):
-              status = json.loads(
-                  subprocess.run(
-                      ["${getExe config.services.tailscale.package}", "status", "--peers=false", "--json"], capture_output=True
-                  ).stdout
-              )["Self"]["Online"]
-              if status:
-                  exit(0)
-              time.sleep(1)
-
-          exit(1)
-        '';
-
+      ++ (lib.optional cfg.blackbox.enable "prometheus-blackbox-exporters.service");
     services.prometheus.exporters.node = mkIf cfg.node.enable {
       enable = true;
       enabledCollectors = [
@@ -121,26 +95,6 @@ in
     };
 
     services.ntfy-sh.settings.enable-metrics = true;
-
-    services.caddy.globalConfig = ''
-      servers {
-        metrics
-      }
-
-      admin unix//var/run/caddy/admin.sock {
-        origins 127.0.0.1 ${config.networking.hostName}.coho-tet.ts.net:2019
-      }
-    '';
-
-    systemd.services.caddy.serviceConfig = {
-      RuntimeDirectory = "caddy";
-      RuntimeDirectoryMode = "0700";
-    };
-
-    services.tailscale = {
-      permitCertUid = config.services.caddy.user;
-      openFirewall = true;
-    };
 
     services.caddy = {
       virtualHosts."https://${config.networking.hostName}.coho-tet.ts.net:2019".extraConfig = ''

@@ -40,19 +40,6 @@
     comin.enable = true;
   };
 
-  custom.monitoring = {
-    promtail.enable = true;
-  };
-
-  custom.prometheus.exporters = {
-    enable = true;
-    node.enable = true;
-  };
-
-  services.tailscale.enable = true;
-
-  services.caddy.enable = true;
-
   sops = {
     defaultSopsFile = ./secrets.yaml;
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];

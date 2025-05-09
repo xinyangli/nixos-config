@@ -106,12 +106,6 @@ in
   nixpkgs.config.contentAddressedByDefault = true;
   nixpkgs.overlays = [ fix-folly-build ];
 
-  services.tailscale = {
-    enable = true;
-    openFirewall = true;
-    permitCertUid = "caddy";
-  };
-
   custom.prometheus.exporters = {
     enable = true;
     blackbox = {

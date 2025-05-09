@@ -133,12 +133,6 @@
       ];
     };
 
-    services.tailscale = {
-      enable = true;
-      openFirewall = true;
-      permitCertUid = "caddy";
-    };
-
     services.tailscale.derper = {
       enable = true;
       domain = "derper00.namely.icu";

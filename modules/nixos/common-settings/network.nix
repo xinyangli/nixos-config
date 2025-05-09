@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkOption mkIf;
   inherit (config.my-lib.settings)
@@ -16,87 +21,137 @@ in
         default = 100;
       };
     };
+    tailscale = {
+      enable = mkEnableOption "Tailscale client" // {
+        default = true;
+      };
+      before = mkOption {
+        default = [ ];
+        type = lib.types.listOf lib.types.str;
+      };
+    };
   };
 
-  config = {
-    networking.resolvconf = mkIf cfg.localdns.enable {
-      enable = true;
-      dnsExtensionMechanism = false;
-      # We should disable local resolver if dae is enabled
-      # to let dns traffic go through dae
-      useLocalResolver = !config.commonSettings.network.enableProxy;
-    };
+  config = lib.mkMerge [
+    (mkIf cfg.tailscale.enable {
+      sops = {
+        secrets = {
+          "tailscale/authkey" = {
+            sopsFile = ../../../machines/secrets.yaml;
+          };
+        };
+      };
 
-    services.resolved.enable = mkIf cfg.localdns.enable false;
+      services.tailscale = {
+        enable = true;
+        openFirewall = true;
+        permitCertUid = mkIf config.services.caddy.enable config.services.caddy.user;
+        extraUpFlags = [ "--accept-routes" ] ++ (lib.optional cfg.localdns.enable "--accept-dns=false");
+        authKeyFile = config.sops.secrets."tailscale/authkey".path;
+      };
+      commonSettings.network.tailscale.before = (
+        lib.optional config.services.caddy.enable "caddy.service"
+      );
 
-    networking.firewall.trustedInterfaces = [
-      config.services.tailscale.interfaceName
-    ];
-    services.tailscale = mkIf cfg.localdns.enable {
-      extraUpFlags = [ "--accept-dns=false" ];
-    };
-
-    services.kresd = mkIf cfg.localdns.enable {
-      enable = true;
-      listenPlain = [ "127.0.0.1:53" ];
-      listenTLS = [ "127.0.0.1:853" ];
-      extraConfig =
-        let
-          listToLuaTable =
-            x:
-            lib.pipe x [
-              (builtins.split "\n")
-              (builtins.filter (s: s != [ ] && s != ""))
-              (lib.strings.concatMapStrings (x: "'${x}',"))
+      systemd.services.tailscaled.before = cfg.tailscale.before;
+      systemd.services.tailscaled.serviceConfig.ExecStartPost =
+        pkgs.writers.writePython3 "tailscale-wait-online"
+          {
+            flakeIgnore = [
+              "E401" # import on one line
+              "E501" # line length limit
             ];
-          chinaDomains = listToLuaTable (builtins.readFile ./china-domains.txt);
-          globalSettings = ''
-            log_level("notice")
-            modules = { 'hints > iterate', 'stats', 'predict' }
-            cache.size = ${toString cfg.localdns.cacheSize} * MB
-            trust_anchors.remove(".")
+          }
+          ''
+            import subprocess, json, time
+
+            for _ in range(30):
+                status = json.loads(
+                    subprocess.run(
+                        ["${lib.getExe config.services.tailscale.package}", "status", "--peers=false", "--json"], capture_output=True
+                    ).stdout
+                )["Self"]["Online"]
+                if status:
+                    exit(0)
+                time.sleep(1)
+
+            exit(1)
           '';
-          tsSettings = ''
-            internalDomains = policy.todnames({'${internalDomain}'})
-            policy.add(policy.suffix(policy.STUB({'100.100.100.100'}), internalDomains))
-          '';
-          proxySettings = ''
-            policy.add(policy.domains(
-              policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('8.218.218.229'), ttl=300 } }),
-              { todname('hk-00.namely.icu') }))
-            policy.add(policy.domains(
-              policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('67.230.168.47'), ttl=300 } }),
-              { todname('la-00.namely.icu') }))
-            policy.add(policy.domains(
-              policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('185.217.108.59'), ttl=300 } }),
-              { todname('fra-00.namely.icu') }))
-          '';
-          mainlandSettings = ''
-            chinaDomains = policy.todnames({'namely.icu', ${chinaDomains}})
-            policy.add(policy.suffix(policy.TLS_FORWARD({
-              { "223.5.5.5", hostname="dns.alidns.com" },
-              { "223.6.6.6", hostname="dns.alidns.com" },
-            }), chinaDomains))
-            policy.add(policy.all(policy.TLS_FORWARD({
-              { "8.8.8.8", hostname="dns.google" },
-              { "8.8.4.4", hostname="dns.google" },
-            })))
-          '';
-          overseaSettings = ''
-            policy.add(policy.all(policy.TLS_FORWARD({
-              { "8.8.8.8", hostname="dns.google" },
-              { "8.8.4.4", hostname="dns.google" },
-            })))
-          '';
-        in
-        globalSettings
-        + (if config.services.tailscale.enable then tsSettings else "")
-        + (
-          if config.commonSettings.network.enableProxy then
-            proxySettings + mainlandSettings
-          else
-            overseaSettings
-        );
-    };
-  };
+
+    })
+
+    (mkIf cfg.localdns.enable {
+      networking.resolvconf = {
+        enable = true;
+        dnsExtensionMechanism = false;
+        # We should disable local resolver if dae is enabled
+        # to let dns traffic go through dae
+        useLocalResolver = !config.commonSettings.network.enableProxy;
+      };
+      services.resolved.enable = false;
+
+      services.kresd = {
+        enable = true;
+        listenPlain = [ "127.0.0.1:53" ];
+        listenTLS = [ "127.0.0.1:853" ];
+        extraConfig =
+          let
+            listToLuaTable =
+              x:
+              lib.pipe x [
+                (builtins.split "\n")
+                (builtins.filter (s: s != [ ] && s != ""))
+                (lib.strings.concatMapStrings (x: "'${x}',"))
+              ];
+            chinaDomains = listToLuaTable (builtins.readFile ./china-domains.txt);
+            globalSettings = ''
+              log_level("notice")
+              modules = { 'hints > iterate', 'stats', 'predict' }
+              cache.size = ${toString cfg.localdns.cacheSize} * MB
+              trust_anchors.remove(".")
+            '';
+            tsSettings = ''
+              internalDomains = policy.todnames({'${internalDomain}'})
+              policy.add(policy.suffix(policy.STUB({'100.100.100.100'}), internalDomains))
+            '';
+            proxySettings = ''
+              policy.add(policy.domains(
+                policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('8.218.218.229'), ttl=300 } }),
+                { todname('hk-00.namely.icu') }))
+              policy.add(policy.domains(
+                policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('67.230.168.47'), ttl=300 } }),
+                { todname('la-00.namely.icu') }))
+              policy.add(policy.domains(
+                policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('185.217.108.59'), ttl=300 } }),
+                { todname('fra-00.namely.icu') }))
+            '';
+            mainlandSettings = ''
+              chinaDomains = policy.todnames({'namely.icu', ${chinaDomains}})
+              policy.add(policy.suffix(policy.TLS_FORWARD({
+                { "223.5.5.5", hostname="dns.alidns.com" },
+                { "223.6.6.6", hostname="dns.alidns.com" },
+              }), chinaDomains))
+              policy.add(policy.all(policy.TLS_FORWARD({
+                { "8.8.8.8", hostname="dns.google" },
+                { "8.8.4.4", hostname="dns.google" },
+              })))
+            '';
+            overseaSettings = ''
+              policy.add(policy.all(policy.TLS_FORWARD({
+                { "8.8.8.8", hostname="dns.google" },
+                { "8.8.4.4", hostname="dns.google" },
+              })))
+            '';
+          in
+          globalSettings
+          + (if config.services.tailscale.enable then tsSettings else "")
+          + (
+            if config.commonSettings.network.enableProxy then
+              proxySettings + mainlandSettings
+            else
+              overseaSettings
+          );
+      };
+    })
+  ];
 }

@@ -12,6 +12,8 @@
     nix.enable = true;
     auth.enable = true;
     comin.enable = true;
+    network.enableProxy = false;
+    serverComponents.enable = true;
   };
 
   nixpkgs.overlays = [
@@ -36,15 +38,4 @@
   };
 
   time.timeZone = "Asia/Shanghai";
-
-  # fileSystems."/".fsType = lib.mkForce "btrfs";
-  boot.supportedFilesystems.zfs = lib.mkForce false;
-
-  services.dae.enable = false;
-
-  services.tailscale = {
-    enable = true;
-    permitCertUid = config.services.caddy.user;
-    openFirewall = true;
-  };
 }

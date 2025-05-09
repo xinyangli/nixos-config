@@ -33,8 +33,6 @@
       promtail.enable = true;
     };
 
-    services.tailscale.enable = true;
-
     commonSettings = {
       auth.enable = true;
       comin.enable = true;

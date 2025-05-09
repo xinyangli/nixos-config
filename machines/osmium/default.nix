@@ -139,11 +139,6 @@
       };
     };
 
-    services.tailscale = {
-      enable = true;
-      extraSetFlags = [
-        "--advertise-routes=10.1.1.0/24"
-      ];
-    };
+    services.tailscale.extraSetFlags = [ "--advertise-routes=10.1.1.0/24" ];
   };
 }

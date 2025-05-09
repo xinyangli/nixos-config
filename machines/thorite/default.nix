@@ -31,8 +31,6 @@
       443
     ];
 
-    services.tailscale.enable = true;
-
     services.caddy.enable = true;
 
     commonSettings = {
