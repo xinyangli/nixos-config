@@ -8,6 +8,14 @@ builds:
       - nixosConfigurations.baryte
     branch: deploy
   - include:
+      - nixosConfigurations.*
+    exclude:
+      - nixosConfigurations.osmium
+      - nixosConfigurations.raspite
+      - nixosConfigurations.agate
+      - nixosConfigurations.baryte
+    branch: deploy-next
+  - include:
       - nixosConfigurations.biotite
     branch: testing-biotite
   - include:
