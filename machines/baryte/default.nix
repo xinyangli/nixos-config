@@ -10,6 +10,7 @@
     commonSettings = {
       auth.enable = true;
       network.localdns.enable = true;
+      serverComponents.enable = true;
     };
 
     services.openssh.enable = true;

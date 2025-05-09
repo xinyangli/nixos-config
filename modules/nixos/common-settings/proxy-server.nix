@@ -176,11 +176,8 @@ in
         reverse_proxy 127.0.0.1:30310
       '';
 
-      networking.firewall.allowedTCPPorts = [
-        80
-        cfg.trojan.port
-      ];
-      networking.firewall.allowedUDPPorts = [ ] ++ (lib.range 6311 6314);
+      networking.firewall.allowedTCPPorts = [ cfg.trojan.port ];
+      networking.firewall.allowedUDPPorts = lib.range 6311 6314;
 
       services.sing-box = {
         enable = true;

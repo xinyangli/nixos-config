@@ -7,6 +7,7 @@
     ./common-settings/proxy-server.nix
     ./common-settings/mainland.nix
     ./common-settings/network.nix
+    ./common-settings/server.nix
     ./disk-partitions
     ./restic.nix
     ./monitor

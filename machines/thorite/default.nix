@@ -26,16 +26,10 @@
       address = [ "23.165.200.99/24" ];
     };
 
-    networking.firewall.allowedTCPPorts = [
-      80
-      443
-    ];
-
-    services.caddy.enable = true;
-
     commonSettings = {
       auth.enable = true;
       comin.enable = true;
+      serverComponents.enable = true;
     };
 
     nixpkgs.system = "x86_64-linux";

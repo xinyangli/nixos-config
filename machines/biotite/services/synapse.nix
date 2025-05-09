@@ -120,8 +120,4 @@ in
       reverse_proxy /_synapse/client/* 127.0.0.1:${toString port-synapse}
     '';
   };
-
-  networking.firewall.allowedTCPPorts = [
-    443
-  ];
 }

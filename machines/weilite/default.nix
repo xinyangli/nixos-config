@@ -32,6 +32,7 @@
       };
       comin.enable = true;
       network.localdns.enable = true;
+      serverComponents.enable = true;
     };
 
     boot = {

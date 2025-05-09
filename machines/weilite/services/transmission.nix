@@ -73,6 +73,8 @@ in
       watch-dir-enabled = false;
     };
   };
+
+  networking.firewall.allowedTCPPorts = [ 9091 ];
   services.caddy.virtualHosts."https://weilite.coho-tet.ts.net:9091".extraConfig = ''
     reverse_proxy 127.0.0.1:${toString cfg.settings.rpc-port}
   '';
@@ -93,6 +95,5 @@ in
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 9091 ]; # allow on lan
   users.groups.media.members = [ cfg.user ];
 }

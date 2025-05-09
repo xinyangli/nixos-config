@@ -27,7 +27,6 @@
     # environmentFile = config.sops.secrets."ocis/env".path;
   };
 
-  networking.firewall.allowedTCPPorts = [ 8443 ];
   services.caddy.virtualHosts."${config.services.ocis.url}".extraConfig = ''
     reverse_proxy ${config.services.ocis.address}:${toString config.services.ocis.port}
   '';

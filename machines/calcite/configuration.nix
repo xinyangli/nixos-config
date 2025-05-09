@@ -316,10 +316,6 @@ in
     ];
   };
 
-  custom.prometheus = {
-    exporters.node.enable = true;
-  };
-
   services.ollama = {
     enable = true;
     acceleration = "cuda";

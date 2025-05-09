@@ -223,10 +223,7 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 8443 ];
-
   services.caddy = {
-    enable = true;
     virtualHosts = {
       "raspite.coho-tet.ts.net".extraConfig = ''
         reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}

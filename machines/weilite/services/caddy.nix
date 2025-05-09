@@ -35,13 +35,6 @@
       }";
     in
     {
-      enable = true;
-      package = pkgs.caddy.withPlugins {
-        plugins = [
-          "github.com/caddy-dns/cloudflare@v0.2.1"
-        ];
-        hash = "sha256-saKJatiBZ4775IV2C5JLOmZ4BwHKFtRZan94aS5pO90=";
-      };
       virtualHosts."derper00.namely.icu:8443".extraConfig = ''
         ${acmeCF}
         reverse_proxy 127.0.0.1:${toString config.services.tailscale.derper.port}
@@ -52,10 +45,7 @@
       '';
     };
 
-  networking.firewall.allowedTCPPorts = [
-    8000
-    8443
-  ];
+  networking.firewall.allowedTCPPorts = [ 8443 ];
 
   systemd.services.caddy = {
     serviceConfig = {

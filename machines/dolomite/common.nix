@@ -36,6 +36,7 @@
     commonSettings = {
       auth.enable = true;
       comin.enable = true;
+      serverComponents.enable = true;
       proxyServer = {
         enable = true;
         users = [

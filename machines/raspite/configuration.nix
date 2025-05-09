@@ -23,6 +23,8 @@
     })
   ];
 
+  networking.firewall.allowedTCPPorts = [ 8443 ];
+
   environment.systemPackages = with pkgs; [
     git
     libraspberrypi
