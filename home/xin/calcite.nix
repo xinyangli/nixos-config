@@ -132,14 +132,6 @@ in
     };
   };
 
-  xdg.systemDirs.data = [
-    "/usr/share"
-  ];
-
-  xdg.configFile."distrobox/distrobox.conf".text = ''
-    container_additional_volumes="/nix/store:/nix/store:ro /etc/profiles/per-user:/etc/profiles/per-user:ro"
-  '';
-
   programs.man.generateCaches = false;
 
   programs.atuin = {
@@ -153,6 +145,71 @@ in
       recolor = false;
       selection-clipboard = "clipboard";
     };
+  };
+
+  programs.yazi = {
+    enable = true;
+    plugins = with pkgs.yaziPlugins; {
+      chmod = chmod;
+      git = git;
+      bypass = bypass;
+    };
+    initLua = ''
+      require("git"):setup()
+    '';
+    settings = {
+      plugin.prepend_fetchers = [
+        {
+          id = "git";
+          name = "*";
+          run = "git";
+        }
+        {
+          id = "git";
+          name = "*/";
+          run = "git";
+        }
+      ];
+    };
+    keymap = {
+      manager.prepend_keymap = [
+        {
+          on = "T";
+          run = "plugin toggle-pane max-preview";
+          desc = "Maximize or restore the preview pane";
+        }
+        {
+          on = [
+            "c"
+            "m"
+          ];
+          run = "plugin chmod";
+          desc = "Chmod on selected files";
+        }
+        {
+          on = [ "L" ];
+          run = "plugin bypass";
+          desc = "Recursively enter child directory, skipping children with only a single subdirectory";
+        }
+        {
+          on = [ "H" ];
+          run = "plugin bypass reverse";
+          desc = "Recursively enter parent directory, skipping parents with only a single subdirectory";
+        }
+        {
+
+          on = [ "l" ];
+          run = "plugin bypass smart_enter";
+          desc = "Open a file, or recursively enter child directory, skipping children with only a single subdirectory";
+
+        }
+
+      ];
+    };
+  };
+
+  programs.lazygit = {
+    enable = true;
   };
 
   programs.firefox = {

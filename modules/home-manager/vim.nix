@@ -124,5 +124,6 @@ in
         })
       );
     };
+    home.sessionVariables.EDITOR = "neovide";
   };
 }

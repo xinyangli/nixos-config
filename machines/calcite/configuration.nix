@@ -77,7 +77,7 @@ in
   };
 
   programs.vim.enable = true;
-  programs.vim.defaultEditor = true;
+  programs.neovim.defaultEditor = true;
 
   # Keep this even if enabled in home manager
   programs.fish.enable = true;
