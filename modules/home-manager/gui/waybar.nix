@@ -5,8 +5,45 @@
   ...
 }:
 let
-  inherit (lib) mkIf mkEnableOption readFile;
+  inherit (lib) mkIf mkEnableOption;
   cfg = config.custom-hm.gui.waybar;
+  niri-taskbar = pkgs.callPackage (
+
+    {
+      rustPlatform,
+      lib,
+      fetchFromGitHub,
+      pkg-config,
+      gtk3,
+    }:
+
+    rustPlatform.buildRustPackage rec {
+      pname = "niri-taskbar";
+      version = "0.1.0";
+
+      src = fetchFromGitHub {
+        owner = "LawnGnome";
+        repo = "niri-taskbar";
+        tag = "v${version}";
+        hash = "sha256-mzO2j3CnYJsF8UCoKquG2AT1Lb0PDsSEs2mdmTcTGPA=";
+      };
+
+      useFetchCargoVendor = true;
+      cargoHash = "sha256-zOAdnkWSSJd2tfT1bV9WkFY74DKSGD6HkSl8a+Fyd9o=";
+
+      nativeBuildInputs = [
+        pkg-config
+      ];
+
+      buildInputs = [
+        gtk3
+      ];
+
+      meta = {
+        maintainers = with lib.maintainers; [ bot-wxt1221 ];
+      };
+    }
+  ) { };
 in
 {
   options.custom-hm.gui.waybar = {
@@ -14,77 +51,152 @@ in
   };
 
   config = mkIf cfg.enable {
+    home.packages = with pkgs; [
+      waybar-mpris
+    ];
+    services.playerctld.enable = true;
     programs.waybar = {
       enable = true;
       style = ''
         * {
-          font-family: Ubuntu Nerd Font, Noto Sans CJK SC;
+          font-family: Ubuntu Nerd Font, NotoSans Nerd Font, sans;
+          min-height: 14px;
+          border-radius: 1rem;
+          color: @text;
+          background-color: transparent;
+        }
+
+        menu, tooltip {
+          background: @crust;
+        }
+
+        #workspaces,
+        #tray, #custom-notification {
+          background-color: @crust;
+        }
+        #mpris,
+        #network, #pulseaudio, #cpu, #memory, #backlight, #battery {
+          color: @crust;
+          background-color: transparent;
+        }
+
+        /* Hover on filled elements */
+        #workspaces button:hover, #tray > .active:hover, #custom-notification:hover {
+          background: @base;
+        }
+        /* Transparent Hover */
+        .niri-taskbar button:hover,
+        #mpris:hover, #clock:hover, #network:hover, #pulseaudio:hover, #cpu:hover, #memory:hover, #backlight:hover, #battery:hover {
+
+          background-color: alpha(@crust, 0.2);
+        }
+
+        #tray {
+          padding: 0 0.8rem;
+        }
+        #mpris, #network, #pulseaudio, #cpu, #memory, #backlight, #battery {
+          padding: 0 0.5rem;
+        }
+
+        #mpris {
+          font-weight: normal;
+          font-size: 16px;
+        }
+
+        #clock {
+          padding: 0 1rem;
+        }
+        #custom-notification {
+          min-width: 2.8rem;
+          padding: 0;
+        }
+
+        #workspaces button {
+          min-width: 1.2rem;
+        }
+
+        #workspaces button.focused, workspaces button.active {
+          border-radius: 1rem 1rem 0 0;
+          border-bottom: 4px solid @${config.catppuccin.accent};
+        }
+        .niri-taskbar button.focused {
+          background-color: alpha(@crust, 0.1);
+          border-radius: 1rem 1rem 0 0;
+          border-bottom: 4px solid @${config.catppuccin.accent};
+        }
+
+
+        #network, #pulseaudio, #cpu, #memory {
           font-size: 14px;
           font-weight: bold;
-          min-height: 14px;
         }
 
-        window#waybar {
-          color: @text;
-          opacity: 0.95;
-          background-color: @crust;
-          padding: 2px;
+        #backlight, #battery {
+          font-size: 16px;
         }
 
-        #custom-nixos {
-          background-color: #24273a;
-          padding-left: 15px;
-          padding-right: 18px;
-        }
-
-        #custom-separator {
-          margin: 0 2px;
-        }
-
-        #workspaces {
+        #pulseaudio, #cpu, #memory, #backlight {
           border-radius: 0;
         }
-        #workspaces button {
-          padding: 0 10px;
-          border-radius: 0;
+
+        #network, #tray {
+          border-radius: 1rem 0 0 1rem;
         }
-        #workspaces button.focused,
-        #workspaces button.active {
-          border-bottom: 4px solid #8aadf4;
+
+        #battery, #custom-notification{
+          border-radius: 0 1rem 1rem 0;
         }
-        #workspaces button.empty {
-          font-size: 0;
-          min-width: 0;
-          min-height: 0;
-          margin: 0;
-          padding: 0;
-          border: 0;
-          opacity: 0;
-          box-shadow: none;
+
+        #tray {
+          font-weight: bold;
+          font-size: 14px;
         }
-        #cpu,
-        #memory,
-        #pulseaudio,
-        #network,
-        #backlight,
-        #battery,
-        #tray,
-        #custom-notification {
-          margin-right: 15px;
-        }
+
         #clock {
+          color: @crust;
+          background-color: transparent;
+          font-weight: bold;
           font-size: 16px;
         }
       '';
       settings = {
         main = {
-          margin = "2px 3px 2 3px";
-          height = 30;
+          margin = "1px 1px 0 1px";
+          height = 20;
           layer = "top";
-          "custom/nixos" = {
-            format = "";
-            interval = "once";
-            tooltip = false;
+          "cffi/niri-taskbar" = {
+            module_path = "${niri-taskbar}/lib/libniri_taskbar.so";
+            apps = {
+              signal = [
+                {
+                  match = "\\([0-9]+\\)$";
+                  class = "unread";
+                }
+              ];
+            };
+          };
+          "mpris" = {
+            format = "{player_icon} {status_icon}  {title} - {artist}";
+            format-paused = "{player_icon} {status_icon}";
+            justify = "left";
+            expand = false;
+            ellipsis = ".";
+            player-icons = {
+              default = "";
+              spotify = "";
+              Spot = "";
+              Valent = "";
+              vlc = "󰕼";
+            };
+            status-icons = {
+              paused = "";
+              playing = "";
+            };
+            ignored-players = [
+              "firefox"
+              "chromium"
+            ];
+            max-length = 20;
           };
           "custom/separator" = {
             format = " ";
@@ -92,29 +204,20 @@ in
             tooltip = false;
           };
           modules-left = [
-            "custom/nixos"
             "niri/workspaces"
-            "custom/separator"
-            "niri/window"
+            "mpris"
           ];
           modules-center = [
             "clock"
           ];
           modules-right = [
             "network#speed"
-            "custom/separator"
             "pulseaudio"
-            "custom/separator"
             "memory"
-            "custom/separator"
             "cpu"
-            "custom/separator"
             "backlight"
-            "custom/separator"
             "battery"
-            "custom/separator"
             "tray"
-            "custom/separator"
             "custom/notification"
           ];
           "niri/workspaces" = {
@@ -153,15 +256,22 @@ in
             on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
           };
           backlight = {
-            format = "󰖨  {percent}%";
+            format = "{icon}";
+            format-icons = [
+              "󱩎"
+              "󱩐"
+              "󱩒"
+              "󱩔"
+              "󰛨"
+            ];
             on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
             on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set +1%";
           };
           battery = {
             interval = 10;
-            format = "{icon}  {capacity}%";
-            format-charging = "{icon}  {capacity}% 󱐋";
-            format-plugged = "{icon}  {capacity}% ";
+            format = "{icon}";
+            format-charging = "{icon} 󱐋";
+            format-plugged = "{icon} ";
             format-icons = [
               ""
               ""
@@ -172,7 +282,7 @@ in
           };
           clock = {
             format = "{:%a %b %d %H:%M}";
-            tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+            tooltip-format = "<tt><small>{calendar}</small></tt>";
           };
           memory = {
             format = "  {percentage}%";
@@ -199,7 +309,7 @@ in
 
           tray = {
             icon-size = 18;
-            spacing = 14;
+            spacing = 10;
           };
 
           "custom/notification" = {
@@ -209,13 +319,13 @@ in
             format = "{icon}";
             format-icons = {
               dnd-inhibited-none = "";
-              dnd-inhibited-notification = "<span foreground='red'><sup></sup></span>";
+              dnd-inhibited-notification = "<span foreground='#fab387'><sup></sup></span>";
               dnd-none = "";
-              dnd-notification = "<span foreground='red'><sup></sup></span>";
+              dnd-notification = "<span foreground='#fab387'><sup></sup></span>";
               inhibited-none = "";
-              inhibited-notification = "<span foreground='red'><sup></sup></span>";
+              inhibited-notification = "<span foreground='#fab387'><sup></sup></span>";
               none = "";
-              notification = "<span foreground='red'><sup></sup></span>";
+              notification = "<span foreground='#fab387'><sup></sup></span>";
             };
             on-click = "swaync-client -t -sw";
             on-click-right = "swaync-client -d -sw";

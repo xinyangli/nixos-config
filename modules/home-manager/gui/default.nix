@@ -14,7 +14,7 @@ in
   options.custom-hm.gui = {
     wallpaper = mkOption {
       type = types.path;
-      default = ./bwmountains.jpg;
+      default = ./dawn.jpg;
     };
   };
 }
