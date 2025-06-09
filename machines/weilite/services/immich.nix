@@ -12,7 +12,7 @@ let
   jsonSettings = {
     oauth = {
       enabled = true;
-      issuerUrl = "https://${idpUrl}/oauth2/openid/immich/";
+      issuerUrl = "https://${idpUrl}/oauth2/openid/immich/.well-known/openid-configuration";
       clientId = "immich";
       clientSecret = config.sops.placeholder."immich/oauth_client_secret";
       scope = "openid email profile";
@@ -25,16 +25,13 @@ let
     };
     job = {
       faceDetection = {
-        concurrency = 3;
-      };
-      backgroundTask = {
-        concurrency = 2;
+        concurrency = 1;
       };
       metadataExtraction = {
         concurrency = 2;
       };
       thumbnailGeneration = {
-        concurrency = 1;
+        concurrency = 2;
       };
     };
     passwordLogin = {
@@ -103,8 +100,8 @@ in
           ]
         );
         immich_auto_stack = pkgs.fetchurl {
-          url = "https://gist.githubusercontent.com/xinyangli/39de5979e72d81af6fe9ddb7d1805df4/raw/7798ed8cef7bcd3d06ed005feb0dd01b4b603684/immich_auto_stack.py";
-          hash = "sha256-qE7TRJ+TLFdSJanBiuKP6fgijdE1NqAeSXWSzsfyEO0=";
+          url = "https://gist.githubusercontent.com/xinyangli/39de5979e72d81af6fe9ddb7d1805df4/raw/805beab14eb9160713b14e1da4d0d5922816d988/immich_auto_stack.py";
+          hash = "sha256-vWbw2iFkSD5jLM95Dmk7Kdb2iSI1gd4RexIGG37dm90=";
         };
       in
       {

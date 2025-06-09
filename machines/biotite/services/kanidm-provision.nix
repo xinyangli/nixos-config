@@ -182,7 +182,6 @@ in
           "https://immich.xiny.li:8443/user-settings"
         ];
         originLanding = "https://immich.xiny.li:8443/auth/login?autoLaunch=0";
-        allowInsecureClientDisablePkce = true;
         scopeMaps = {
           immich-users = [
             "openid"
