@@ -83,6 +83,15 @@ in
     ];
   };
 
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  };
+
+  # FIXME: https://github.com/Mic92/sops-nix/issues/764
+  sops.environment.HOME = "/var/empty";
+
+  services.userborn.enable = true;
   users.users.root.hashedPassword = "$y$j9T$vgLUF3/R0RJpDu7e22fSW.$CPomHsuRziERtNGUnnMZZDQG.Vj7LCe5PUOSbvkwSV3";
 
   commonSettings = {
@@ -99,12 +108,7 @@ in
   nix.settings = {
     max-jobs = 8;
     cores = 16;
-    substituters = [ "https://cache.ngi0.nixos.org/" ];
-    trusted-public-keys = [ "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA=" ];
   };
-
-  nixpkgs.config.contentAddressedByDefault = true;
-  nixpkgs.overlays = [ fix-folly-build ];
 
   custom.prometheus.exporters = {
     enable = true;
