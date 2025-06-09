@@ -49,9 +49,12 @@ in
 
     exiftool
     darktable
+    enblend-enfuse
+    hdrmerge
     kdePackages.kdenlive
     inkscape
-    gimp3
+    gimp3-with-plugins
+    hugin
     gthumb
     oculante
 
