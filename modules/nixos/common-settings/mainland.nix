@@ -143,6 +143,7 @@ in
         # See https://github.com/daeuniverse/dae/blob/main/docs/en/configuration/routing.md for full examples.
         routing {
           # pname(kresd) && dport(53) && l4proto(udp)-> must_direct
+          pname(systemd-resolve) -> must_direct
           # Disable h3 because it usually consumes too much cpu/mem resources.
           l4proto(udp) && dport(443) -> block
 

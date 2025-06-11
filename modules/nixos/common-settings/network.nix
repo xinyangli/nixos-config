@@ -81,14 +81,21 @@ in
     })
 
     (mkIf cfg.localdns.enable {
-      networking.resolvconf = {
+      services.resolved = mkIf config.networking.useNetworkd {
+        llmnr = "false";
+        extraConfig = ''
+          ${lib.optionalString (!config.commonSettings.network.enableProxy) "DNS=127.0.0.1 ::1"}
+          DNSStubListener=no
+        '';
+      };
+
+      networking.resolvconf = mkIf (!config.networking.useNetworkd) {
         enable = true;
         dnsExtensionMechanism = false;
         # We should disable local resolver if dae is enabled
         # to let dns traffic go through dae
         useLocalResolver = !config.commonSettings.network.enableProxy;
       };
-      services.resolved.enable = false;
 
       services.kresd = {
         enable = true;
