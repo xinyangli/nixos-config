@@ -68,7 +68,6 @@ in
           disable_waiting_network: false
 
           ##### Interface and kernel options.
-          # lan_interface: docker0
           wan_interface: auto
 
           auto_config_kernel_parameter: true

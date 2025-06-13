@@ -16,7 +16,7 @@
     };
 
     services.garage = {
-      enable = true;
+      enable = false;
       package = pkgs.garage_1_x;
       environmentFile = config.sops.templates."garage/env".path;
       settings = {

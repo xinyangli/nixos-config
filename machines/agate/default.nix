@@ -1,60 +1,4 @@
-{ lib, ... }:
-let
-  fix-folly-build = (
-    final: prev: {
-      folly =
-        let
-          lib = prev.lib;
-          stdenv = prev.stdenv;
-        in
-        prev.folly.overrideAttrs {
-          checkPhase = ''
-            runHook preCheck
-
-            ctest -j $NIX_BUILD_CORES --output-on-failure --exclude-regex ${
-              lib.escapeShellArg (
-                lib.concatMapStringsSep "|" (test: "^${lib.escapeRegex test}$") (
-                  [
-                    "concurrency_concurrent_hash_map_test.*/ConcurrentHashMapTest/*.StressTestReclamation"
-                    "io_async_ssl_session_test.SSLSessionTest.BasicTest"
-                    "io_async_ssl_session_test.SSLSessionTest.NullSessionResumptionTest"
-                    "singleton_thread_local_test.SingletonThreadLocalDeathTest.Overload"
-
-                    # very strict timing constraints, will fail under load
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.CancelTimeout"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.DefaultTimeout"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.DeleteWheelInTimeout"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.DestroyTimeoutSet"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.FireOnce"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.GetTimeRemaining"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.IntrusivePtr"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.Level1"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.NegativeTimeout"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.ReschedTest"
-                    "io_async_hh_wheel_timer_test.HHWheelTimerTest.SlowFast"
-                    "concurrent_skip_list_test.ConcurrentSkipList.ConcurrentAdd"
-                  ]
-                  ++ lib.optionals stdenv.hostPlatform.isLinux [
-                    "concurrency_cache_locality_test.CacheLocality.BenchmarkSysfs"
-                    "concurrency_cache_locality_test.CacheLocality.LinuxActual"
-                    "futures_future_test.Future.NoThrow"
-                    "futures_retrying_test.RetryingTest.largeRetries"
-                  ]
-                  ++ lib.optionals stdenv.hostPlatform.isDarwin [
-                    "buffered_atomic_test.BufferedAtomic.singleThreadUnguardedAccess"
-                    "io_async_notification_queue_test.NotificationQueueTest.UseAfterFork"
-                    "container_heap_vector_types_test.HeapVectorTypes.SimpleSetTes"
-                  ]
-                )
-              )
-            }
-
-            runHook postCheck
-          '';
-        };
-    }
-  );
-in
+{ config, lib, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -101,6 +45,7 @@ in
     };
     comin.enable = true;
     network.localdns.enable = true;
+    serverComponents.enable = true;
   };
   system.stateVersion = "25.05";
   time.timeZone = "Asia/Shanghai";
@@ -122,5 +67,19 @@ in
 
   custom.monitoring = {
     promtail.enable = true;
+  };
+
+  networking = {
+    useNetworkd = true;
+    hostName = "agate";
+  };
+  systemd.network = {
+    enable = true;
+    networks = {
+      "10-wan" = {
+        matchConfig.MACAddress = "80:b5:75:86:9e:c8";
+        networkConfig.DHCP = "ipv4";
+      };
+    };
   };
 }
