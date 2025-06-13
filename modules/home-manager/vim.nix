@@ -30,7 +30,6 @@ let
   fontType = types.either fontItem (types.listOf fontItem);
   neovideConfig = {
     neovim-bin = getExe pkgs.nixvim;
-    fork = true;
     frame = "none";
   };
 in
@@ -124,6 +123,6 @@ in
         })
       );
     };
-    home.sessionVariables.EDITOR = "neovide";
+    home.sessionVariables.EDITOR = "neovide --no-fork";
   };
 }
