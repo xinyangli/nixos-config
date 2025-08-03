@@ -298,7 +298,7 @@ in
   sops.templates."davfs2.conf" = {
     owner = config.services.davfs2.davUser;
     content = ''
-      https://weilite.coho-tet.ts.net:6065/photosync photosync ${
+      https://agate.coho-tet.ts.net:6065/photosync photosync ${
         config.sops.placeholder."davfs2/photosync_password"
       }
     '';
@@ -343,7 +343,7 @@ in
 
   fileSystems = {
     "/media/photosync" = {
-      device = "https://weilite.coho-tet.ts.net:6065/photosync";
+      device = "https://agate.coho-tet.ts.net:6065/photosync";
       fsType = "davfs";
       options = [
         "rw"
