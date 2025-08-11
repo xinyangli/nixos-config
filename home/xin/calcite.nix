@@ -220,8 +220,8 @@ in
     policies.DefaultDownloadDirectory = "/media/data/Downloads";
     profiles.default = {
       isDefault = true;
+      extensions.force = true;
       userChrome = ''
-
         #TabsToolbar {
           display: none;
         }
@@ -281,8 +281,9 @@ in
           min-width: var(--uc-sidebar-width) !important;
           will-change: min-width;
         }
-        #sidebar-box:hover > #sidebar-header,
-        #sidebar-box:hover > #sidebar{
+
+        #sidebar-header:hover,
+        #sidebar:hover{
           min-width: var(--uc-sidebar-hover-width) !important;
           transition-delay: 0ms !important;
         }

@@ -22,7 +22,7 @@ in
 
   config = mkIf cfg.enable {
     services.kanidm = {
-      package = pkgs.kanidm_1_5;
+      package = pkgs.kanidm_1_6;
       enableClient = true;
       clientSettings = {
         uri = "https://${idpUrl}";

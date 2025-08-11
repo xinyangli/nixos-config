@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   config = {
     home.pointerCursor = {
@@ -14,8 +19,8 @@
         package = pkgs.magnetic-catppuccin-gtk;
       };
       iconTheme = {
-        name = "Qogir";
-        package = pkgs.qogir-icon-theme;
+        name = lib.mkForce "Qogir";
+        package = lib.mkForce pkgs.qogir-icon-theme;
       };
       gtk2.configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc";
     };

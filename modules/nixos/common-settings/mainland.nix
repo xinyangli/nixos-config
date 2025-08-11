@@ -42,10 +42,17 @@ in
         "dae/sub" = {
           sopsFile = ../../../machines/secrets.yaml;
         };
+        "dae/nodes" = {
+          sopsFile = ../../../machines/secrets.yaml;
+        };
       };
       templates."dae/sub.dae".content = ''
         subscription {
-          my_sub: '${config.sops.placeholder."dae/sub"}'
+          online_sub_link: '${config.sops.placeholder."dae/sub"}'
+        }
+
+        node {
+          ${config.sops.placeholder."dae/nodes"}
         }
       '';
     };

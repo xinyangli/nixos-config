@@ -118,6 +118,8 @@ in
   # ====== GUI ======
 
   programs.niri.enable = true;
+  # Disable gcr-ssh-agent as it does not support ed25519-sk yet
+  services.gnome.gcr-ssh-agent.enable = false;
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   security.pam.services.gtklock = { }; # Required by gtklock
 
@@ -239,6 +241,7 @@ in
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.1.1w"
+    "libsoup-2.74.3"
   ];
   environment.systemPackages = with pkgs; [
     # ==== Development ==== #
@@ -272,13 +275,11 @@ in
     winetricks
   ];
 
-  services.esphome.enable = true;
   users.groups.dialout.members = [ "xin" ];
 
   system.stateVersion = "22.05";
 
-  system.switch.enable = false;
-  system.switch.enableNg = true;
+  system.switch.enable = true;
 
   sops.secrets = {
     "restic/repo_url" = {
