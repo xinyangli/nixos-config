@@ -78,7 +78,9 @@
     networks = {
       "10-wan" = {
         matchConfig.MACAddress = "80:b5:75:86:9e:c8";
-        networkConfig.DHCP = "ipv4";
+        networkConfig = {
+          DHCP = "ipv4";
+        };
       };
     };
   };
