@@ -89,8 +89,17 @@ in
         '';
       };
 
-      networking.resolvconf = mkIf (!config.networking.useNetworkd) {
-        enable = true;
+      system.nssDatabases.hosts = mkIf config.networking.useNetworkd (
+        lib.mkForce [
+          "mymachines"
+          "files"
+          "myhostname"
+          "dns"
+        ]
+      );
+
+      networking.resolvconf = {
+        enable = !config.networking.useNetworkd;
         dnsExtensionMechanism = false;
         # We should disable local resolver if dae is enabled
         # to let dns traffic go through dae
