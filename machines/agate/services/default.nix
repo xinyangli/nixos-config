@@ -4,5 +4,6 @@
     ./hydra.nix
     ./garage.nix
     ./immich.nix
+    ./derper.nix
   ];
 }
