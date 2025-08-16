@@ -6,5 +6,6 @@
     ./immich.nix
     ./derper.nix
     ./webdav.nix
+    ./ocis.nix
   ];
 }
