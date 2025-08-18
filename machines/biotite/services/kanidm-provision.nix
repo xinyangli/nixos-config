@@ -7,6 +7,7 @@ let
     forgejoDomain
     grafanaUrl
     synapseDelegateUrl
+    ocisUrl
     ;
 in
 {
@@ -107,20 +108,6 @@ in
           };
         };
       };
-      gts = {
-        displayName = "GoToSocial";
-        originUrl = "https://xinyang.life/auth/callback";
-        originLanding = "https://xinyang.life/auth/callback";
-        allowInsecureClientDisablePkce = true;
-        scopeMaps = {
-          gts-users = [
-            "openid"
-            "email"
-            "profile"
-            "groups"
-          ];
-        };
-      };
       gotosocial = {
         displayName = "GoToSocial";
         originUrl = "${gotosocialUrl}/auth/callback";
@@ -135,18 +122,32 @@ in
           ];
         };
       };
-      # It's used for all the clients. I'm too lazy to change the name.
-      owncloud-android = {
+
+      owncloud = {
         displayName = "ownCloud Apps";
-        originLanding = "https://drive.xinyang.life:8443/";
+        originLanding = ocisUrl;
         originUrl = [
-          "http://localhost:38622/"
-          "http://localhost:43580/"
-          "https://drive.xinyang.life:8443/"
+          "${ocisUrl}/oidc-callback.html"
           # TODO: Should allow mobile redirect url not ending with /
-          # "oc://android.owncloud.com"
         ];
         public = true;
+        preferShortUsername = true;
+        scopeMaps = {
+          ocis-users = [
+            "openid"
+            "email"
+            "profile"
+            "offline_access"
+          ];
+        };
+      };
+
+      owncloud-android = {
+        displayName = "ownCloud Apps";
+        originLanding = ocisUrl;
+        originUrl = [
+          "oc://android.owncloud.com"
+        ];
         preferShortUsername = true;
         scopeMaps = {
           ocis-users = [

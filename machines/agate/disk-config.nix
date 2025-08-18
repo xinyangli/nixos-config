@@ -59,6 +59,14 @@
                   "/rootfs" = {
                     mountpoint = "/";
                   };
+                  "/garage_subvol" = {
+                    mountOptions = [
+                      "noatime"
+                      "nodatacow"
+                      "compress=no"
+                    ];
+                    mountpoint = "/storage/garage";
+                  };
                   # Subvolume name is the same as the mountpoint
                   "/home" = {
                     mountOptions = [ "compress=zstd" ];

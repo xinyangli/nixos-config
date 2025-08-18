@@ -14,7 +14,7 @@
     synapseDelegateUrl = "https://synapse.xiny.li";
 
     transmissionExporterUrl = "weilite.coho-tet.ts.net:19091";
-    ocisUrl = "https://drive.xiny.li:8443/";
+    ocisUrl = "https://drive.xiny.li:8443";
 
     prometheusCollectors = [
       "thorite.coho-tet.ts.net"

@@ -24,9 +24,12 @@ in
 
     systemd.services.garage.serviceConfig = {
       BindPaths = [
-        "/storage/garage:%S/garage/data" # /var/lib/garage/data
+        "/storage/garage:/var/lib/garage/data"
       ];
+      SupplementaryGroups = [ "garage-data" ];
     };
+
+    users.groups.garage-data = { };
 
     services.garage = {
       enable = true;
