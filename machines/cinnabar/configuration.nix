@@ -12,6 +12,7 @@ in
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./disko-config.nix
     ./network.nix
     ../sops.nix
   ];
@@ -36,14 +37,8 @@ in
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  boot.kernelModules = [
-    "nvidia"
-    "nvidia_modeset"
-    "nvidia_uvm"
-  ];
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.latest;
-  boot.supportedFilesystems = [ "ntfs" ];
+  boot.loader.efi.efiSysMountPoint = "/boot";
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   documentation = {
@@ -64,6 +59,8 @@ in
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
   programs.gnupg.agent.pinentryPackage = pkgs.pinentry-gtk2;
+
+  networking.hostName = "cinnabar";
 
   services.blueman.enable = true;
 

@@ -136,6 +136,12 @@
           machines/calcite/configuration.nix
           (mkHome "xin" "calcite")
         ];
+        cinnabar = [
+          disko.nixosModules.disko
+          catppuccin.nixosModules.catppuccin
+          machines/cinnabar/configuration.nix
+          (mkHome "xin" "calcite")
+        ];
         hk-00 = [
           ./machines/dolomite/claw.nix
           ./machines/dolomite/common.nix
@@ -314,6 +320,10 @@
       nixosConfigurations = {
         calcite = mkNixos {
           hostname = "calcite";
+        };
+
+        cinnabar = mkNixos {
+          hostname = "cinnabar";
         };
 
         weilite = mkNixos {

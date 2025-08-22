@@ -48,6 +48,8 @@ in
       };
     };
 
+    home.sessionVariables.DISPLAY = ":0";
+
     systemd.user.services.swaybg = {
       Install = {
         WantedBy = [ "graphical-session.target" ];
