@@ -8,6 +8,7 @@ in
     ./common/pentesting.nix
     ./common/gui/foot.nix
     ./common/gui/default.nix
+    ./localisation.nix
   ];
 
   programs.nix-index-database.comma.enable = true;

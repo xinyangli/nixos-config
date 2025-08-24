@@ -1,6 +1,7 @@
 keys:
   - &xin age1uw059wcwfvd9xuj0hpqzqpeg7qemecspjrsatg37wc7rs2pumfdsgken0c
   - &host-calcite age1ytwfqfeez3dqtazyjltn7mznccwx3ua8djhned7n8mxqhw4p6e5s97skfa
+  - &host-cinnabar age1xfd44csxcjszy4tdhntl8nq2s2ntyyt2crjfj26hfmceqe2grvgq7kkmec
   - &host-raspite age1nugzw24upk8pz5lyz2z89qk8se4gpcsg3ypcs58nykncr56sevrsm8qpvj
   - &host-la-00 age1fw2sqaa5s9c8ml6ncsexkj8ar4288387ju92ytjys4awf9aw6smqqz94dh
   - &host-massicot age1jle2auermhswqtehww9gqada8car5aczrx43ztzqf9wtcld0sfmqzaecta
@@ -16,6 +17,7 @@ creation_rules:
     - age:
       - *xin
       - *host-calcite
+      - *host-cinnabar
       - *host-weilite
       - *host-massicot
       - *host-thorite
@@ -34,6 +36,11 @@ creation_rules:
     - age:
       - *xin
       - *host-calcite
+  - path_regex: machines/cinnabar/secrets.yaml
+    key_groups:
+    - age:
+      - *xin
+      - *host-cinnabar
   - path_regex: machines/raspite/secrets.yaml
     key_groups:
     - age:

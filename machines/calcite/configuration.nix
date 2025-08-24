@@ -101,18 +101,6 @@ in
     LC_TIME = "en_US.UTF-8";
   };
 
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5 = {
-      addons = with pkgs; [
-        fcitx5-rime
-        fcitx5-gtk
-      ];
-      waylandFrontend = true;
-    };
-  };
-
   # ====== GUI ======
 
   programs.niri.enable = true;
@@ -153,7 +141,6 @@ in
     in
     {
       enable = true;
-      vt = 1;
       settings = {
         default_session = {
           command = "${pkgs.dbus}/bin/dbus-run-session -- ${getExe pkgs.niri} -c ${niri-login-config} -- ${getExe pkgs.greetd.gtkgreet} -l -c niri-session -s ${pkgs.magnetic-catppuccin-gtk}/share/themes/Catppuccin-GTK-Dark/gtk-3.0/gtk.css";

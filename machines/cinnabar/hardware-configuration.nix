@@ -9,6 +9,30 @@
   ...
 }:
 let
+  sensorhub-firmware = pkgs.callPackage (
+    { stdenvNoCC, fetchurl }:
+    stdenvNoCC.mkDerivation (finalAttrs: {
+      pname = "sensorhub-firmware";
+      version = "2025.04.14";
+
+      src = fetchurl {
+        url = "https://github.com/dantmnf/zenbook-s14-linux/raw/refs/heads/master/firmware/intel/ish/ish_lnlm_ef534c00_fb3b8d86.bin";
+        hash = "sha256-AdlQVdGuuy4leUZbR93aOW13t8BIZiyuB5FJpUbky0M=";
+      };
+
+      dontUnpack = true;
+      dontFixup = true; # binaries must not be stripped or patchelfed
+
+      installPhase = ''
+        runHook preInstall
+
+        mkdir -p $out/lib/firmware/intel/ish/
+        cp $src $out/lib/firmware/intel/ish/ish_lnlm.bin
+
+        runHook postInstall
+      '';
+    })
+  ) { };
   my-alsa-ucm = pkgs.alsa-ucm-conf.overrideAttrs (oldAttrs: {
     version = "1.2.14";
     src = pkgs.fetchurl {
@@ -40,6 +64,7 @@ in
     "nvme"
   ];
   boot.initrd.kernelModules = [ ];
+  boot.initrd.systemd.enable = true; # For hibernation
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
@@ -62,10 +87,10 @@ in
     inherit ALSA_CONFIG_UCM ALSA_CONFIG_UCM2;
   };
 
-  # sound
   hardware.firmware = [
-    pkgs.sof-firmware # Intel sound DSP firmware
-    pkgs.linux-firmware # includes cs35l56-* & friends
+    sensorhub-firmware
+    pkgs.sof-firmware
+    pkgs.linux-firmware
     pkgs.alsa-firmware
   ];
 

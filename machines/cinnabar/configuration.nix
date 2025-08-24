@@ -41,6 +41,20 @@ in
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
+  services.logind = {
+    powerKey = "suspend-then-hibernate";
+    powerKeyLongPress = "poweroff";
+    lidSwitch = "suspend-then-hibernate";
+    lidSwitchDocked = "ignore";
+    lidSwitchExternalPower = "ignore";
+  };
+
+  systemd.sleep.extraConfig = ''
+    SuspendEstimationSec=1m
+    HibernateDelaySec=5m
+    HibernateOnACPower=false
+  '';
+
   documentation = {
     nixos.enable = false;
     man.enable = false;
@@ -96,18 +110,6 @@ in
     LC_PAPER = "zh_CN.UTF-8";
     LC_TELEPHONE = "zh_CN.UTF-8";
     LC_TIME = "en_US.UTF-8";
-  };
-
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5 = {
-      addons = with pkgs; [
-        fcitx5-rime
-        fcitx5-gtk
-      ];
-      waylandFrontend = true;
-    };
   };
 
   # ====== GUI ======

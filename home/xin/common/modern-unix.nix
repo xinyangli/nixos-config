@@ -10,8 +10,8 @@
     jq
     fd
     du-dust # du + rust
-    zoxide # autojumper
     ripgrep
     tealdeer
   ];
+  programs.zoxide.enable = true;
 }

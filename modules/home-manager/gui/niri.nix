@@ -50,17 +50,38 @@ in
 
     home.sessionVariables.DISPLAY = ":0";
 
-    systemd.user.services.swaybg = {
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
+    services.swww.enable = true;
+    systemd.user.services.bg-switch =
+      let
+        wallpaper_directory = config.home.homeDirectory + "/Pictures/Wallpapers";
+        wallpaper_switch = pkgs.writeShellScript "wallpaper-switch" ''
+          img=$(ls ${wallpaper_directory} | shuf | head -1)
+          ${lib.getExe pkgs.swww} img ${wallpaper_directory}/$img
+        '';
+      in
+      {
+        Install = {
+          WantedBy = [ config.wayland.systemd.target ];
+        };
+        Unit = {
+          After = [ "swww.service" ];
+        };
+        Service = {
+          ExecStart = "${wallpaper_switch}";
+          Restart = "on-failure";
+          RestartSec = "30s";
+        };
       };
+    systemd.user.timers.bg-switch = {
       Unit = {
-        PartOf = [ "graphical-session.target" ];
-        After = [ "graphical-session.target" ];
+        Description = "Switch wallpaper hourly";
       };
-      Service = {
-        ExecStart = "${lib.getExe pkgs.swaybg} -i ${wallpaper} -m fill";
-        Restart = "on-failure";
+      Install = {
+        WantedBy = [ config.wayland.systemd.target ];
+      };
+      Timer = {
+        Unit = "bg-switch.service";
+        OnCalendar = "hourly";
       };
     };
 
@@ -82,12 +103,17 @@ in
         enable = true;
         timeouts = [
           {
-            timeout = 600;
-            command = ''[ "$(${pkgs.tlp}/bin/tlp-stat -m)" == "battery" ] && /run/current-system/systemd/bin/systemctl suspend'';
+            timeout = 60;
+            command = "${getExe pkgs.brightnessctl} -s set 2";
+            resumeCommand = "${getExe pkgs.brightnessctl} -r";
           }
           {
-            timeout = 1200;
+            timeout = 300;
             command = ''${getExe pkgs.niri} msg action power-off-monitors'';
+          }
+          {
+            timeout = 500;
+            command = ''[ $(${pkgs.coreutils}/bin/cat /sys/class/power_supply/AC0/online) -eq 0 ] && /run/current-system/systemd/bin/systemctl suspend-then-hibernate'';
           }
         ];
         events = [

@@ -72,7 +72,7 @@ in
 
         #workspaces,
         #tray, #custom-notification {
-          background-color: @crust;
+          background-color: alpha(@crust, 0.8);
         }
         #mpris,
         #network, #pulseaudio, #cpu, #memory, #backlight, #battery {
@@ -279,6 +279,7 @@ in
               ""
               ""
             ];
+            tooltip-format = "{capacity}% ({time})";
           };
           clock = {
             format = "{:%a %b %d %H:%M}";
