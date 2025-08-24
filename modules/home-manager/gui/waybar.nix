@@ -253,7 +253,7 @@ in
             format-muted = " {format_source}";
             format-source = " {volume}%";
             format-source-muted = "";
-            on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
+            on-click = "${pkgs.pwvucontrol}/bin/pwvucontrol";
           };
           backlight = {
             format = "{icon}";

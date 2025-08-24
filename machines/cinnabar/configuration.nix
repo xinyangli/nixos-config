@@ -39,16 +39,7 @@ in
 
   # Bootloader.
   boot = {
-    plymouth = {
-      enable = true;
-      theme = "splash";
-      themePackages = with pkgs; [
-        # By default we would install all themes
-        (adi1090x-plymouth-themes.override {
-          selected_themes = [ "splash" ];
-        })
-      ];
-    };
+    plymouth.enable = true;
 
     # Enable "Silent boot"
     consoleLogLevel = 3;
@@ -76,7 +67,6 @@ in
     powerKeyLongPress = "poweroff";
     lidSwitch = "suspend-then-hibernate";
     lidSwitchDocked = "ignore";
-    lidSwitchExternalPower = "ignore";
   };
 
   systemd.sleep.extraConfig = ''
@@ -154,7 +144,6 @@ in
     enable = true;
     accent = "peach";
     flavor = "mocha";
-    plymouth.enable = false;
   };
 
   xdg.portal = {
@@ -179,14 +168,14 @@ in
         hotkey-overlay {
           skip-at-startup
         }
+        spawn-at-startup "${getExe pkgs.swayidle}" "-w" "timeout" "60" "${getExe pkgs.brightnessctl} -s set 2" "resume" "${getExe pkgs.brightnessctl} -r" "timeout" "300" "${getExe pkgs.niri} msg action power-off-monitors"
       '';
     in
     {
       enable = true;
-      vt = 1;
       settings = {
         default_session = {
-          command = "${pkgs.dbus}/bin/dbus-run-session -- ${getExe pkgs.niri} -c ${niri-login-config} -- ${getExe pkgs.greetd.gtkgreet} -l -c niri-session -s ${pkgs.magnetic-catppuccin-gtk}/share/themes/Catppuccin-GTK-Dark/gtk-3.0/gtk.css";
+          command = "${pkgs.dbus}/bin/dbus-run-session -- ${getExe pkgs.niri} -c ${niri-login-config} -- ${getExe pkgs.greetd.gtkgreet} -l -c niri-session -b ${../../bwmountains.jpg}";
         };
       };
     };

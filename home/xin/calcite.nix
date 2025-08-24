@@ -1,4 +1,9 @@
-{ pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   homeDirectory = "/home/xin";
 in
@@ -63,7 +68,10 @@ in
     vlc
     obs-studio
     spotify
-    spot
+    # TODO: Waiting for a new release of librespot, see github: spotifyd #1299
+    spotifyd
+    coppwr
+
     # IM
     element-desktop
     tdesktop
@@ -89,7 +97,19 @@ in
     enable = true;
     accent = "peach";
     flavor = "mocha";
+    fcitx5 = {
+      # See https://github.com/nix-community/home-manager/issues/5982#issuecomment-2822054196
+      # catppuccin/nix directly bind to conf/classiui.conf, which cause the problem if
+      # any fcitx5 settings is set in home-manager
+      apply = false;
+      enableRounded = true;
+    };
   };
+  i18n.inputMethod.fcitx5.settings.globalOptions.globalSection.Theme =
+    let
+      cfg = config.catppuccin.fcitx5;
+    in
+    "catppuccin-${cfg.flavor}-${cfg.accent}";
 
   xdg.enable = true;
 
