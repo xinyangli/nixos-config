@@ -34,12 +34,42 @@ in
     "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
   ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot";
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+  # Bootloader.
+  boot = {
+    plymouth = {
+      enable = true;
+      theme = "splash";
+      themePackages = with pkgs; [
+        # By default we would install all themes
+        (adi1090x-plymouth-themes.override {
+          selected_themes = [ "splash" ];
+        })
+      ];
+    };
+
+    # Enable "Silent boot"
+    consoleLogLevel = 3;
+    initrd.verbose = false;
+    initrd.availableKernelModules = [ "xe" ];
+    kernelParams = [
+      "quiet"
+      "splash"
+      "boot.shell_on_fail"
+      "udev.log_priority=3"
+      "rd.systemd.show_status=auto"
+    ];
+
+    loader = {
+      # Hide the OS choice for bootloaders.
+      timeout = 0;
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+      efi.efiSysMountPoint = "/boot";
+    };
+  };
 
   services.logind = {
     powerKey = "suspend-then-hibernate";
@@ -50,8 +80,8 @@ in
   };
 
   systemd.sleep.extraConfig = ''
-    SuspendEstimationSec=1m
-    HibernateDelaySec=5m
+    SuspendEstimationSec=5m
+    HibernateDelaySec=4h
     HibernateOnACPower=false
   '';
 
@@ -124,6 +154,7 @@ in
     enable = true;
     accent = "peach";
     flavor = "mocha";
+    plymouth.enable = false;
   };
 
   xdg.portal = {
