@@ -92,7 +92,7 @@ in
     custom-hm.gui.gtklock = {
       enable = true;
       config = {
-        gtk-theme = "Catppuccin-GTK-Dark";
+        # gtk-theme = "Catppuccin-GTK-Dark";
       };
     };
 
@@ -112,18 +112,20 @@ in
             command = ''${getExe pkgs.niri} msg action power-off-monitors'';
           }
           {
-            timeout = 500;
+            # Sleep if on battery
+            timeout = 300;
             command = ''[ $(${pkgs.coreutils}/bin/cat /sys/class/power_supply/AC0/online) -eq 0 ] && /run/current-system/systemd/bin/systemctl suspend-then-hibernate'';
           }
         ];
         events = [
           {
-            event = "lock";
-            command = "${getExe pkgs.gtklock}";
+            event = "before-sleep";
+            command = "${pkgs.playerctl}/bin/playerctl --all-players pause; ${getExe pkgs.gtklock} --daemonize";
           }
           {
-            event = "before-sleep";
-            command = "/run/current-system/systemd/bin/loginctl lock-session";
+            event = "after-resume";
+            # Avoid dark lock screen when we enter sleep after a timeout.
+            command = "${getExe pkgs.brightnessctl} -r";
           }
         ];
       };
