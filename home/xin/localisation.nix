@@ -22,7 +22,11 @@
       ];
       waylandFrontend = true;
       settings = {
-        globalOptions = { };
+        globalOptions = {
+          Behavior = {
+            ActiveByDefault = true;
+          };
+        };
         inputMethod = {
           GroupOrder."0" = "Default";
           "Groups/0" = {

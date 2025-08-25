@@ -66,6 +66,11 @@
       url = "github:nakato/nixos-sbc/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -85,6 +90,7 @@
       disko,
       comin,
       nixos-sbc,
+      lanzaboote,
       ...
     }:
     let
@@ -139,6 +145,7 @@
         cinnabar = [
           disko.nixosModules.disko
           catppuccin.nixosModules.catppuccin
+          lanzaboote.nixosModules.lanzaboote
           machines/cinnabar/configuration.nix
           (mkHome "xin" "calcite")
         ];
@@ -173,7 +180,8 @@
       };
       sharedColmenaModules = [
         deploymentModule
-      ] ++ sharedNixosModules;
+      ]
+      ++ sharedNixosModules;
       mkHome =
         user: host:
         { ... }:
@@ -289,7 +297,8 @@
               "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
               nixos-hardware.nixosModules.raspberry-pi-4
               machines/raspite/configuration.nix
-            ] ++ sharedColmenaModules;
+            ]
+            ++ sharedColmenaModules;
           };
 
         thorite =
@@ -337,7 +346,8 @@
         baryte = mkNixos {
           hostname = "baryte";
         };
-      } // self.colmenaHive.nodes;
+      }
+      // self.colmenaHive.nodes;
 
       hydraJobs =
         let
@@ -367,7 +377,8 @@
             modules = [
               (import ./home).${user}.${host}
               overlayModule
-            ] ++ sharedHmModules;
+            ]
+            ++ sharedHmModules;
           };
         };
       in

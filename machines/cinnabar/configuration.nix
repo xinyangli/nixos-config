@@ -15,6 +15,7 @@ in
     ./disko-config.nix
     ./network.nix
     ../sops.nix
+    ./lanzaboote.nix
   ];
 
   commonSettings = {
@@ -329,12 +330,14 @@ in
     };
   };
 
-  custom.restic = {
-    enable = true;
-    paths = [
-      "/backup/rootfs/var/lib"
-      "/backup/home"
-    ];
+  custom = {
+    restic = {
+      enable = true;
+      paths = [
+        "/backup/rootfs/var/lib"
+        "/backup/home"
+      ];
+    };
   };
 
   services.ollama = {

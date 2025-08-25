@@ -105,7 +105,7 @@ in
       enableRounded = true;
     };
   };
-  i18n.inputMethod.fcitx5.settings.globalOptions.globalSection.Theme =
+  i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection.Theme =
     let
       cfg = config.catppuccin.fcitx5;
     in
