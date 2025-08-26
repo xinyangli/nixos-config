@@ -64,7 +64,7 @@ in
         ];
         default = pkgs.writeText "gtklock-style.css" ''
           window {
-            background-image: url("${config.custom-hm.gui.wallpaper}");
+            background-image: url("./bwmountains.jpg");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -103,9 +103,8 @@ in
 
     extraConfig = mkOption {
       type = nullOr attrs;
-      default =
-        {
-        };
+      default = {
+      };
       description = ''
         Extra configuration to append to gtklock configuration file.
         Mostly used for appending module configurations.
