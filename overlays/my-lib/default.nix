@@ -9,3 +9,4 @@
 }
 // (import ./prometheus.nix)
 // (import ./settings.nix)
+// (import ./flakepath.nix)

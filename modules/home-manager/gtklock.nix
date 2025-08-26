@@ -64,7 +64,7 @@ in
         ];
         default = pkgs.writeText "gtklock-style.css" ''
           window {
-            background-image: url("./bwmountains.jpg");
+            background-image: url("${./bwmountains.jpg}");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;

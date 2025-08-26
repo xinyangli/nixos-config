@@ -100,24 +100,26 @@
           inherit (self.packages.${prev.stdenv.system}) nixvim;
         }
       );
-      overlayModule =
-        { ... }:
-        {
-          options.my-lib = nixpkgs.lib.mkOption {
-            type = nixpkgs.lib.types.attrs;
-            default = import ./overlays/my-lib;
-          };
-          config = {
-            nixpkgs.overlays = [
-              editorOverlay
-              (import ./overlays/add-pkgs.nix)
-            ];
-          };
+      mylibModule = {
+        options.my-lib = nixpkgs.lib.mkOption {
+          type = nixpkgs.lib.types.attrs;
+          default = import ./overlays/my-lib;
         };
+      };
+      overlayModule = {
+        imports = [ mylibModule ];
+        config = {
+          nixpkgs.overlays = [
+            editorOverlay
+            (import ./overlays/add-pkgs.nix)
+          ];
+        };
+      };
       deploymentModule = {
         deployment.targetUser = "xin";
       };
       sharedHmModules = [
+        mylibModule
         self.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.hmModules.nix-index
@@ -147,7 +149,7 @@
           catppuccin.nixosModules.catppuccin
           lanzaboote.nixosModules.lanzaboote
           machines/cinnabar/configuration.nix
-          (mkHome "xin" "calcite")
+          (mkHome "xin" "cinnabar")
         ];
         hk-00 = [
           ./machines/dolomite/claw.nix
@@ -394,6 +396,7 @@
               nvd
               nh
               (python3.withPackages (ps: with ps; [ requests ]))
+              sbctl
             ];
           };
         };

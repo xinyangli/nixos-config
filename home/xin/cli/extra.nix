@@ -19,6 +19,8 @@ in
   ];
 
   # == Terminal enhancement ==
+  programs.nix-index-database.comma.enable = true;
+
   programs.yazi = {
     enable = true;
     plugins = with pkgs.yaziPlugins; {

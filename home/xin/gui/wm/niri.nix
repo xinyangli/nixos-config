@@ -5,6 +5,8 @@
   ...
 }:
 let
+  inherit (config.my-lib) flakePath;
+  configDir = "${flakePath config}/config";
   xwayland-satellite = pkgs.xwayland-satellite.overrideAttrs (drv: rec {
     src = pkgs.fetchFromGitHub {
       owner = "Supreeeme";
@@ -30,6 +32,9 @@ in
   ];
 
   config = {
+    xdg.configFile = {
+      niri.source = config.lib.file.mkOutOfStoreSymlink "${configDir}/niri";
+    };
     systemd.user.services.xwayland-satellite = {
       Install = {
         WantedBy = [ "graphical-session.target" ];

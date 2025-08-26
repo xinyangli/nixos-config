@@ -57,7 +57,10 @@ in
     loader = {
       # Hide the OS choice for bootloaders.
       timeout = 0;
-      systemd-boot.enable = true;
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 10;
+      };
       efi.canTouchEfiVariables = true;
       efi.efiSysMountPoint = "/boot";
     };

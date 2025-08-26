@@ -151,7 +151,7 @@ in
       main = {
         margin = "1px 1px 0 1px";
         height = 20;
-        layer = "top";
+        layer = "bottom";
         "cffi/niri-taskbar" = {
           module_path = "${niri-taskbar}/lib/libniri_taskbar.so";
           apps = {
