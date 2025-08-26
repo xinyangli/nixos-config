@@ -64,7 +64,7 @@ in
           WantedBy = [ config.wayland.systemd.target ];
         };
         Unit = {
-          After = [ "swww.service" ];
+          After = [ config.wayland.systemd.target ];
         };
         Service = {
           ExecStart = "${wallpaper_switch}";
@@ -120,7 +120,7 @@ in
         events = [
           {
             event = "before-sleep";
-            command = "${pkgs.playerctl}/bin/playerctl --all-players pause; ${getExe pkgs.gtklock} --daemonize";
+            command = "${pkgs.playerctl}/bin/playerctl --all-players pause; pgrep gktlock || ${getExe pkgs.gtklock} --daemonize";
           }
           {
             event = "after-resume";

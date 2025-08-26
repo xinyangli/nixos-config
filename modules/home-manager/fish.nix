@@ -40,6 +40,12 @@ in
     home.packages = [ pkgs.grc ];
     programs.fish = {
       enable = true;
+      shellAliases = {
+        sctl = "systemctl --user";
+        ssctl = "sudo systemctl";
+        jctl = "journalctl --user";
+        sjctl = "sudo journalctl";
+      };
       plugins =
         with pkgs;
         (filter
