@@ -22,6 +22,9 @@ builds:
       - nixosConfigurations.calcite
     branch: testing-calcite
   - include:
+      - nixosConfigurations.cinnabar
+    branch: testing-cinnabar
+  - include:
       - nixosConfigurations.fra-00
     branch: testing-fra-00
   - include:

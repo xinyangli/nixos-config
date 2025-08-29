@@ -12,8 +12,10 @@ in
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./disko-config.nix
     ./network.nix
     ../sops.nix
+    ./lanzaboote.nix
   ];
 
   commonSettings = {
@@ -33,18 +35,49 @@ in
     "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
   ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  boot.kernelModules = [
-    "nvidia"
-    "nvidia_modeset"
-    "nvidia_uvm"
-  ];
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.latest;
-  boot.supportedFilesystems = [ "ntfs" ];
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+  # Bootloader.
+  boot = {
+    plymouth.enable = true;
+
+    # Enable "Silent boot"
+    consoleLogLevel = 3;
+    initrd.verbose = false;
+    initrd.availableKernelModules = [ "xe" ];
+    kernelParams = [
+      "quiet"
+      "splash"
+      "boot.shell_on_fail"
+      "udev.log_priority=3"
+      "rd.systemd.show_status=auto"
+    ];
+
+    loader = {
+      # Hide the OS choice for bootloaders.
+      timeout = 0;
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 10;
+      };
+      efi.canTouchEfiVariables = true;
+      efi.efiSysMountPoint = "/boot";
+    };
+  };
+
+  services.logind = {
+    powerKey = "suspend-then-hibernate";
+    powerKeyLongPress = "poweroff";
+    lidSwitch = "suspend-then-hibernate";
+    lidSwitchDocked = "ignore";
+  };
+
+  systemd.sleep.extraConfig = ''
+    SuspendEstimationSec=5m
+    HibernateDelaySec=4h
+    HibernateOnACPower=false
+  '';
 
   documentation = {
     nixos.enable = false;
@@ -64,6 +97,8 @@ in
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
   programs.gnupg.agent.pinentryPackage = pkgs.pinentry-gtk2;
+
+  networking.hostName = "cinnabar";
 
   services.blueman.enable = true;
 
@@ -137,13 +172,14 @@ in
         hotkey-overlay {
           skip-at-startup
         }
+        spawn-at-startup "${getExe pkgs.swayidle}" "-w" "timeout" "60" "${getExe pkgs.brightnessctl} -s set 2" "resume" "${getExe pkgs.brightnessctl} -r" "timeout" "300" "${getExe pkgs.niri} msg action power-off-monitors"
       '';
     in
     {
       enable = true;
       settings = {
         default_session = {
-          command = "${pkgs.dbus}/bin/dbus-run-session -- ${getExe pkgs.niri} -c ${niri-login-config} -- ${getExe pkgs.greetd.gtkgreet} -l -c niri-session -s ${pkgs.magnetic-catppuccin-gtk}/share/themes/Catppuccin-GTK-Dark/gtk-3.0/gtk.css";
+          command = "${pkgs.dbus}/bin/dbus-run-session -- ${getExe pkgs.niri} -c ${niri-login-config} -- ${getExe pkgs.greetd.gtkgreet} -l -c niri-session -b ${../../bwmountains.jpg}";
         };
       };
     };
@@ -297,12 +333,14 @@ in
     };
   };
 
-  custom.restic = {
-    enable = true;
-    paths = [
-      "/backup/rootfs/var/lib"
-      "/backup/home"
-    ];
+  custom = {
+    restic = {
+      enable = true;
+      paths = [
+        "/backup/rootfs/var/lib"
+        "/backup/home"
+      ];
+    };
   };
 
   services.ollama = {

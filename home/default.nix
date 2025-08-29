@@ -1,6 +1,6 @@
 {
   xin = {
     calcite = import ./xin/calcite.nix;
-    gold = import ./xin/gold;
+    cinnabar = import ./xin/cinnabar.nix;
   };
 }

@@ -66,6 +66,11 @@
       url = "github:nakato/nixos-sbc/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -85,6 +90,7 @@
       disko,
       comin,
       nixos-sbc,
+      lanzaboote,
       ...
     }:
     let
@@ -94,24 +100,26 @@
           inherit (self.packages.${prev.stdenv.system}) nixvim;
         }
       );
-      overlayModule =
-        { ... }:
-        {
-          options.my-lib = nixpkgs.lib.mkOption {
-            type = nixpkgs.lib.types.attrs;
-            default = import ./overlays/my-lib;
-          };
-          config = {
-            nixpkgs.overlays = [
-              editorOverlay
-              (import ./overlays/add-pkgs.nix)
-            ];
-          };
+      mylibModule = {
+        options.my-lib = nixpkgs.lib.mkOption {
+          type = nixpkgs.lib.types.attrs;
+          default = import ./overlays/my-lib;
         };
+      };
+      overlayModule = {
+        imports = [ mylibModule ];
+        config = {
+          nixpkgs.overlays = [
+            editorOverlay
+            (import ./overlays/add-pkgs.nix)
+          ];
+        };
+      };
       deploymentModule = {
         deployment.targetUser = "xin";
       };
       sharedHmModules = [
+        mylibModule
         self.homeManagerModules.default
         sops-nix.homeManagerModules.sops
         nix-index-database.hmModules.nix-index
@@ -135,6 +143,13 @@
           catppuccin.nixosModules.catppuccin
           machines/calcite/configuration.nix
           (mkHome "xin" "calcite")
+        ];
+        cinnabar = [
+          disko.nixosModules.disko
+          catppuccin.nixosModules.catppuccin
+          lanzaboote.nixosModules.lanzaboote
+          machines/cinnabar/configuration.nix
+          (mkHome "xin" "cinnabar")
         ];
         hk-00 = [
           ./machines/dolomite/claw.nix
@@ -167,7 +182,8 @@
       };
       sharedColmenaModules = [
         deploymentModule
-      ] ++ sharedNixosModules;
+      ]
+      ++ sharedNixosModules;
       mkHome =
         user: host:
         { ... }:
@@ -283,7 +299,8 @@
               "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
               nixos-hardware.nixosModules.raspberry-pi-4
               machines/raspite/configuration.nix
-            ] ++ sharedColmenaModules;
+            ]
+            ++ sharedColmenaModules;
           };
 
         thorite =
@@ -316,6 +333,10 @@
           hostname = "calcite";
         };
 
+        cinnabar = mkNixos {
+          hostname = "cinnabar";
+        };
+
         weilite = mkNixos {
           hostname = "weilite";
         };
@@ -327,7 +348,8 @@
         baryte = mkNixos {
           hostname = "baryte";
         };
-      } // self.colmenaHive.nodes;
+      }
+      // self.colmenaHive.nodes;
 
       hydraJobs =
         let
@@ -357,7 +379,8 @@
             modules = [
               (import ./home).${user}.${host}
               overlayModule
-            ] ++ sharedHmModules;
+            ]
+            ++ sharedHmModules;
           };
         };
       in
@@ -373,6 +396,7 @@
               nvd
               nh
               (python3.withPackages (ps: with ps; [ requests ]))
+              sbctl
             ];
           };
         };
