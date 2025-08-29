@@ -1,4 +1,9 @@
-{ pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   inherit (lib) getExe;
 in
@@ -25,7 +30,7 @@ in
       events = [
         {
           event = "before-sleep";
-          command = "${pkgs.playerctl}/bin/playerctl --all-players pause; pgrep gktlock || ${getExe pkgs.gtklock} --daemonize";
+          command = "${pkgs.playerctl}/bin/playerctl --all-players pause; ${config.custom-hm.gui.gtklock.package} --daemonize";
         }
         {
           event = "after-resume";
@@ -43,6 +48,15 @@ in
 
   custom-hm.gui.gtklock = {
     enable = true;
+    package = pkgs.gtklock.overrideAttrs {
+      patches = [
+        # TODO: https://github.com/jovanlanik/gtklock/pull/139
+        (pkgs.fetchurl {
+          url = "https://github.com/jovanlanik/gtklock/commit/99532b665cf4dcccde3f5eadf14c50438626e01d.diff";
+          hash = "sha256-bJaFPXzW/yGM1TFisXRoKuMYcFnf0hMSOZEmt2P1cnw=";
+        })
+      ];
+    };
     config = {
       # gtk-theme = "Catppuccin-GTK-Dark";
     };

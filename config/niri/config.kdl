@@ -211,7 +211,7 @@ layout {
     }
 
     tab-indicator {
-	hide-when-single-tab
+	      hide-when-single-tab
         width 3
         gap 8
         length total-proportion=0.3
@@ -281,11 +281,6 @@ window-rule {
 }
 
 window-rule {
-    match app-id="wechat$"
-    open-floating true
-}
-
-window-rule {
     match app-id="org.pulseaudio.pavucontrol$"
     match app-id="com.saivert.pwvucontrol$"
     match app-id=".blueman-manager-wrapped$"
@@ -327,6 +322,11 @@ window-rule {
     match at-startup=true app-id=r#"^thunderbird$"#
     match at-startup=true app-id=r#"^wechat$"#
     open-on-workspace "chat"
+}
+
+window-rule {
+    match at-startup=true app-id="firefox"
+    open-on-workspace "browser"
 }
 
 window-rule {

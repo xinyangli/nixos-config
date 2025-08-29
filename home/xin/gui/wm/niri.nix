@@ -7,21 +7,6 @@
 let
   inherit (config.my-lib) flakePath;
   configDir = "${flakePath config}/config";
-  xwayland-satellite = pkgs.xwayland-satellite.overrideAttrs (drv: rec {
-    src = pkgs.fetchFromGitHub {
-      owner = "Supreeeme";
-      repo = "xwayland-satellite";
-      rev = "3e6f892d20d918479e67d1e6c90c4be824a9d4ab";
-      hash = "sha256-W1UUok7DPi4IXCYtc273FbVH1ifuCIcl+oO6CDqt8Dk=";
-    };
-    cargoDeps = drv.cargoDeps.overrideAttrs (
-      lib.const {
-        name = "xwayland-satellite-vendor.tar.gz";
-        inherit src;
-        outputHash = "sha256-/nK4cVgelaMtpym18RYNafPUFnMOG4uHRpVO8bOS3ow=";
-      }
-    );
-  });
 in
 {
   imports = [
@@ -44,7 +29,7 @@ in
         After = [ "graphical-session.target" ];
       };
       Service = {
-        ExecStart = "${xwayland-satellite}/bin/xwayland-satellite";
+        ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
         Restart = "on-failure";
       };
     };
