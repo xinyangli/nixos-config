@@ -30,7 +30,7 @@ in
       events = [
         {
           event = "before-sleep";
-          command = "${pkgs.playerctl}/bin/playerctl --all-players pause; ${config.custom-hm.gui.gtklock.package} --daemonize";
+          command = "${pkgs.playerctl}/bin/playerctl --all-players pause; ${getExe config.custom-hm.gui.gtklock.package} --daemonize";
         }
         {
           event = "after-resume";

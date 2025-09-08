@@ -234,7 +234,7 @@ layout {
 // You can change the path where screenshots are saved.
 // A ~ at the front will be expanded to the home directory.
 // The path is formatted with strftime(3) to give you the screenshot date and time.
-screenshot-path "/media/data/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+screenshot-path "/home/xin/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 // You can also set this to null to disable saving screenshots to disk.
 // screenshot-path null
@@ -262,14 +262,15 @@ cursor {
 
 // Example: block out two password managers from screen capture.
 // (This example rule is commented out with a "/-" in front.)
-/-window-rule {
-    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
-    match app-id=r#"^org\.gnome\.World\.Secrets$"#
+window-rule {
+    match app-id="^org.keepassxc.KeePassXC$"
+    match app-id="^org.gnome.World.Secrets$"
+    match app-id="^wechat$"
+    match app-id="^thunderbird$"
+    match app-id="^Element$"
+    match app-id="^org.telegram.desktop$"
 
     block-out-from "screen-capture"
-
-    // Use this instead if you want them visible on third-party screenshot tools.
-    // block-out-from "screencast"
 }
 
 // Open the Firefox Picture-in-Picture window at the bottom-left corner of the screen
@@ -286,7 +287,7 @@ window-rule {
     match app-id=".blueman-manager-wrapped$"
     default-floating-position x=5 y=5 relative-to="top-right"
     min-width 400 
-    max-width 400
+    max-width 800
     min-height 600
     max-height 600
     open-floating true
@@ -294,6 +295,13 @@ window-rule {
 
 window-rule {
     match app-id="engrampa$"
+    open-floating true
+}
+
+window-rule {
+    match app-id="wemeetapp$" title="EmojiFloatWnd$"
+    default-floating-position x=32 y=32 relative-to="bottom-right"
+    open-focused false
     open-floating true
 }
 
@@ -321,6 +329,7 @@ window-rule {
     match at-startup=true app-id=r#"^org\.telegram\.desktop$"#
     match at-startup=true app-id=r#"^thunderbird$"#
     match at-startup=true app-id=r#"^wechat$"#
+    match at-startup=true app-id="Element"
     open-on-workspace "chat"
 }
 

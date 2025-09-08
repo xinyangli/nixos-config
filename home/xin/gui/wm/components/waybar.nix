@@ -63,7 +63,7 @@ in
         background-color: alpha(@crust, 0.8);
       }
       #mpris,
-      #network, #pulseaudio, #cpu, #memory, #backlight, #battery {
+      #network, #wireplumber, #cpu, #memory, #backlight, #battery {
         color: @crust;
         background-color: transparent;
       }
@@ -74,7 +74,7 @@ in
       }
       /* Transparent Hover */
       .niri-taskbar button:hover,
-      #mpris:hover, #clock:hover, #network:hover, #pulseaudio:hover, #cpu:hover, #memory:hover, #backlight:hover, #battery:hover {
+      #mpris:hover, #clock:hover, #network:hover, #wireplumber:hover, #cpu:hover, #memory:hover, #backlight:hover, #battery:hover {
 
         background-color: alpha(@crust, 0.2);
       }
@@ -82,7 +82,7 @@ in
       #tray {
         padding: 0 0.8rem;
       }
-      #mpris, #network, #pulseaudio, #cpu, #memory, #backlight, #battery {
+      #mpris, #network, #wireplumber, #cpu, #memory, #backlight, #battery {
         padding: 0 0.5rem;
       }
 
@@ -114,7 +114,7 @@ in
       }
 
 
-      #network, #pulseaudio, #cpu, #memory {
+      #network, #wireplumber, #cpu, #memory {
         font-size: 14px;
         font-weight: bold;
       }
@@ -123,7 +123,7 @@ in
         font-size: 16px;
       }
 
-      #pulseaudio, #cpu, #memory, #backlight {
+      #wireplumber, #cpu, #memory, #backlight {
         border-radius: 0;
       }
 
@@ -200,7 +200,8 @@ in
         ];
         modules-right = [
           "network#speed"
-          "pulseaudio"
+          "wireplumber#sink"
+          "wireplumber#source"
           "memory"
           "cpu"
           "backlight"
@@ -221,28 +222,31 @@ in
         "niri/window" = {
           max-length = 50;
         };
-        pulseaudio = {
-          format = "{icon} {volume}% {format_source}";
-          format-bluetooth = "{icon}  {volume}% {format_source}";
-          format-bluetooth-muted = "  {icon} {format_source}";
-          format-icons = {
-            car = "";
-            default = [
-              ""
-              ""
-              ""
-            ];
-            hands-free = "";
-            headphone = "";
-            headset = "";
-            phone = "";
-            portable = "";
-          };
-          format-muted = " {format_source}";
-          format-source = " {volume}%";
-          format-source-muted = "";
+
+        "wireplumber#sink" = {
+          format = "{icon} {volume}%";
+          format-muted = "";
+          format-icons = [
+            ""
+            ""
+            ""
+          ];
           on-click = "${pkgs.pwvucontrol}/bin/pwvucontrol";
+          on-click-middle = "${pkgs.coppwr}/bin/coppwr";
+          on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          scroll-step = 2;
         };
+
+        "wireplumber#source" = {
+          node-type = "Audio/Source";
+          format = " {volume}%";
+          format-muted = "";
+          on-click = "${pkgs.pwvucontrol}/bin/pwvucontrol";
+          on-click-middle = "${pkgs.coppwr}/bin/coppwr";
+          on-click-right = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
+          scroll-step = 2;
+        };
+
         backlight = {
           format = "{icon}";
           format-icons = [
@@ -268,6 +272,15 @@ in
             ""
           ];
           tooltip-format = "{capacity}% ({time})";
+          tooltip-format-plugged = "{capacity}%";
+          states = {
+            warning = 15;
+            critical = 5;
+          };
+          events = {
+            "on-discharging-warning" = "${pkgs.libnotify}/bin/notify-send -u normal 'Low Battery'";
+            "on-discharging-critical" = "${pkgs.libnotify}/bin/notify-send -u normal 'Very Low battery'";
+          };
         };
         clock = {
           format = "{:%a %b %d %H:%M}";

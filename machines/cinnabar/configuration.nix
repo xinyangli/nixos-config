@@ -18,6 +18,19 @@ in
     ./lanzaboote.nix
   ];
 
+  nixpkgs.overlays = [
+    (self: super: {
+      niri = super.niri.overrideAttrs {
+        patches = [
+          (pkgs.fetchurl {
+            url = "https://patch-diff.githubusercontent.com/raw/YaLTeR/niri/pull/1791.diff";
+            hash = "sha256-M2jOquJDmnJFO1ghO0IyMBJTiRpPzew53IjiO1Tw65c=";
+          })
+        ];
+      };
+    })
+  ];
+
   commonSettings = {
     auth.enable = true;
     nix = {
@@ -93,7 +106,6 @@ in
     # TPM2TOOLS_TCTI and TPM2_PKCS11_TCTI env variables
     tctiEnvironment.enable = true;
   };
-  security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
   programs.gnupg.agent.pinentryPackage = pkgs.pinentry-gtk2;
