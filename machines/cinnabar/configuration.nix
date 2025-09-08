@@ -175,6 +175,25 @@ in
   systemd.user.services.xdg-desktop-portal-gnome.after = [ "graphical-session.target" ];
   systemd.user.services.xdg-desktop-portal-gnome.wantedBy = [ "graphical-session.target" ];
 
+  programs.regreet = {
+    enable = true;
+    settings = {
+      background.path = "${../../bwmountains.jpg}";
+      application_prefer_dark_theme = true;
+    };
+    theme = {
+      name = "Catppuccin-GTK-Dark";
+      package = pkgs.magnetic-catppuccin-gtk;
+    };
+    iconTheme = {
+      name = lib.mkForce "Qogir";
+      package = lib.mkForce pkgs.qogir-icon-theme;
+    };
+    cursorTheme = {
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Ice";
+    };
+  };
   services.greetd =
     let
       niri-login-config = pkgs.writeText "niri-login-config.kdl" ''
@@ -184,17 +203,25 @@ in
         hotkey-overlay {
           skip-at-startup
         }
+        environment {
+          GTK_USE_PORTAL "0"
+          GDK_DEBUG "no-portals"
+        }
         spawn-at-startup "${getExe pkgs.swayidle}" "-w" "timeout" "60" "${getExe pkgs.brightnessctl} -s set 2" "resume" "${getExe pkgs.brightnessctl} -r" "timeout" "300" "${getExe pkgs.niri} msg action power-off-monitors"
+        spawn-at-startup "sh" "-c" "${pkgs.greetd.regreet}/bin/regreet; niri msg action quit --skip-confirmation"
       '';
     in
     {
       enable = true;
       settings = {
         default_session = {
-          command = "${pkgs.dbus}/bin/dbus-run-session -- ${getExe pkgs.niri} -c ${niri-login-config} -- ${getExe pkgs.greetd.gtkgreet} -l -c niri-session -b ${../../bwmountains.jpg}";
+          command = "${getExe pkgs.niri} -c ${niri-login-config}";
         };
       };
     };
+
+  services.desktopManager.plasma6.enable = true;
+  programs.kdeconnect.package = lib.mkForce pkgs.valent;
 
   # Keyboard mapping on internal keyboard
   services.keyd = {
@@ -247,10 +274,7 @@ in
     enable = true;
     wireplumber.enable = true;
     alsa.enable = true;
-    alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    jack.enable = true;
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.

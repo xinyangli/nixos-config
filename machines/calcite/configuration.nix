@@ -60,7 +60,6 @@ in
     # TPM2TOOLS_TCTI and TPM2_PKCS11_TCTI env variables
     tctiEnvironment.enable = true;
   };
-  security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
   programs.gnupg.agent.pinentryPackage = pkgs.pinentry-gtk2;
