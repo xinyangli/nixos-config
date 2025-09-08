@@ -190,6 +190,13 @@ in
           targetAddresses = probeList;
         }
         {
+          hostAddress = "agate.coho-tet.ts.net";
+          targetAddresses = [
+            "la-00.video.namely.icu:8080"
+            "fra-00.video.namely.icu:8080"
+          ];
+        }
+        {
           hostAddress = "weilite.coho-tet.ts.net";
           targetAddresses = [
             "la-00.video.namely.icu:8080"
