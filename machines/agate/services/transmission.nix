@@ -82,22 +82,6 @@ in
     reverse_proxy 127.0.0.1:${toString cfg.settings.rpc-port}
   '';
 
-  systemd.services.prometheus-transmission-exporter = {
-    enable = true;
-    wantedBy = [ "transmission.service" ];
-    environment = {
-      WEB_ADDR = transmissionExporterUrl;
-      TRANSMISSION_ADDR = "http://127.0.0.1:${toString cfg.settings.rpc-port}";
-      TRANSMISSION_USERNAME = "xin";
-    };
-    after = [ "tailscaled.service" ];
-    wants = [ "tailscaled.service" ];
-    serviceConfig = {
-      ExecStart = "${lib.getExe pkgs.transmission-exporter}";
-      EnvironmentFile = config.sops.templates."transmission-cred.env".path;
-    };
-  };
-
   systemd.tmpfiles.settings."10-media-storage" = {
     "/storage/media" = {
       d = {

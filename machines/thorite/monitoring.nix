@@ -152,12 +152,6 @@ in
           port = 3100;
         }
         {
-          name = "transmission";
-          scheme = "http";
-          address = "agate.${internalDomain}";
-          port = 19091;
-        }
-        {
           name = "sonarr";
           scheme = "http";
           address = "agate.${internalDomain}";
