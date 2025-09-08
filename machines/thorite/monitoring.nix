@@ -13,7 +13,6 @@ let
     grafanaUrl
     ntfyUrl
     internalDomain
-    transmissionExporterUrl
     ;
   removeHttps = s: lib.removePrefix "https://" s;
 in
@@ -152,24 +151,24 @@ in
           address = "thorite.${internalDomain}";
           port = 3100;
         }
-        # {
-        #   name = "transmission";
-        #   scheme = "http";
-        #   address = "weilite.${internalDomain}";
-        #   port = 19091;
-        # }
-        # {
-        #   name = "sonarr";
-        #   scheme = "http";
-        #   address = "weilite.${internalDomain}";
-        #   port = 21560;
-        # }
-        # {
-        #   name = "radarr";
-        #   scheme = "http";
-        #   address = "weilite.${internalDomain}";
-        #   port = 21561;
-        # }
+        {
+          name = "transmission";
+          scheme = "http";
+          address = "agate.${internalDomain}";
+          port = 19091;
+        }
+        {
+          name = "sonarr";
+          scheme = "http";
+          address = "agate.${internalDomain}";
+          port = 21560;
+        }
+        {
+          name = "radarr";
+          scheme = "http";
+          address = "agate.${internalDomain}";
+          port = 21561;
+        }
       ])
       ++ (mkCaddyScrapes [
         { address = "thorite.coho-tet.ts.net"; }
