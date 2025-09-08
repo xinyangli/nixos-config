@@ -151,10 +151,6 @@
           machines/cinnabar/configuration.nix
           (mkHome "xin" "cinnabar")
         ];
-        hk-00 = [
-          ./machines/dolomite/claw.nix
-          ./machines/dolomite/common.nix
-        ];
         la-00 = [
           ./machines/dolomite/bandwagon.nix
           ./machines/dolomite/common.nix
@@ -254,20 +250,6 @@
             system.stateVersion = "21.05";
             deployment = {
               targetHost = "la-00.video.namely.icu";
-              buildOnTarget = false;
-              tags = [ "proxy" ];
-            };
-          };
-
-        hk-00 =
-          { ... }:
-          {
-            imports = nodeNixosModules.hk-00 ++ sharedColmenaModules;
-            nixpkgs.system = "x86_64-linux";
-            networking.hostName = "hk-00";
-            system.stateVersion = "24.05";
-            deployment = {
-              targetHost = "hk-00.video.namely.icu";
               buildOnTarget = false;
               tags = [ "proxy" ];
             };

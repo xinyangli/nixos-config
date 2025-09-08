@@ -6,7 +6,6 @@ keys:
   - &host-la-00 age1fw2sqaa5s9c8ml6ncsexkj8ar4288387ju92ytjys4awf9aw6smqqz94dh
   - &host-massicot age1jle2auermhswqtehww9gqada8car5aczrx43ztzqf9wtcld0sfmqzaecta
   - &host-weilite age17r3fxfmt6hgwe984w4lds9u0cnkf5ttq8hnqt800ayfmx7t8t5gqjddyml
-  - &host-hk-00 age1p2dlc8gfgyrvtta6mty2pezjycn244gmvh456qd3wvkfwesp253qnwyta9
   - &host-fra-00 age18u4mqrhqkrpcytxfxfex6aeap04u38emhy6u4wrp5k62sz2vae4qm5jj7s
   - &host-biotite age1v5h946jfke6ae8pcgz52mhj26cacqcpl9dmmrrkf37x55rnq2v3szqctvv
   - &host-thorite age12ng08vjx5jde5ncqutwkd5vm4ygfwy33mzhzwe0lkxzglulgpqusc89r96
@@ -22,7 +21,6 @@ creation_rules:
       - *host-massicot
       - *host-thorite
       - *host-biotite
-      - *host-hk-00
       - *host-fra-00
       - *host-la-00
       - *host-agate
@@ -65,7 +63,6 @@ creation_rules:
     key_groups:
     - age: 
       - *xin
-      - *host-hk-00
       - *host-fra-00
       - *host-la-00
   - path_regex: machines/dolomite/secrets/la-00.yaml
@@ -73,11 +70,6 @@ creation_rules:
     - age:
       - *xin
       - *host-la-00
-  - path_regex: machines/dolomite/secrets/hk-00.yaml
-    key_groups:
-    - age:
-      - *xin
-      - *host-hk-00
   - path_regex: machines/dolomite/secrets/fra-00.yaml
     key_groups:
     - age:
