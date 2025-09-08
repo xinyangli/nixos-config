@@ -24,7 +24,7 @@ in
         patches = [
           (pkgs.fetchurl {
             url = "https://patch-diff.githubusercontent.com/raw/YaLTeR/niri/pull/1791.diff";
-            hash = "sha256-M2jOquJDmnJFO1ghO0IyMBJTiRpPzew53IjiO1Tw65c=";
+            hash = "sha256-oHtim6jsFDiHG0BxPd7n9GJc8BWA46G/yjj2nmFrirg=";
           })
         ];
       };
