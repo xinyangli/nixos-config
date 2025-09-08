@@ -83,8 +83,8 @@ in
       let
         probeList = [
           "la-00.video.namely.icu:8080"
+          "agate_home.xiny.li:8443"
           "fra-00.video.namely.icu:8080"
-          "home.xinyang.life:8000"
         ];
         chinaTargets = [
           "bj-cu-v4.ip.zstaticcdn.com:80"
@@ -116,14 +116,14 @@ in
         {
           name = "immich";
           scheme = "http";
-          address = "weilite.coho-tet.ts.net";
+          address = "agate.coho-tet.ts.net";
           port = 8082;
         }
-        {
-          name = "restic_rest_server";
-          address = "backup.xinyang.life";
-          port = 8443;
-        }
+        # {
+        #   name = "restic_rest_server";
+        #   address = "backup.xinyang.life";
+        #   port = 8443;
+        # }
         {
           inherit passwordFile;
           name = "gotosocial";
@@ -152,24 +152,24 @@ in
           address = "thorite.${internalDomain}";
           port = 3100;
         }
-        {
-          name = "transmission";
-          scheme = "http";
-          address = "weilite.${internalDomain}";
-          port = 19091;
-        }
-        {
-          name = "sonarr";
-          scheme = "http";
-          address = "weilite.${internalDomain}";
-          port = 21560;
-        }
-        {
-          name = "radarr";
-          scheme = "http";
-          address = "weilite.${internalDomain}";
-          port = 21561;
-        }
+        # {
+        #   name = "transmission";
+        #   scheme = "http";
+        #   address = "weilite.${internalDomain}";
+        #   port = 19091;
+        # }
+        # {
+        #   name = "sonarr";
+        #   scheme = "http";
+        #   address = "weilite.${internalDomain}";
+        #   port = 21560;
+        # }
+        # {
+        #   name = "radarr";
+        #   scheme = "http";
+        #   address = "weilite.${internalDomain}";
+        #   port = 21561;
+        # }
       ])
       ++ (mkCaddyScrapes [
         { address = "thorite.coho-tet.ts.net"; }

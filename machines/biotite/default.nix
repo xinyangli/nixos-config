@@ -38,6 +38,7 @@
   commonSettings = {
     auth.enable = true;
     comin.enable = true;
+    serverComponents.enable = true;
   };
 
   sops = {
