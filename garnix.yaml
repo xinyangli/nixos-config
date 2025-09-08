@@ -28,9 +28,6 @@ builds:
       - nixosConfigurations.fra-00
     branch: testing-fra-00
   - include:
-      - nixosConfigurations.hk-00
-    branch: testing-hk-00
-  - include:
       - nixosConfigurations.la-00
     branch: testing-la-00
   - include:

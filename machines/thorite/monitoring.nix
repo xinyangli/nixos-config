@@ -59,25 +59,24 @@ in
         blackbox.enable = true;
         node.enable = true;
       };
-      ruleModules =
-        [
-          {
-            name = "comin_rules";
-            rules = [
-              {
-                alert = "CominBuildFailed";
-                expr = "comin_build_info != 1";
-                for = "1m";
-                labels = {
-                  severity = "critical";
-                };
-              }
-            ];
-          }
-        ]
-        ++ (mkCaddyRules [ { host = "thorite"; } ])
-        ++ (mkNodeRules [ { host = "thorite"; } ])
-        ++ (mkBlackboxRules [ { host = "thorite"; } ]);
+      ruleModules = [
+        {
+          name = "comin_rules";
+          rules = [
+            {
+              alert = "CominBuildFailed";
+              expr = "comin_build_info != 1";
+              for = "1m";
+              labels = {
+                severity = "critical";
+              };
+            }
+          ];
+        }
+      ]
+      ++ (mkCaddyRules [ { host = "thorite"; } ])
+      ++ (mkNodeRules [ { host = "thorite"; } ])
+      ++ (mkBlackboxRules [ { host = "thorite"; } ]);
     };
 
     services.prometheus.scrapeConfigs =
@@ -85,7 +84,6 @@ in
         probeList = [
           "la-00.video.namely.icu:8080"
           "fra-00.video.namely.icu:8080"
-          "hk-00.video.namely.icu:8080"
           "home.xinyang.life:8000"
         ];
         chinaTargets = [
@@ -108,7 +106,6 @@ in
                 "weilite"
                 "thorite"
                 "la-00"
-                "hk-00"
                 "fra-00"
               ];
             }
@@ -183,7 +180,6 @@ in
         { address = "thorite.coho-tet.ts.net"; }
         { address = "weilite.coho-tet.ts.net"; }
         { address = "biotite.coho-tet.ts.net"; }
-        { address = "hk-00.coho-tet.ts.net"; }
         { address = "la-00.coho-tet.ts.net"; }
         { address = "fra-00.coho-tet.ts.net"; }
       ])
@@ -197,15 +193,10 @@ in
           targetAddresses = [
             "la-00.video.namely.icu:8080"
             "fra-00.video.namely.icu:8080"
-            "hk-00.video.namely.icu:8080"
           ];
         }
         {
           hostAddress = "la-00.coho-tet.ts.net";
-          targetAddresses = chinaTargets;
-        }
-        {
-          hostAddress = "hk-00.coho-tet.ts.net";
           targetAddresses = chinaTargets;
         }
         {
@@ -215,7 +206,6 @@ in
       ])
       ++ (mkV2rayScrapes [
         { address = "la-00.coho-tet.ts.net"; }
-        { address = "hk-00.coho-tet.ts.net"; }
         { address = "fra-00.coho-tet.ts.net"; }
       ]);
 

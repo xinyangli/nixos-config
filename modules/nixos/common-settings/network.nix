@@ -132,9 +132,6 @@ in
             '';
             proxySettings = ''
               policy.add(policy.domains(
-                policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('8.218.218.229'), ttl=300 } }),
-                { todname('hk-00.namely.icu') }))
-              policy.add(policy.domains(
                 policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('67.230.168.47'), ttl=300 } }),
                 { todname('la-00.namely.icu') }))
               policy.add(policy.domains(
