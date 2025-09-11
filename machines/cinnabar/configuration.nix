@@ -220,9 +220,6 @@ in
       };
     };
 
-  services.desktopManager.plasma6.enable = true;
-  programs.kdeconnect.package = lib.mkForce pkgs.valent;
-
   # Keyboard mapping on internal keyboard
   services.keyd = {
     enable = true;
