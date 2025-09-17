@@ -11,5 +11,6 @@
     ./disk-partitions
     ./restic.nix
     ./monitor
+    ./rustical.nix
   ];
 }

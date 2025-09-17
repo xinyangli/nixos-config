@@ -16,6 +16,7 @@
     ./services/forgejo.nix
     ./services/vaultwarden.nix
     ./services/kanidm.nix
+    ./services/rustical.nix
   ];
 
   networking.hostName = "biotite";
