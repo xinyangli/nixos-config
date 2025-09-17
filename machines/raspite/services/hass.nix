@@ -96,6 +96,9 @@
         legacy = false;
       };
       devices = {
+        "0x8cf681fffe002b73" = {
+          friendly_name = "大次卧开关";
+        };
         "0x000d6f001673c5d4" = {
           friendly_name = "小次卧开关";
         };
@@ -211,6 +214,26 @@
           friendly_name = "客厅射灯南3";
           transition = 1;
         };
+        "0x540f57fffe5210b8" = {
+          friendly_name = "主卧射灯北";
+          transition = 1;
+        };
+        "0x540f57fffe54c8c6" = {
+          friendly_name = "主卧射灯南";
+          transition = 1;
+        };
+        "0x540f57fffe5210c2" = {
+          friendly_name = "衣帽间右";
+          transition = 1;
+        };
+        "0x540f57fffe54c8c5" = {
+          friendly_name = "衣帽间左";
+          transition = 1;
+        };
+        "0x540f57fffe4ee62d" = {
+          friendly_name = "卧室走廊";
+          transition = 1;
+        };
         "0x540f57fffe520ceb" = {
           friendly_name = "小次卧射灯北";
           transition = 1;
@@ -218,6 +241,52 @@
         "0x540f57fffe5210cd" = {
           friendly_name = "小次卧射灯南";
           transition = 1;
+        };
+        "0xa4c1385b43afdf5e" = {
+          friendly_name = "油烟机插座";
+        };
+      };
+      groups = {
+        "1" = {
+          friendly_name = "客厅射灯";
+          devices = [
+            "0x540f57fffe5210cf"
+            "0x540f57fffe54c8bb"
+            "0x540f57fffe5210db"
+            "0x540f57fffe54cec5"
+            "0x540f57fffe520d1d"
+            "0x540f57fffe54c966"
+          ];
+        };
+        "2" = {
+          friendly_name = "主卧射灯";
+          devices = [
+            "0x540f57fffe5210b8"
+            "0x540f57fffe54c8c6"
+          ];
+        };
+        "3" = {
+          friendly_name = "书房射灯";
+          devices = [
+            "0x540f57fffe54ced3"
+            "0x540f57fffe54c8d4"
+            "0x540f57fffe54c82b"
+            "0x540f57fffe5210bc"
+          ];
+        };
+        "4" = {
+          friendly_name = "小次卧射灯";
+          devices = [
+            "0x540f57fffe520ceb"
+            "0x540f57fffe5210cd"
+          ];
+        };
+        "5" = {
+          friendly_name = "过道射灯";
+          devices = [
+            "0x540f57fffe54c86b"
+            "0x540f57fffe54c82e"
+          ];
         };
       };
     };
