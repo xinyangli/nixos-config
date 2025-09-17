@@ -339,7 +339,7 @@ window-rule {
 }
 
 window-rule {
-    match app-id=r#"^valent$"#
+    match app-id="org.kde.kdeconnect.api"
     match app-id=r#"^.blueman-manager-wrapped$"#
     default-column-width { proportion 0.2; }
     max-width 200

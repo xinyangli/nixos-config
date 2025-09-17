@@ -10,6 +10,7 @@
     ttf-wps-fonts
 
     eudic
+    calibre
 
     # Multimedia
     obs-studio

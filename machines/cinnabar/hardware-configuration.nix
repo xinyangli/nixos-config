@@ -67,6 +67,9 @@ in
   boot.initrd.systemd.enable = true; # For hibernation
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 1;
+  };
 
   hardware.enableAllFirmware = true;
   services.asusd.enable = true;
