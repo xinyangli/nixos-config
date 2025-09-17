@@ -8,6 +8,7 @@ let
     grafanaUrl
     synapseDelegateUrl
     ocisUrl
+    rusticalUrl
     ;
 in
 {
@@ -57,6 +58,9 @@ in
         members = [ "xin" ];
       };
       synapse-users = {
+        members = [ "xin" ];
+      };
+      rustical-users = {
         members = [ "xin" ];
       };
       idm_people_self_mail_write = {
@@ -234,6 +238,18 @@ in
           synapse-users = [
             "openid"
             "profile"
+          ];
+        };
+      };
+      rustical = {
+        displayName = "Rustical";
+        originUrl = "${rusticalUrl}/frontend/login/oidc/callback";
+        originLanding = "${rusticalUrl}/";
+        scopeMaps = {
+          rustical-users = [
+            "openid"
+            "profile"
+            "groups"
           ];
         };
       };

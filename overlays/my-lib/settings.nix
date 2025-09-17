@@ -12,6 +12,7 @@
     grafanaUrl = "https://grafana.xiny.li";
     synapseUrl = "https://xiny.li";
     synapseDelegateUrl = "https://synapse.xiny.li";
+    rusticalUrl = "https://calendar.xiny.li";
 
     transmissionExporterUrl = "agate.coho-tet.ts.net:19091";
     ocisUrl = "https://drive.xiny.li:8443";
