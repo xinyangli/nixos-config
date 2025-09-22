@@ -150,6 +150,11 @@ in
 
   # ====== GUI ======
 
+  services.desktopManager.plasma6.enable = true;
+  # See https://discuss.kde.org/t/no-hdr-available-on-oled-laptop-with-intel-igpu/31580/2,
+  # There's many OLED laptop displays where libdisplay-info doesn't yet parse the
+  # parts of the EDID that would signal HDR support.
+  environment.variables.KWIN_FORCE_ASSUME_HDR_SUPPORT = 1;
   programs.niri.enable = true;
   # Disable gcr-ssh-agent as it does not support ed25519-sk yet
   services.gnome.gcr-ssh-agent.enable = false;

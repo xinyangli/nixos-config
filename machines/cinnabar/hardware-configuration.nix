@@ -68,7 +68,7 @@ in
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   boot.kernel.sysctl = {
-    "vm.swappiness" = 1;
+    "vm.swappiness" = 0;
   };
 
   hardware.enableAllFirmware = true;
