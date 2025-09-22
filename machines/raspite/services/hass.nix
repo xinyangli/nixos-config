@@ -1,9 +1,17 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   services.home-assistant = {
     enable = true;
     openFirewall = false;
     config = {
+      "automation ui" = "!include automations.yaml";
+      "scene ui" = "!include scenes.yaml";
+      "script ui" = "!include scripts.yaml";
       logger = {
         logs = {
           homeassistant.helpers.llm = "debug";
@@ -45,6 +53,7 @@
         zlib-ng
       ];
     extraComponents = [
+      "esphome"
       "mqtt"
       "roborock"
       "openai_conversation"
@@ -70,7 +79,9 @@
     enable = true;
     package = pkgs.zigbee2mqtt_2;
     settings = {
-      home-assistant = config.services.home-assistant.enable;
+      homeassistant = lib.mkIf config.services.home-assistant.enable {
+        enabled = true;
+      };
       serial = {
         adapter = "zstack";
         port = "/dev/ttyUSB0";
@@ -242,51 +253,12 @@
           friendly_name = "小次卧射灯南";
           transition = 1;
         };
+        "0x540f57fffe54ceee" = {
+          friendly_name = "小走廊射灯";
+          transition = 1;
+        };
         "0xa4c1385b43afdf5e" = {
           friendly_name = "油烟机插座";
-        };
-      };
-      groups = {
-        "1" = {
-          friendly_name = "客厅射灯";
-          devices = [
-            "0x540f57fffe5210cf"
-            "0x540f57fffe54c8bb"
-            "0x540f57fffe5210db"
-            "0x540f57fffe54cec5"
-            "0x540f57fffe520d1d"
-            "0x540f57fffe54c966"
-          ];
-        };
-        "2" = {
-          friendly_name = "主卧射灯";
-          devices = [
-            "0x540f57fffe5210b8"
-            "0x540f57fffe54c8c6"
-          ];
-        };
-        "3" = {
-          friendly_name = "书房射灯";
-          devices = [
-            "0x540f57fffe54ced3"
-            "0x540f57fffe54c8d4"
-            "0x540f57fffe54c82b"
-            "0x540f57fffe5210bc"
-          ];
-        };
-        "4" = {
-          friendly_name = "小次卧射灯";
-          devices = [
-            "0x540f57fffe520ceb"
-            "0x540f57fffe5210cd"
-          ];
-        };
-        "5" = {
-          friendly_name = "过道射灯";
-          devices = [
-            "0x540f57fffe54c86b"
-            "0x540f57fffe54c82e"
-          ];
         };
       };
     };
