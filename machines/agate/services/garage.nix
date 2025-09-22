@@ -40,12 +40,12 @@ in
         data_dir = "/var/lib/garage/data";
 
         replication_factor = garageFactor;
-        rpc_bind_addr = "[::]:3901";
+        rpc_bind_addr = "127.0.0.1:3901";
         rpc_public_addr = "127.0.0.1:3901";
 
         s3_api = {
           s3_region = "cn-north-1";
-          api_bind_addr = "[::]:3900";
+          api_bind_addr = "127.0.0.1:3900";
           root_domain = ".s3.garage.localhost";
         };
         # s3_web = {
@@ -57,7 +57,7 @@ in
         #   api_bind_addr = "[::]:3904";
         # };
         admin = {
-          api_bind_addr = "[::]:3903";
+          api_bind_addr = "127.0.0.1:3903";
         };
       };
     };

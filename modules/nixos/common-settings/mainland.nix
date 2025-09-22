@@ -150,6 +150,7 @@ in
         routing {
           # pname(kresd) && dport(53) && l4proto(udp)-> must_direct
           pname(systemd-resolve) -> must_direct
+          pname(caddy) -> must_direct
           # Disable h3 because it usually consumes too much cpu/mem resources.
           l4proto(udp) && dport(443) -> block
 

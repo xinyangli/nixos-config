@@ -1,5 +1,6 @@
 {
   imports = [
+    ./attic.nix
     ./caddy.nix
     ./hydra.nix
     ./garage.nix

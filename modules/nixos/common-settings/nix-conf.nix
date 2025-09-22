@@ -53,11 +53,13 @@ in
       trusted-users = [ "root" ];
 
       substituters = [
+        "https://pek-0.cache.xiny.li:8443/general"
         "https://nix-community.cachix.org"
         "https://cache.garnix.io"
       ];
 
       trusted-public-keys = [
+        "general:2Hwow6RGV4egE/mDBARmfkyH5tm84r1+BrYvtPRTzco="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
         "xin-1:8/ul1IhdWLswERF/8RfeAw8VZqjwHrJ1x55y1yjxQ+Y="
