@@ -3,9 +3,14 @@ let
   inherit (config.my-lib.settings) idpUrl rusticalUrl;
 in
 {
+  sops.secrets."rustical/client_secret" = { };
+  sops.templates."rustical.env".content = ''
+    RUSTICAL_OIDC__CLIENT_SECRET=${config.sops.placeholder."rustical/client_secret"}
+  '';
   services.rustical = {
     enable = true;
     settings = {
+      http.host = "127.0.0.1";
       oidc = {
         name = "Kanidm";
         issuer = "https://${idpUrl}/oauth2/openid/rustical";
@@ -19,6 +24,7 @@ in
         allow_sign_up = false;
       };
     };
+    environmentFile = config.sops.templates."rustical.env".path;
   };
 
   services.caddy.virtualHosts.${rusticalUrl}.extraConfig = ''
