@@ -21,8 +21,9 @@ in
           "profile"
           "groups"
         ];
-        allow_sign_up = false;
+        allow_sign_up = true;
       };
+      frontend.allow_password_login = false;
     };
     environmentFile = config.sops.templates."rustical.env".path;
   };
