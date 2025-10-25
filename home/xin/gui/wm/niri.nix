@@ -20,22 +20,10 @@ in
     xdg.configFile = {
       niri.source = config.lib.file.mkOutOfStoreSymlink "${configDir}/niri";
     };
-    systemd.user.services.xwayland-satellite = {
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
-      };
-      Unit = {
-        PartOf = [ "graphical-session.target" ];
-        After = [ "graphical-session.target" ];
-      };
-      Service = {
-        ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
-        Restart = "on-failure";
-      };
-    };
 
     home.packages = with pkgs; [
       wl-clipboard
+      xwayland-satellite # managed by niri
     ];
 
     custom-hm.gui.gtklock = {

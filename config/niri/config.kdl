@@ -3,7 +3,6 @@
 // Check the wiki for a full description of the configuration:
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Overview
 environment {
-    DISPLAY ":0"
     DEEPSEEK_API_KEY "d75adc7a-ed7a-428f-9323-205ba49887c6"
 }
 
