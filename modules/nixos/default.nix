@@ -12,5 +12,6 @@
     ./restic.nix
     ./monitor
     ./rustical.nix
+    ./matrix-authentication-service.nix
   ];
 }
