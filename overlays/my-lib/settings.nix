@@ -11,6 +11,7 @@
     ntfyUrl = "https://ntfy.xiny.li";
     grafanaUrl = "https://grafana.xiny.li";
     synapseUrl = "https://xiny.li";
+    matrixAuthUrl = "https://matrix-auth.xiny.li";
     synapseDelegateUrl = "https://synapse.xiny.li";
     rusticalUrl = "https://calendar.xiny.li";
 

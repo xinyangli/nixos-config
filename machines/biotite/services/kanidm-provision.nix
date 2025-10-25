@@ -7,6 +7,7 @@ let
     forgejoDomain
     grafanaUrl
     synapseDelegateUrl
+    matrixAuthUrl
     ocisUrl
     rusticalUrl
     ;
@@ -232,11 +233,13 @@ in
       };
       synapse = {
         displayName = "Synapse";
-        originUrl = "${synapseDelegateUrl}/_synapse/client/oidc/callback";
+        originUrl = "${matrixAuthUrl}/upstream/callback/01K83K1FPGYD79ENWVY0RTWHTB";
         originLanding = "${synapseDelegateUrl}/";
+        enableLegacyCrypto = true;
         scopeMaps = {
           synapse-users = [
             "openid"
+            "email"
             "profile"
           ];
         };
