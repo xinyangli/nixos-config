@@ -80,10 +80,12 @@ in
   };
 
   services.logind = {
-    powerKey = "suspend-then-hibernate";
-    powerKeyLongPress = "poweroff";
-    lidSwitch = "suspend-then-hibernate";
-    lidSwitchDocked = "ignore";
+    settings.Login = {
+      HandlePowerKey = "suspend-then-hibernate";
+      HandlePowerKeyLongPress = "poweroff";
+      HandleLidSwitch = "suspend-then-hibernate";
+      HandlelidSwitchDocked = "ignore";
+    };
   };
 
   systemd.sleep.extraConfig = ''
@@ -120,6 +122,13 @@ in
       enable = true;
     };
   };
+  services.udev.extraRules = ''
+    # 8BitDo Ultimate 2 Wireless over USB
+    KERNEL=="hidraw*", ATTRS{idVendor}=="2dc8", ATTRS{idProduct}=="6012", MODE="0660"
+
+    # 8BitDo Ultimate 2 Wireless over Bluetooth
+    KERNEL=="hidraw*", KERNELS=="*2DC8:6012*", MODE="0660", TAG+="uaccess"
+  '';
 
   programs.vim.enable = true;
   programs.neovim.defaultEditor = true;
@@ -131,7 +140,7 @@ in
 
   # Setup wireguard
   # Set your time zone.
-  time.timeZone = "Asia/Shanghai";
+  time.timeZone = "Europe/Helsinki";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -160,6 +169,9 @@ in
   services.gnome.gcr-ssh-agent.enable = false;
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   security.pam.services.gtklock = { }; # Required by gtklock
+  services.system76-scheduler = {
+    enable = true;
+  };
 
   catppuccin = {
     enable = true;
@@ -213,7 +225,7 @@ in
           GDK_DEBUG "no-portals"
         }
         spawn-at-startup "${getExe pkgs.swayidle}" "-w" "timeout" "60" "${getExe pkgs.brightnessctl} -s set 2" "resume" "${getExe pkgs.brightnessctl} -r" "timeout" "300" "${getExe pkgs.niri} msg action power-off-monitors"
-        spawn-at-startup "sh" "-c" "${pkgs.greetd.regreet}/bin/regreet; niri msg action quit --skip-confirmation"
+        spawn-at-startup "sh" "-c" "${pkgs.regreet}/bin/regreet; niri msg action quit --skip-confirmation"
       '';
     in
     {

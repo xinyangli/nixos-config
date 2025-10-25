@@ -68,7 +68,12 @@ in
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   boot.kernel.sysctl = {
-    "vm.swappiness" = 0;
+    "vm.swappiness" = 1;
+  };
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+    memoryMax = 8589934592;
   };
 
   hardware.enableAllFirmware = true;

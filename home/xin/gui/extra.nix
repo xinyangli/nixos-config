@@ -21,4 +21,6 @@
     # wemeet
     wemeet
   ];
+
+  services.system76-scheduler-niri.enable = true;
 }

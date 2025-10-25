@@ -71,6 +71,11 @@
       url = "github:nix-community/lanzaboote/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    system76-scheduler-niri = {
+      url = "github:Kirottu/system76-scheduler-niri";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -91,6 +96,7 @@
       comin,
       nixos-sbc,
       lanzaboote,
+      system76-scheduler-niri,
       ...
     }:
     let
@@ -124,6 +130,7 @@
         sops-nix.homeManagerModules.sops
         nix-index-database.hmModules.nix-index
         catppuccin.homeModules.catppuccin
+        system76-scheduler-niri.homeModules.default
       ];
       sharedNixosModules = [
         self.nixosModules.default
