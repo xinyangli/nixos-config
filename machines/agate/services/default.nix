@@ -11,5 +11,6 @@
     ./transmission.nix
     ./jellyfin.nix
     ./media-download.nix
+    ./proxy.nix
   ];
 }

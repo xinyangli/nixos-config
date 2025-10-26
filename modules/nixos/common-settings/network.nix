@@ -121,7 +121,7 @@ in
               ];
             chinaDomains = listToLuaTable (builtins.readFile ./china-domains.txt);
             globalSettings = ''
-              log_level("notice")
+              log_level("info")
               modules = { 'hints > iterate', 'stats', 'predict' }
               cache.size = ${toString cfg.localdns.cacheSize} * MB
               trust_anchors.remove(".")
@@ -159,7 +159,7 @@ in
           globalSettings
           + (if config.services.tailscale.enable then tsSettings else "")
           + (
-            if config.commonSettings.network.enableProxy then
+            if (config.inMainland && config.commonSettings.network.enableProxy) then
               proxySettings + mainlandSettings
             else
               overseaSettings

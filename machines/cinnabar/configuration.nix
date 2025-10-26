@@ -37,7 +37,10 @@ in
       signing.enable = true;
     };
     comin.enable = true;
-    network.localdns.enable = true;
+    network = {
+      localdns.enable = true;
+      enableProxy = true;
+    };
   };
 
   nix.settings.substituters = [
