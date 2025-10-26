@@ -488,7 +488,7 @@ in
     };
   };
 
-  services.nixseparatedebuginfod.enable = true;
+  services.nixseparatedebuginfod2.enable = true;
   services.bloop = {
     install = true;
     extraOptions = [
