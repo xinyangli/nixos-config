@@ -49,6 +49,7 @@ in
         extraUpFlags = [ "--accept-routes" ] ++ (lib.optional cfg.localdns.enable "--accept-dns=false");
         authKeyFile = config.sops.secrets."tailscale/authkey".path;
       };
+      networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
       commonSettings.network.tailscale.before = (
         lib.optional config.services.caddy.enable "caddy.service"
       );

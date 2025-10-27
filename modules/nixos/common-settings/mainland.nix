@@ -181,7 +181,6 @@ let
       dip(223.5.5.5) -> default_group
       dip('2400:3200::1') -> default_group
       domain(full: www.apple.com.cn) -> default_group
-      dip('10.101.0.1/16') -> default_group
 
       dip('115.168.0.0/14') -> default_group
       domain(suffix: xiny.li) && dport(8443) -> default_group
