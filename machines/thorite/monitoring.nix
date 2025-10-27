@@ -115,6 +115,7 @@ in
               targets = map (host: "${host}.${internalDomain}:4243") [
                 "weilite"
                 "thorite"
+                "biotite"
                 "la-00"
                 "fra-00"
               ];
