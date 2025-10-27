@@ -20,8 +20,8 @@ let
   singTls = {
     enabled = true;
     server_name = host;
-    key_path = config.security.acme.certs.${host}.directory + "/key.pem";
-    certificate_path = config.security.acme.certs.${host}.directory + "/cert.pem";
+    # key_path = config.security.acme.certs.${host}.directory + "/key.pem";
+    # certificate_path = config.security.acme.certs.${host}.directory + "/cert.pem";
     acme = {
       domain = [ host ];
       disable_http_challenge = cfg.dns01;
