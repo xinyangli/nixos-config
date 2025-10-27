@@ -63,9 +63,9 @@ in
           name = "comin_rules";
           rules = [
             {
-              alert = "CominBuildFailed";
-              expr = "comin_build_info != 1";
-              for = "1m";
+              alert = "CominDeployFailed";
+              expr = "deployment_up_to_date != 1";
+              for = "3h";
               labels = {
                 severity = "critical";
               };
@@ -96,6 +96,17 @@ in
         passwordFile = config.sops.secrets."prometheus/metrics_password".path;
       in
       [
+        {
+          job_name = "comin-deployment";
+          scheme = "http";
+          static_configs = [
+            {
+              targets = [
+                "127.0.0.1:13131"
+              ];
+            }
+          ];
+        }
         {
           job_name = "comin";
           scheme = "http";
