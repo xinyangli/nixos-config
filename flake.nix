@@ -159,10 +159,12 @@
           (mkHome "xin" "cinnabar")
         ];
         la-00 = [
+          disko.nixosModules.disko
           ./machines/dolomite/bandwagon.nix
           ./machines/dolomite/common.nix
         ];
         fra-00 = [
+          disko.nixosModules.disko
           ./machines/dolomite/fra.nix
           ./machines/dolomite/common.nix
         ];
@@ -377,6 +379,7 @@
         devShells = {
           default = pkgs.mkShell {
             packages = with pkgs; [
+              colmena.packages.${system}.colmena
               nix
               git
               sops

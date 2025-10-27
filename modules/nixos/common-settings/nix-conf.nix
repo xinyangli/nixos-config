@@ -35,8 +35,8 @@ in
 
     nix.gc = {
       automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 30d";
+      dates = lib.mkDefault "weekly";
+      options = lib.mkDefault "--delete-older-than 30d";
     };
 
     nix.optimise.automatic = true;

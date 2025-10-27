@@ -1,4 +1,5 @@
 {
+  config,
   modulesPath,
   ...
 }:
@@ -17,21 +18,29 @@
     boot.initrd.kernelModules = [ ];
     boot.kernelModules = [ ];
     boot.extraModulePackages = [ ];
-
-    fileSystems."/" = {
-      device = "/dev/disk/by-label/NIXROOT";
-      fsType = "xfs";
-    };
-
-    fileSystems."/boot" = {
-      device = "/dev/disk/by-label/NIXBOOT";
-      fsType = "vfat";
-    };
-
-    swapDevices = [ ];
-
     boot.loader.grub.enable = true;
-    boot.loader.grub.device = "/dev/sda";
+    disko.devices = {
+      disk = {
+        main = {
+          type = "disk";
+          device = "/dev/disk/by-path/pci-0000:00:05.0-scsi-0:0:0:0";
+          content = {
+            type = "gpt";
+            partitions = {
+              boot = config.diskPartitions.grubMbr;
+              root = config.diskPartitions.btrfs;
+            };
+          };
+        };
+      };
+    };
+    disko.devices.disk.main.imageSize = "10G";
+
+    nix.gc = {
+      dates = "daily";
+      options = "--delete-older-than 1d";
+    };
+
     networking.useNetworkd = true;
     systemd.network.networks."10-wan" = {
       matchConfig.MACAddress = "ens18";
