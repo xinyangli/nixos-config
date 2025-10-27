@@ -54,31 +54,40 @@ in
         lib.optional config.services.caddy.enable "caddy.service"
       );
 
-      systemd.services.tailscaled.before = cfg.tailscale.before;
-      systemd.services.tailscaled.serviceConfig.ExecStartPost =
-        pkgs.writers.writePython3 "tailscale-wait-online"
-          {
-            flakeIgnore = [
-              "E401" # import on one line
-              "E501" # line length limit
-            ];
-          }
-          ''
-            import subprocess, json, time
+      systemd.services.tailscale-wait-online = {
+        enable = true;
+        requires = [ "tailscaled.service" ];
+        requiredBy = cfg.tailscale.before;
+        before = cfg.tailscale.before;
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = "yes";
+          ExecStart =
+            pkgs.writers.writePython3 "tailscale-wait-online"
+              {
+                flakeIgnore = [
+                  "E401" # import on one line
+                  "E501" # line length limit
+                ];
+              }
+              ''
+                import subprocess, json, time
 
-            for _ in range(30):
-                status = json.loads(
-                    subprocess.run(
-                        ["${lib.getExe config.services.tailscale.package}", "status", "--peers=false", "--json"], capture_output=True
-                    ).stdout
-                )["Self"]["Online"]
-                if status:
-                    exit(0)
-                time.sleep(1)
+                for _ in range(30):
+                    status = json.loads(
+                        subprocess.run(
+                            ["${lib.getExe config.services.tailscale.package}", "status", "--peers=false", "--json"], capture_output=True
+                        ).stdout
+                    )["Self"]["Online"]
+                    if status:
+                        exit(0)
+                    time.sleep(1)
 
-            exit(1)
-          '';
-
+                exit(1)
+              '';
+          DynamicUser = true;
+        };
+      };
     })
 
     (mkIf cfg.localdns.enable {

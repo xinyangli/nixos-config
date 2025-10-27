@@ -12,8 +12,8 @@ in
 {
   config = {
     commonSettings.network.tailscale.before =
-      (lib.optional cfg.node.enable "prometheus-node-exporters.service")
-      ++ (lib.optional cfg.blackbox.enable "prometheus-blackbox-exporters.service");
+      (lib.optional cfg.node.enable "prometheus-node-exporter.service")
+      ++ (lib.optional cfg.blackbox.enable "prometheus-blackbox-exporter.service");
     services.prometheus.exporters.node = mkIf cfg.node.enable {
       enable = true;
       enabledCollectors = [
