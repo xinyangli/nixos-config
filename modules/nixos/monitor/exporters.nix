@@ -58,6 +58,9 @@ in
         GTS_METRICS_AUTH_ENABLED=true
         GTS_METRICS_AUTH_USERNAME=${config.sops.placeholder."prometheus/metrics_username"}
         GTS_METRICS_AUTH_PASSWORD=${config.sops.placeholder."prometheus/metrics_password"}
+        OTEL_METRICS_PRODUCERS=prometheus
+        OTEL_METRICS_EXPORTER=prometheus
+        OTEL_EXPORTER_PROMETHEUS_PORT=9464
       '';
       group = "prometheus-auth";
       mode = "0440";

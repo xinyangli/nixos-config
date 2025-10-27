@@ -36,6 +36,9 @@ in
 
   services.caddy = {
     virtualHosts."https://gts.xiny.li".extraConfig = ''
+      handle /metrics {
+        reverse_proxy http://127.0.0.1:9464
+      }
       reverse_proxy http://${config.services.gotosocial.settings.bind-address}:${toString config.services.gotosocial.settings.port} {
           flush_interval -1
       }
