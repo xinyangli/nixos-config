@@ -24,7 +24,7 @@ let
     certificate_path = config.security.acme.certs.${host}.directory + "/cert.pem";
     acme = {
       domain = [ host ];
-      disable_http_challenge = !cfg.dns01;
+      disable_http_challenge = cfg.dns01;
       disable_tls_alpn_challenge = true;
       alternative_http_port = if config.services.caddy.enable then 30310 else 80;
       email = "me@namely.icu";
@@ -181,14 +181,7 @@ in
 
       networking.firewall.trustedInterfaces = [ "tun0" ];
 
-      security.acme = {
-        acceptTerms = true;
-        certs.${host} = {
-          email = "me@namely.icu";
-          # Avoid port conflict
-          listenHTTP = if config.services.caddy.enable then ":30310" else ":80";
-        };
-      };
+      # For acme
       services.caddy.virtualHosts."http://${host}:80".extraConfig = ''
         reverse_proxy 127.0.0.1:30310
       '';
