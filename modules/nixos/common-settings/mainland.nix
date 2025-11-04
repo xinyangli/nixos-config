@@ -136,7 +136,7 @@ let
       tproxy_port: 12345
       tproxy_port_protect: true
       disable_waiting_network: false
-      log_level: trace
+      log_level: debug
       tcp_check_url: 'http://www.apple.com.cn/library/test/success.html'
       tcp_check_http_method: GET
       wan_interface: auto
@@ -172,7 +172,6 @@ let
     }
     group {
       default_group {
-        filter: name(regex: '^(pek)[0-9]+')
         policy: min_moving_avg
       }
     }
