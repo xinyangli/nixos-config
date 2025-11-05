@@ -14,6 +14,8 @@ let
   inherit (config.my-lib.settings) idpUrl;
 
   cfg = config.commonSettings.auth;
+
+  kanidm_pkg = pkgs.kanidm_1_7;
 in
 {
   options.commonSettings.auth = {
@@ -22,7 +24,7 @@ in
 
   config = mkIf cfg.enable {
     services.kanidm = {
-      package = pkgs.kanidm_1_7;
+      package = kanidm_pkg;
       enableClient = true;
       clientSettings = {
         uri = "https://${idpUrl}";
@@ -50,7 +52,7 @@ in
       mode = "0555";
       text = ''
         #!/bin/sh
-        ${pkgs.kanidm}/bin/kanidm_ssh_authorizedkeys $1
+        ${kanidm_pkg}/bin/kanidm_ssh_authorizedkeys $1
       '';
     };
     users.groups.wheel.members = [ "xin@${idpUrl}" ];

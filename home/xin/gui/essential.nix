@@ -11,10 +11,8 @@
     })
     mate.engrampa
 
-    bitwarden
-
     thunderbird
-    tdesktop
+    telegram-desktop
     element-desktop
 
     swayimg
@@ -38,7 +36,7 @@
     entries = [
       "${pkgs.thunderbird}/share/applications/thunderbird.desktop"
       "${pkgs.firefox}/share/applications/firefox.desktop"
-      "${pkgs.tdesktop}/share/applications/org.telegram.desktop.desktop"
+      "${pkgs.telegram-desktop}/share/applications/org.telegram.desktop.desktop"
       "${pkgs.element-desktop}/share/applications/element-desktop.desktop"
     ];
   };

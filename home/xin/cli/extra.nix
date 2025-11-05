@@ -119,32 +119,43 @@ in
   # == Coding ==
   programs.git = {
     enable = true;
-    delta.enable = true;
-    userName = "Xinyang Li";
-    userEmail = "lixinyang411@gmail.com";
-    aliases = {
-      graph = "log --all --oneline --graph --decorate";
-      a = "add";
-      d = "diff";
-      s = "status";
-      ck = "checkout";
+    # delta.enable = true;
+    settings = {
+      user = {
+        name = "Xinyang Li";
+        email = "lixinyang411@gmail.com";
+      };
+      alias = {
+        graph = "log --all --oneline --graph --decorate";
+        a = "add";
+        d = "diff";
+        s = "status";
+        ck = "checkout";
+      };
+      absorb = {
+        oneFixupPerCommit = true;
+        maxStack = 20;
+      };
+      user = {
+        signingkey = gitSigningKey;
+      };
+      gpg = {
+        format = "ssh";
+      };
     };
     signing = {
       signByDefault = true;
       key = gitSigningKey;
     };
-    extraConfig.absorb = {
-      oneFixupPerCommit = true;
-      maxStack = 20;
-    };
-    extraConfig.user = {
-      signingkey = gitSigningKey;
-    };
-    extraConfig.gpg = {
-      format = "ssh";
-    };
   };
   programs.lazygit.enable = true;
+  programs.difftastic = {
+    enable = true;
+    git = {
+      enable = true;
+      diffToolMode = true;
+    };
+  };
 
   programs.direnv =
     let
