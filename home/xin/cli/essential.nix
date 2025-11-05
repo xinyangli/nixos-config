@@ -9,7 +9,7 @@
     tmux
     inetutils
     jq
-    du-dust # du + rust
+    dust # du + rust
     fd
     ripgrep
     grc

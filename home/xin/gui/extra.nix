@@ -5,7 +5,7 @@
     resources
     remmina
     qq
-    wechat-uos
+    wechat
     wpsoffice
     ttf-wps-fonts
 

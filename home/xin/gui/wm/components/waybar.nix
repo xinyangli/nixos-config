@@ -1,7 +1,6 @@
 { config, pkgs, ... }:
 let
   niri-taskbar = pkgs.callPackage (
-
     {
       rustPlatform,
       lib,
@@ -21,7 +20,6 @@ let
         hash = "sha256-mzO2j3CnYJsF8UCoKquG2AT1Lb0PDsSEs2mdmTcTGPA=";
       };
 
-      useFetchCargoVendor = true;
       cargoHash = "sha256-zOAdnkWSSJd2tfT1bV9WkFY74DKSGD6HkSl8a+Fyd9o=";
 
       nativeBuildInputs = [

@@ -396,11 +396,6 @@ in
     };
   };
 
-  services.ollama = {
-    enable = true;
-    acceleration = "cuda";
-  };
-
   # MTP support
   services.gvfs.enable = true;
 
@@ -443,12 +438,12 @@ in
       nerd-fonts.roboto-mono
       nerd-fonts.noto
       noto-fonts
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       liberation_ttf
       mplus-outline-fonts.githubRelease
       dina-font
       proggyfonts
-      ubuntu_font_family
+      ubuntu-classic
       # Chinese
       wqy_microhei
       wqy_zenhei
