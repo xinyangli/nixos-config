@@ -1,4 +1,0 @@
-{
-  imports = [ ./full.nix ];
-  home.stateVersion = "23.05";
-}
