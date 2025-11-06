@@ -9,6 +9,8 @@
     wpsoffice
     ttf-wps-fonts
 
+    gnome-sound-recorder
+
     eudic
     calibre
 
