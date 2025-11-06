@@ -149,12 +149,6 @@
           disko.nixosModules.disko
           ./machines/agate
         ];
-        calcite = [
-          nixos-hardware.nixosModules.asus-zephyrus-ga401
-          catppuccin.nixosModules.catppuccin
-          machines/calcite/configuration.nix
-          (mkHome "xin" "calcite")
-        ];
         cinnabar = [
           disko.nixosModules.disko
           catppuccin.nixosModules.catppuccin
@@ -324,10 +318,6 @@
       };
 
       nixosConfigurations = {
-        calcite = mkNixos {
-          hostname = "calcite";
-        };
-
         cinnabar = mkNixos {
           hostname = "cinnabar";
         };
@@ -396,8 +386,6 @@
             ];
           };
         };
-
-        homeConfigurations = builtins.listToAttrs [ (mkHomeConfiguration "xin" "calcite") ];
 
         packages = {
           nixvim = my-nixvim.packages.${system}.default;
