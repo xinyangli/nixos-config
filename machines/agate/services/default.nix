@@ -12,5 +12,6 @@
     ./jellyfin.nix
     ./media-download.nix
     ./proxy.nix
+    ./rsshub.nix
   ];
 }
