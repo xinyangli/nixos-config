@@ -14,6 +14,9 @@
     useSubstitutes = true;
     minimumDiskFreeEvaluator = 20;
     minimumDiskFree = 20;
+    extraConfig = ''
+      allow_import_from_derivation = true
+    '';
   };
 
   systemd.services.attic-watch-store = {
