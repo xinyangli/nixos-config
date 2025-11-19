@@ -1,3 +1,4 @@
+{ lib, ... }:
 {
   mkSystemdDebug =
     { lib, pkgs }:
@@ -10,3 +11,4 @@
 // (import ./prometheus.nix)
 // (import ./settings.nix)
 // (import ./flakepath.nix)
+// (import ./fn.nix { inherit lib; })
