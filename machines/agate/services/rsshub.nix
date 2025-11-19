@@ -8,7 +8,7 @@ in
     "rsshub/env/CAIXIN_COOKIE" = { };
   };
   sops.templates."caixin.env".content = ''
-    CAIXIN_COOKIE=${config.sops.placeholder."rsshub/env/CAIXIN_COOKIE"}
+    CAIXIN_COOKIE='${config.sops.placeholder."rsshub/env/CAIXIN_COOKIE"}'
   '';
   systemd.services.rsshub = {
     description = "RSSHub";
@@ -47,11 +47,28 @@ in
   };
   users.groups.rsshub = { };
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      rsshub = prev.rsshub.overrideAttrs (
+        _: prevAttrs: {
+          patches = prevAttrs.patches ++ [ ./caixin_weekly_fulltext.patch ];
+        }
+      );
+    })
+  ];
+
   services.caddy.virtualHosts."pek-0.rsshub.xiny.li:8443".extraConfig = ''
     tls {
       dns cloudflare {env.CF_API_TOKEN}
     }
-    abort not remote_ip 45.142.178.32
-    reverse_proxy 127.0.0.1:${toString port}
+
+    @allowed {
+      remote_ip 45.142.178.32
+    }
+
+    route {
+        reverse_proxy @allowed 127.0.0.1:1200
+        respond "Access Denied" 403
+    }
   '';
 }
