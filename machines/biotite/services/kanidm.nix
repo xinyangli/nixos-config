@@ -23,7 +23,7 @@ in
   };
 
   services.kanidm = {
-    package = lib.mkForce pkgs.kanidmWithSecretProvisioning_1_7;
+    package = lib.mkForce pkgs.kanidmWithSecretProvisioning_1_8;
     enableServer = true;
     serverSettings = {
       domain = idpUrl;
