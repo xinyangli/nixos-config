@@ -75,11 +75,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.rust-overlay.follows = "rust-overlay";
     };
-
-    system76-scheduler-niri = {
-      url = "github:Kirottu/system76-scheduler-niri";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -100,14 +95,13 @@
       comin,
       nixos-sbc,
       lanzaboote,
-      system76-scheduler-niri,
       ...
     }:
     let
       editorOverlay = (
         final: prev: {
-          inherit (nix-vscode-extensions.extensions.${prev.stdenv.system}) vscode-marketplace;
-          inherit (self.packages.${prev.stdenv.system}) nixvim;
+          inherit (nix-vscode-extensions.extensions.${prev.stdenv.hostPlatform.system}) vscode-marketplace;
+          inherit (self.packages.${prev.stdenv.hostPlatform.system}) nixvim;
         }
       );
       mylibModule = {
@@ -134,7 +128,6 @@
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         catppuccin.homeModules.catppuccin
-        system76-scheduler-niri.homeModules.default
       ];
       sharedNixosModules = [
         self.nixosModules.default
