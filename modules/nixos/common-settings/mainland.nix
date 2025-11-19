@@ -172,7 +172,7 @@ let
     }
     group {
       default_group {
-        policy: min_moving_avg
+        policy: fixed(1)
       }
     }
     routing {
@@ -181,7 +181,7 @@ let
       dip('2400:3200::1') -> default_group
       domain(full: www.apple.com.cn) -> default_group
 
-      dip('115.168.0.0/14') -> default_group
+      ip('115.168.0.0/14') -> default_group
       domain(suffix: xiny.li) && dport(8443) -> default_group
       domain(suffix: coho-tet.ts.net) -> default_group
       fallback: direct
@@ -243,13 +243,13 @@ in
     (lib.mkIf (!config.inMainland) {
       sops = mkIf config.commonSettings.network.enableProxy {
         secrets = {
-          "dae/sub_mainland" = {
+          "dae/nodes_mainland" = {
             sopsFile = ../../../machines/secrets.yaml;
           };
         };
         templates."dae/sub_mainland.dae".content = ''
-          subscription {
-            online_sub_link: '${config.sops.placeholder."dae/sub_mainland"}'
+          node {
+            ${config.sops.placeholder."dae/nodes_mainland"}
           }
         '';
       };
