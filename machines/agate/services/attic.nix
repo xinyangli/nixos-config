@@ -26,7 +26,7 @@ in
         type = "s3";
         region = "cn-north-1";
         bucket = "attic";
-        endpoint = "http://127.0.0.1:3900";
+        endpoint = "https://pek-0.garage.xiny.li:8443";
       };
       chunking = {
         # The minimum NAR size to trigger chunking

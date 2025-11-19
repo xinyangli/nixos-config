@@ -12,7 +12,6 @@ builds:
     exclude:
       - nixosConfigurations.osmium
       - nixosConfigurations.raspite
-      - nixosConfigurations.agate
       - nixosConfigurations.baryte
     branch: deploy-next
   - include:
