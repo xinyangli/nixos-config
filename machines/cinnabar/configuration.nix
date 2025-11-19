@@ -52,6 +52,10 @@ in
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  services.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+  };
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # Bootloader.
@@ -172,10 +176,6 @@ in
   services.gnome.gcr-ssh-agent.enable = false;
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   security.pam.services.gtklock = { }; # Required by gtklock
-  services.system76-scheduler = {
-    enable = true;
-  };
-
   catppuccin = {
     enable = true;
     accent = "peach";

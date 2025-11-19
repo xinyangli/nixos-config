@@ -14,6 +14,9 @@
           rc-manager = "resolvconf";
         };
       };
+      plugins = [
+        pkgs.networkmanager-openconnect
+      ];
     };
   };
 
