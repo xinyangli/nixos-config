@@ -43,6 +43,11 @@ in
           "yzl"
         ];
       };
+      immich-admin = {
+        members = [
+          "xin"
+        ];
+      };
       grafana-superadmins = {
         members = [ "xin" ];
       };
@@ -194,6 +199,15 @@ in
             "email"
             "profile"
           ];
+        };
+        claimMaps = {
+          immich_role = {
+            joinType = "array";
+            valuesByGroup = {
+              immich-users = [ "user" ];
+              immich-admin = [ "admin" ];
+            };
+          };
         };
       };
       miniflux = {

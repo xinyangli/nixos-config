@@ -16,7 +16,7 @@ let
       clientSecret = config.sops.placeholder."immich/oauth_client_secret";
       scope = "openid email profile";
       signingAlgorithm = "ES256";
-      storageLabelClaim = "email";
+      storageLabelClaim = "preferred_username";
       buttonText = "Login with Kanidm";
       autoLaunch = true;
       mobileOverrideEnabled = true;
@@ -35,6 +35,11 @@ let
     };
     passwordLogin = {
       enabled = false;
+    };
+    storageTemplate = {
+      enabled = true;
+      hashVerificationEnabled = true;
+      template = "{{#if album}}{{{album}}}/{{filetypefull}}/{{MMM}}.{{dd}}/{{filename}}{{else}}{{y}}/{{y}}-{{MM}}-{{dd}}/{{filename}}{{/if}}";
     };
     image = {
       extractEmbedded = true;
@@ -87,6 +92,34 @@ in
         before = [ "immich-server.service" ];
         wantedBy = [ "immich-server.service" ];
       }
+    ];
+
+    nixpkgs.overlays = [
+      # Wait for https://github.com/NixOS/nixpkgs/pull/458575
+      (final: super: {
+        onnxruntime = super.onnxruntime.overrideAttrs (prevAttrs: {
+          patches = prevAttrs.patches ++ [
+            (pkgs.fetchurl {
+              url = "https://raw.githubusercontent.com/NixOS/nixpkgs/0cf9d8c48210853611c9b8a6deffdf1a5833aef9/pkgs/by-name/on/onnxruntime/cpuinfo-logging.patch";
+              hash = "sha256-3Dqgpbr5qSuBkxWmf5YwiRrFxSlefqXyec5zTd/U8mU=";
+            })
+          ];
+        });
+        pythonPackagesExtensions = super.pythonPackagesExtensions ++ [
+          (_: python-super: {
+            rapidocr-onnxruntime = python-super.rapidocr-onnxruntime.overridePythonAttrs (self: {
+              meta = self.meta // {
+                badPlatforms = [ ];
+              };
+            });
+            rapidocr = python-super.rapidocr.overridePythonAttrs (self: {
+              meta = self.meta // {
+                badPlatforms = [ ];
+              };
+            });
+          })
+        ];
+      })
     ];
 
     systemd.timers.immich-auto-stack = {
