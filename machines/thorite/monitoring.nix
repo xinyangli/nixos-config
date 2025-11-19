@@ -238,8 +238,8 @@ in
           PROMETHEUS_URL="https://thorite.coho-tet.ts.net"
           REPO="xinyangli/nixos-config"
           JOB_NAME="deployment_check"
-          CURL=${getExe pkgs.curl}
-          JQ=${getExe pkgs.jq}
+          CURL=${lib.getExe pkgs.curl}
+          JQ=${lib.getExe pkgs.jq}
           get_latest_commit() {
             local branch=$1
             local response
