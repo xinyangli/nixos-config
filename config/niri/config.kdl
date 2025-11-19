@@ -77,8 +77,13 @@ output "eDP-1" {
     // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
     transform "normal"
 
-    position x=0 y=0
+    position x=3440 y=1300
     variable-refresh-rate
+}
+
+output "Xiaomi Corporation Mi monitor 0000000000000" {
+    position x=0 y=0
+    mode "3440x1440@100.000"
 }
 
 output "LG Electronics LG HDR 4K 0x000AC053" {
