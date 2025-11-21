@@ -11,7 +11,7 @@ in
 {
   imports = [
     ./components/background.nix
-    ./components/fuzzel.nix
+    ./components/vicinae.nix
     ./components/misc.nix
     ./components/waybar.nix
   ];

@@ -380,7 +380,8 @@ binds {
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+T { spawn "alacritty"; }
-    Mod+Space { spawn "fuzzel"; }
+    Mod+Space { spawn "vicinae" "open"; }
+    Mod+P repeat=false { spawn "vicinae" "vicinae://extensions/vicinae/clipboard/history"; }
     Mod+Alt+L { spawn "gtklock"; }
 
     // You can also use a shell. Do this if you need pipes, multiple commands, etc.

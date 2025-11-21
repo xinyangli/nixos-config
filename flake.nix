@@ -75,6 +75,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.rust-overlay.follows = "rust-overlay";
     };
+
+    mcps-nix = {
+      url = "github:roman/mcps.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    vicinae = {
+      url = "github:vicinaehq/vicinae";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -95,6 +105,8 @@
       comin,
       nixos-sbc,
       lanzaboote,
+      mcps-nix,
+      vicinae,
       ...
     }:
     let
@@ -128,6 +140,7 @@
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         catppuccin.homeModules.catppuccin
+        vicinae.homeManagerModules.default
       ];
       sharedNixosModules = [
         self.nixosModules.default
@@ -348,7 +361,10 @@
     // flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
 
         mkHomeConfiguration = user: host: {
           name = "${user}-${host}";
@@ -376,6 +392,11 @@
               nh
               (python3.withPackages (ps: with ps; [ requests ]))
               sbctl
+              claude-code
+              mcp-nixos
+              mcps-nix.packages.${system}.mcp-language-server
+              mcps-nix.packages.${system}.mcp-servers
+              nixd
             ];
           };
         };
