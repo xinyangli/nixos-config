@@ -335,7 +335,7 @@ in
     )
 
     # ==== GUI Softwares ==== #
-
+    gparted
     bibata-cursors
 
     (epsonscan2.overrideAttrs (

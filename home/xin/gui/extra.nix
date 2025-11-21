@@ -16,6 +16,7 @@
 
     # Multimedia
     obs-studio
+    piliplus
 
     # Browser
     chromium
