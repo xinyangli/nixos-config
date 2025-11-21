@@ -1,41 +1,4 @@
 { config, pkgs, ... }:
-let
-  niri-taskbar = pkgs.callPackage (
-    {
-      rustPlatform,
-      lib,
-      fetchFromGitHub,
-      pkg-config,
-      gtk3,
-    }:
-
-    rustPlatform.buildRustPackage rec {
-      pname = "niri-taskbar";
-      version = "0.1.0";
-
-      src = fetchFromGitHub {
-        owner = "LawnGnome";
-        repo = "niri-taskbar";
-        tag = "v${version}";
-        hash = "sha256-mzO2j3CnYJsF8UCoKquG2AT1Lb0PDsSEs2mdmTcTGPA=";
-      };
-
-      cargoHash = "sha256-zOAdnkWSSJd2tfT1bV9WkFY74DKSGD6HkSl8a+Fyd9o=";
-
-      nativeBuildInputs = [
-        pkg-config
-      ];
-
-      buildInputs = [
-        gtk3
-      ];
-
-      meta = {
-        maintainers = with lib.maintainers; [ bot-wxt1221 ];
-      };
-    }
-  ) { };
-in
 {
   home.packages = with pkgs; [
     waybar-mpris
@@ -53,28 +16,26 @@ in
       }
 
       menu, tooltip {
-        background: @crust;
+        background: @base;
       }
 
-      #workspaces,
       #tray, #custom-notification {
-        background-color: alpha(@crust, 0.8);
+        background-color: alpha(@base, 0.9);
       }
       #mpris,
       #network, #wireplumber, #cpu, #memory, #backlight, #battery {
-        color: @crust;
+        color: @base;
         background-color: transparent;
       }
 
       /* Hover on filled elements */
-      #workspaces button:hover, #tray > .active:hover, #custom-notification:hover {
+      #tray > .active:hover, #custom-notification:hover {
         background: @base;
       }
       /* Transparent Hover */
-      .niri-taskbar button:hover,
       #mpris:hover, #clock:hover, #network:hover, #wireplumber:hover, #cpu:hover, #memory:hover, #backlight:hover, #battery:hover {
 
-        background-color: alpha(@crust, 0.2);
+        background-color: alpha(@base, 0.2);
       }
 
       #tray {
@@ -99,18 +60,39 @@ in
 
       #workspaces button {
         min-width: 1.2rem;
+        background-color: alpha(@base, 0.6);
+        border-radius: 0;
+        transition-duration: 0.1s;
       }
-
-      #workspaces button.focused, workspaces button.active {
-        border-radius: 1rem 1rem 0 0;
+      #workspaces button:hover {
+        background-color: alpha(@base, 0.65);
+      }
+      #workspaces button:first-child {
+        border-radius: 1em 0 0 1em;
+      }
+      #workspaces button:last-child {
+        border-radius: 0 1em 1em 0;
+      }
+      #workspaces button.active {
+        border-bottom: 4px solid @overlay2;
+        border-top: 0px solid transparent;
+        min-height: 10px;
+      }
+      #workspaces button.current_output {
+        background-color: alpha(@base, 0.9);
+      }
+      #workspaces button.current_output:hover {
+        background-color: @base;
+      }
+      #workspaces button.urgent {
+        background-color: @overlay0;
+      }
+      #workspaces button.urgent label {
+        color: @${config.catppuccin.accent};
+      }
+      #workspaces button.focused {
         border-bottom: 4px solid @${config.catppuccin.accent};
       }
-      .niri-taskbar button.focused {
-        background-color: alpha(@crust, 0.1);
-        border-radius: 1rem 1rem 0 0;
-        border-bottom: 4px solid @${config.catppuccin.accent};
-      }
-
 
       #network, #wireplumber, #cpu, #memory {
         font-size: 14px;
@@ -139,7 +121,7 @@ in
       }
 
       #clock {
-        color: @crust;
+        color: @base;
         background-color: transparent;
         font-weight: bold;
         font-size: 16px;
@@ -150,17 +132,6 @@ in
         margin = "1px 1px 0 1px";
         height = 20;
         layer = "bottom";
-        "cffi/niri-taskbar" = {
-          module_path = "${niri-taskbar}/lib/libniri_taskbar.so";
-          apps = {
-            signal = [
-              {
-                match = "\\([0-9]+\\)$";
-                class = "unread";
-              }
-            ];
-          };
-        };
         "mpris" = {
           format = "{player_icon} {status_icon}  {title} - {artist}";
           format-paused = "{player_icon} {status_icon}";
@@ -213,6 +184,7 @@ in
           format-icons = {
             "terminal" = "";
             "browser" = "";
+            "media" = "";
             "chat" = "";
             "mail" = "󰇮";
           };
