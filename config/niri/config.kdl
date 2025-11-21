@@ -3,7 +3,8 @@
 // Check the wiki for a full description of the configuration:
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Overview
 environment {
-    DEEPSEEK_API_KEY "d75adc7a-ed7a-428f-9323-205ba49887c6"
+    QT_SCALE_FACTOR "1.6"
+    GNOME_DESKTOP_SESSION_ID "this-is-deprecated"
 }
 
 // Input device configuration.
@@ -95,15 +96,19 @@ switch-events {
 }
 
 workspace "chat" {
-    // open-on-output "eDP-1"
+    open-on-output "eDP-1"
 }
 
 workspace "browser" {
-    // open-on-output "HDMI-A-1"
+    open-on-output "DP-1"
 }
 
 workspace "terminal" {
-    // open-on-output "HDMI-A-1"
+    open-on-output "DP-1"
+}
+
+workspace "media" {
+    open-on-output "DP-1"
 }
 
 // Settings that influence how windows are positioned and sized.
@@ -310,7 +315,12 @@ window-rule {
 }
 
 window-rule {
-    match app-id=r#"^org\.telegram\.desktop$"# title=r#"^Media viewer$"#
+    match app-id="org.telegram.desktop"
+    max-width 1000
+}
+
+window-rule {
+    match app-id="org.telegram.desktop" title="Media viewer"
     open-floating true
 }
 

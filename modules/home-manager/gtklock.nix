@@ -38,6 +38,7 @@ let
     ${optionalString (cfg.config.gtk-theme != "") "gtk-theme=${cfg.config.gtk-theme}"}
     ${optionalString (cfg.config.style != "") "style=${cfg.config.style}"}
     ${optionalString (cfg.config.modules != [ ]) "modules=${concatStringsSep ";" cfg.config.modules}"}
+    follow-focus=true
   '';
 
   finalConfig = baseConfig + optionals (cfg.extraConfig != null) (toINI { } cfg.extraConfig);
