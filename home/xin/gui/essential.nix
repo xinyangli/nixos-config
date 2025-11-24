@@ -9,6 +9,7 @@
         xfce.thunar-volman
       ];
     })
+    nautilus
     mate.engrampa
 
     thunderbird
@@ -21,8 +22,6 @@
     zotero
 
     spotify
-    # TODO: Waiting for a new release of librespot, see github: spotifyd #1299
-    spotifyd
     coppwr
     imhex
 
