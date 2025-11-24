@@ -345,6 +345,7 @@ in
     virt-manager
     wineWowPackages.waylandFull
     winetricks
+    bottles
   ];
 
   users.groups.dialout.members = [ "xin" ];
@@ -442,6 +443,7 @@ in
       dina-font
       proggyfonts
       ubuntu-classic
+      google-fonts
       # Chinese
       wqy_microhei
       wqy_zenhei
