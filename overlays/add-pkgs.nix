@@ -11,4 +11,5 @@
   };
 
   transmission-exporter = prev.callPackage ./pkgs/transmission-exporter.nix { };
+  fcitx5 = prev.callPackage ./pkgs/fcitx5.nix { };
 })

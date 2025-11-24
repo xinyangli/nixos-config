@@ -165,8 +165,6 @@ in
   };
 
   # ====== GUI ======
-
-  services.desktopManager.plasma6.enable = true;
   # See https://discuss.kde.org/t/no-hdr-available-on-oled-laptop-with-intel-igpu/31580/2,
   # There's many OLED laptop displays where libdisplay-info doesn't yet parse the
   # parts of the EDID that would signal HDR support.

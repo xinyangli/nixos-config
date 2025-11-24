@@ -64,8 +64,11 @@ in
     qt = {
       enable = true;
       style.name = "kvantum";
-      platformTheme.name = "kvantum";
+      platformTheme = {
+        name = "qtct";
+      };
     };
+    home.sessionVariables."QT_STYLE_OVERRIDE" = lib.mkForce "";
     # == == ==
   };
 }
