@@ -51,6 +51,10 @@ in
     "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
   ];
 
+  system.nixos-init.enable = true;
+  system.etc.overlay.enable = true;
+  services.userborn.enable = true;
+
   boot.kernelPackages = pkgs.linuxPackages_latest;
   services.scx = {
     enable = true;
@@ -295,6 +299,7 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.xin = {
     isNormalUser = true;
+    hashedPassword = "$y$j9T$oJ8a7zKc3EV9HOf8qYKC6/$ZEq0Kl8rapeN/WKyJ8eXnTGoTpLb2W/LWLcS8QlNPPB";
     description = "xin";
     extraGroups = [
       "networkmanager"
@@ -331,6 +336,7 @@ in
       in
       python-with-my-packages
     )
+    davfs2
 
     # ==== GUI Softwares ==== #
     gparted
@@ -370,19 +376,11 @@ in
   };
 
   sops.templates."davfs2.conf" = {
-    owner = config.services.davfs2.davUser;
     content = ''
       https://agate.coho-tet.ts.net:6065/photosync photosync ${
         config.sops.placeholder."davfs2/photosync_password"
       }
     '';
-  };
-
-  environment.etc = {
-    "davfs2/secrets" = {
-      source = config.sops.templates."davfs2.conf".path;
-      mode = "0600";
-    };
   };
 
   custom = {
@@ -400,17 +398,47 @@ in
 
   services.flatpak.enable = true;
 
-  services.davfs2 = {
-    enable = true;
-    settings = {
-      globalSection = {
-        use_locks = 1;
-        gui_optimize = 1;
-        table_size = 4096;
-        cache_size = 10240;
+  services.davfs2.enable = true;
+
+  systemd.mounts = [
+    (
+      let
+        davfsWrapperConfig = pkgs.writeText "davfs-wrapper.conf" ''
+          # 核心指令：指定 secrets 文件的路径
+          secrets ${config.sops.templates."davfs2.conf".path}
+
+          # 其他 davfs 配置（可选，推荐加上）
+          use_locks 0
+          gui_optimize 1
+        '';
+      in
+      {
+        what = "https://agate.coho-tet.ts.net:6065/photosync";
+        where = "/media/photosync";
+        type = "davfs";
+        options = "conf=${davfsWrapperConfig},rw,uid=1000,nodev,nosuid,nofail";
+
+        wants = [
+          "network-online.target"
+        ];
+        after = [
+          "network-online.target"
+        ];
+        mountConfig = {
+          TimeoutSec = "30";
+        };
+      }
+    )
+  ];
+  systemd.automounts = [
+    {
+      where = "/media/photosync";
+      wantedBy = [ "multi-user.target" ];
+      automountConfig = {
+        TimeoutIdleSec = "600";
       };
-    };
-  };
+    }
+  ];
 
   fileSystems = {
     "/media/photosync" = {

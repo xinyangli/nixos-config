@@ -24,7 +24,7 @@ in
     signing = {
       enable = mkEnableOption "Sign locally-built paths";
       keyFile = mkOption {
-        default = "/etc/nix/key.private";
+        default = "/var/lib/nix/key.private";
         type = types.str;
       };
     };
