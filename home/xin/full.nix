@@ -7,6 +7,7 @@ in
     ./cli/essential.nix
     ./cli/extra.nix
 
+    ./gui/theme.nix
     ./gui/wm/niri.nix
 
     ./gui/essential.nix
