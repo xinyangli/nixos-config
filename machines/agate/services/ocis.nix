@@ -54,12 +54,6 @@ in
     tls {
       dns cloudflare {env.CF_API_TOKEN}
     }
-
-    @mobileoauth {
-      path /.well-known/openid-configuration
-      header_regexp ua User-Agent "ownCloud-android"
-    }
-    redir @mobileoauth https://${idpUrl}/oauth2/openid/owncloud-android/.well-known/openid-configuration
     reverse_proxy ${config.services.ocis.address}:${toString config.services.ocis.port}
   '';
 }

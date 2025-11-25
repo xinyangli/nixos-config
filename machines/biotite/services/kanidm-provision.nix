@@ -13,6 +13,12 @@ let
     ;
 in
 {
+  sops.secrets = {
+    "kanidm/ocis_android_client_secret" = {
+      owner = config.systemd.services.kanidm.serviceConfig.User;
+    };
+  };
+
   services.kanidm.provision = {
     enable = true;
     autoRemove = true;
@@ -138,9 +144,12 @@ in
         originLanding = ocisUrl;
         originUrl = [
           "${ocisUrl}/oidc-callback.html"
+          "http://127.0.0.1:15241/"
+          "oc://android.owncloud.com"
           # TODO: Should allow mobile redirect url not ending with /
         ];
         public = true;
+        enableLocalhostRedirects = true;
         preferShortUsername = true;
         scopeMaps = {
           ocis-users = [
@@ -158,6 +167,7 @@ in
         originUrl = [
           "oc://android.owncloud.com"
         ];
+        basicSecretFile = config.sops.secrets."kanidm/ocis_android_client_secret".path;
         preferShortUsername = true;
         scopeMaps = {
           ocis-users = [

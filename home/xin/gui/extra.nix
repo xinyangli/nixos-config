@@ -23,6 +23,10 @@
 
     # wemeet
     wemeet
+
+    owncloud-client
+    owncloud-nautilus
+    owncloud-shell-resources
   ];
 
   # TODO: Waiting for a new release of librespot, see github: spotifyd #1299
@@ -45,5 +49,25 @@
         });
       }
     );
+  };
+
+  systemd.user.services.owncloud = {
+    Unit = {
+      Description = "OwnCloud Client with Custom OAuth";
+      After = [ "graphical-session-pre.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.owncloud-client}/bin/owncloud";
+      Environment = [
+        "OWNCLOUD_OAUTH_CLIENT_ID=owncloud"
+        "OWNCLOUD_OAUTH_PORT=15241"
+      ];
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
   };
 }
