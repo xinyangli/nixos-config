@@ -46,5 +46,21 @@ in
     };
   };
   home.sessionVariables."QT_STYLE_OVERRIDE" = lib.mkForce "";
-  # == == ==
+  fonts.fontconfig = {
+    defaultFonts = {
+      serif = [
+        "Source Han Serif SC"
+        "Ubuntu"
+      ];
+      sansSerif = [
+        "Source Han Sans SC"
+        "Ubuntu"
+      ];
+      monospace = [
+        "JetbrainsMono Nerd Font"
+        "Noto Sans Mono CJK SC"
+        "Ubuntu"
+      ];
+    };
+  };
 }

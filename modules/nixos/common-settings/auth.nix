@@ -32,7 +32,7 @@ in
       enablePam = true;
       unixSettings = {
         pam_allowed_login_groups = [ "linux_users" ];
-        default_shell = "/bin/sh";
+        default_shell = "${lib.getExe pkgs.fish}";
       };
     };
 

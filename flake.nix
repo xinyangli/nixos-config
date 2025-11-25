@@ -323,6 +323,38 @@
           };
       };
 
+      homeConfigurations =
+        let
+          idmUsername = "xin@auth.xiny.li";
+          idmHmModule = {
+            home = {
+              stateVersion = "25.11";
+              homeDirectory = "/home/${idmUsername}";
+              username = idmUsername;
+            };
+          };
+        in
+        {
+          "xin-x86_64-linux" = home-manager.lib.homeManagerConfiguration {
+            pkgs = import nixpkgs {
+              system = "x86_64-linux";
+              overlays = [
+                editorOverlay
+                (import ./overlays/add-pkgs.nix)
+              ];
+              config = {
+                allowUnfree = true;
+              };
+            };
+            modules = [
+              ./home/xin/full.nix
+              ./modules/home-manager
+              idmHmModule
+            ]
+            ++ sharedHmModules;
+          };
+        };
+
       nixosConfigurations = {
         cinnabar = mkNixos {
           hostname = "cinnabar";

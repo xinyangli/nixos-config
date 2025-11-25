@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 let
   gitSigningKey = "~/.ssh/id_ed25519_sk.pub";
+  configDir = "${config.my-lib.flakePath config}/config";
 in
 {
   home.packages = with pkgs; [

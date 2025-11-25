@@ -1,7 +1,4 @@
 { config, ... }:
-let
-  homeDirectory = "/home/xin";
-in
 {
   imports = [
     ./cli/essential.nix
@@ -15,11 +12,6 @@ in
     ./gui/media-processing.nix
     ./gui/pentesting.nix
   ];
-
-  home = {
-    inherit homeDirectory;
-    username = "xin";
-  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
