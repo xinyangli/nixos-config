@@ -262,7 +262,7 @@
             networking.hostName = "la-00";
             system.stateVersion = "21.05";
             deployment = {
-              targetHost = "la-00.video.namely.icu";
+              targetHost = "la-00.video.10118244.xyz";
               buildOnTarget = false;
               tags = [ "proxy" ];
             };
@@ -276,7 +276,7 @@
             networking.hostName = "fra-00";
             system.stateVersion = "24.05";
             deployment = {
-              targetHost = "fra-00.video.namely.icu";
+              targetHost = "fra-00.video.10118244.xyz";
               buildOnTarget = false;
               tags = [ "proxy" ];
             };

@@ -41,7 +41,7 @@
         ];
         hash = "sha256-AcWko5513hO8I0lvbCLqVbM1eWegAhoM0J0qXoWL/vI=";
       };
-      virtualHosts."derper00.namely.icu:8443".extraConfig = ''
+      virtualHosts."derper00.10118244.xyz:8443".extraConfig = ''
         ${acmeCF}
         reverse_proxy 127.0.0.1:${toString config.services.tailscale.derper.port}
       '';

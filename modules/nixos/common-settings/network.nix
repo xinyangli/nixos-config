@@ -143,13 +143,13 @@ in
             proxySettings = ''
               policy.add(policy.domains(
                 policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('67.230.168.47'), ttl=300 } }),
-                { todname('la-00.namely.icu') }))
+                { todname('la-00.10118244.xyz') }))
               policy.add(policy.domains(
                 policy.ANSWER({ [kres.type.A] = { rdata=kres.str2ip('185.217.108.59'), ttl=300 } }),
-                { todname('fra-00.namely.icu') }))
+                { todname('fra-00.10118244.xyz') }))
             '';
             mainlandSettings = ''
-              chinaDomains = policy.todnames({'namely.icu', ${chinaDomains}})
+              chinaDomains = policy.todnames({'10118244.xyz', ${chinaDomains}})
               policy.add(policy.suffix(policy.TLS_FORWARD({
                 { "223.5.5.5", hostname="dns.alidns.com" },
                 { "223.6.6.6", hostname="dns.alidns.com" },

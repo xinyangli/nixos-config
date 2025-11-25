@@ -134,7 +134,7 @@
 
     services.tailscale.derper = {
       enable = true;
-      domain = "derper00.namely.icu";
+      domain = "derper00.10118244.xyz";
       openFirewall = true;
       verifyClients = true;
     };

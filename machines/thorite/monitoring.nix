@@ -81,9 +81,9 @@ in
     services.prometheus.scrapeConfigs =
       let
         probeList = [
-          "la-00.video.namely.icu:8080"
+          "la-00.video.10118244.xyz:8080"
           "agate_home.xiny.li:8443"
-          "fra-00.video.namely.icu:8080"
+          "fra-00.video.10118244.xyz:8080"
         ];
         chinaTargets = [
           "bj-cu-v4.ip.zstaticcdn.com:80"
@@ -198,15 +198,15 @@ in
         {
           hostAddress = "agate.coho-tet.ts.net";
           targetAddresses = [
-            "la-00.video.namely.icu:8080"
-            "fra-00.video.namely.icu:8080"
+            "la-00.video.10118244.xyz:8080"
+            "fra-00.video.10118244.xyz:8080"
           ];
         }
         {
           hostAddress = "weilite.coho-tet.ts.net";
           targetAddresses = [
-            "la-00.video.namely.icu:8080"
-            "fra-00.video.namely.icu:8080"
+            "la-00.video.10118244.xyz:8080"
+            "fra-00.video.10118244.xyz:8080"
           ];
         }
         {

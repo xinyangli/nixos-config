@@ -14,7 +14,7 @@ let
 
   cfg = config.commonSettings.proxyServer;
 
-  host = "${config.networking.hostName}.video.namely.icu";
+  host = "${config.networking.hostName}.video.10118244.xyz";
   outbound_direct_mark = "0x1451";
 
   singTls = {
@@ -27,7 +27,7 @@ let
       disable_http_challenge = cfg.dns01;
       disable_tls_alpn_challenge = true;
       alternative_http_port = if config.services.caddy.enable then 30310 else 80;
-      email = "me@namely.icu";
+      email = "me@10118244.xyz";
       dns01_challenge = mkIf cfg.dns01 {
         provider = "cloudflare";
         api_token = {
