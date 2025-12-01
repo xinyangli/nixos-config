@@ -2,6 +2,7 @@
   imports = [
     ./attic.nix
     ./caddy.nix
+    ./ente-photo.nix
     ./hydra.nix
     ./garage.nix
     ./immich.nix
