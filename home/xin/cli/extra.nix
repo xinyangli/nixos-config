@@ -137,16 +137,10 @@ in
         oneFixupPerCommit = true;
         maxStack = 20;
       };
-      user = {
-        signingkey = gitSigningKey;
-      };
-      gpg = {
-        format = "ssh";
-      };
     };
     signing = {
-      signByDefault = true;
       key = gitSigningKey;
+      format = "ssh";
     };
   };
   programs.lazygit.enable = true;

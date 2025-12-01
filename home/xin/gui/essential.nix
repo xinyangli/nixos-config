@@ -39,6 +39,7 @@
       "${pkgs.element-desktop}/share/applications/element-desktop.desktop"
     ];
   };
+  xdg.userDirs.enable = true;
 
   programs.zathura = {
     enable = true;
