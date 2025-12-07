@@ -17,7 +17,6 @@
     owncloud-client = import ./pkgs/owncloud-client.nix prev;
 
     transmission-exporter = prev.callPackage ./pkgs/transmission-exporter.nix { };
-    fcitx5 = prev.callPackage ./pkgs/fcitx5.nix { };
     owncloud-shell-resources = callPackage ./pkgs/owncloud-shell-resources.nix { };
     owncloud-nautilus = callPackage ./pkgs/owncloud-nautilus.nix { };
   }
