@@ -110,11 +110,22 @@
         neovim-bin = lib.getExe pkgs.nixvim;
         frame = "none";
         font = {
-          normal = [
-            "JetbrainsMono Nerd Font"
-            "Noto Sans Mono CJK SC"
-            "Ubuntu"
-          ];
+          normal = {
+            family = "monospace";
+            style = "Medium";
+          };
+          bold = {
+            family = "monospace";
+            style = "Bold";
+          };
+          italic = {
+            family = "monospace";
+            style = "Medium Italic";
+          };
+          bold_italic = {
+            family = "monospace";
+            style = "Bold Italic";
+          };
           size = 12.0;
         };
       };

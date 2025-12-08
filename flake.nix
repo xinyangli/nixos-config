@@ -85,6 +85,11 @@
       url = "github:vicinaehq/vicinae";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    chinese-fonts-overlay = {
+      url = "github:brsvh/chinese-fonts-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -107,6 +112,7 @@
       lanzaboote,
       mcps-nix,
       vicinae,
+      chinese-fonts-overlay,
       ...
     }:
     let
@@ -123,10 +129,10 @@
         };
       };
       overlayModule = {
-        imports = [ mylibModule ];
         config = {
           nixpkgs.overlays = [
             editorOverlay
+            chinese-fonts-overlay.overlays.default
             (import ./overlays/add-pkgs.nix)
           ];
         };
@@ -160,7 +166,7 @@
           catppuccin.nixosModules.catppuccin
           lanzaboote.nixosModules.lanzaboote
           machines/cinnabar/configuration.nix
-          (mkHome "xin" "cinnabar")
+          # (mkHome "xin" "cinnabar")
         ];
         la-00 = [
           disko.nixosModules.disko
@@ -241,6 +247,7 @@
       nixosModules.default = {
         imports = [
           ./modules/nixos
+          mylibModule
           overlayModule
         ];
       };
@@ -338,10 +345,6 @@
           "xin-x86_64-linux" = home-manager.lib.homeManagerConfiguration {
             pkgs = import nixpkgs {
               system = "x86_64-linux";
-              overlays = [
-                editorOverlay
-                (import ./overlays/add-pkgs.nix)
-              ];
               config = {
                 allowUnfree = true;
               };
@@ -350,6 +353,7 @@
               ./home/xin/full.nix
               ./modules/home-manager
               idmHmModule
+              overlayModule
             ]
             ++ sharedHmModules;
           };

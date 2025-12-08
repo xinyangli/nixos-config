@@ -8,8 +8,10 @@
     enable = true;
     style = ''
       * {
-        font-family: Ubuntu Nerd Font, NotoSans Nerd Font, sans;
-        min-height: 14px;
+        font-family: MiSans Nerd Font Propo, sans;
+        font-size: 14px;
+        font-weight: 500;
+        min-height: 12px;
         border-radius: 1rem;
         color: @text;
         background-color: transparent;
@@ -17,6 +19,8 @@
 
       menu, tooltip {
         background: @base;
+        font-size: 12px;
+        font-weight: 400;
       }
 
       #tray, #custom-notification {
@@ -45,17 +49,17 @@
         padding: 0 0.5rem;
       }
 
-      #mpris {
-        font-weight: normal;
-        font-size: 16px;
-      }
-
       #clock {
         padding: 0 1rem;
       }
       #custom-notification {
         min-width: 2.8rem;
         padding: 0;
+      }
+
+      #workspaces {
+        font-size: 12px;
+        font-weight: bold;
       }
 
       #workspaces button {
@@ -95,12 +99,10 @@
       }
 
       #network, #wireplumber, #cpu, #memory {
-        font-size: 14px;
         font-weight: bold;
       }
 
       #backlight, #battery {
-        font-size: 16px;
       }
 
       #wireplumber, #cpu, #memory, #backlight {
@@ -115,16 +117,10 @@
         border-radius: 0 1rem 1rem 0;
       }
 
-      #tray {
-        font-weight: bold;
-        font-size: 14px;
-      }
-
       #clock {
         color: @base;
         background-color: transparent;
         font-weight: bold;
-        font-size: 16px;
       }
     '';
     settings = {
@@ -141,8 +137,12 @@
           player-icons = {
             default = "";
             spotify = "";
+            spotifyd = " 󰀿";
             Spot = "";
             Valent = "";
+            kdeconnect = "";
+            firefox = "󰈹";
+            chromium = "";
             vlc = "󰕼";
           };
           status-icons = {
@@ -150,9 +150,9 @@
             playing = "";
           };
           ignored-players = [
-            "firefox"
-            "chromium"
+            "kdeconnect"
           ];
+          on-click-right = "${pkgs.playerctl}/bin/playerctld shift";
           max-length = 20;
         };
         "custom/separator" = {

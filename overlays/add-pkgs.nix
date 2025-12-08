@@ -19,5 +19,8 @@
     transmission-exporter = prev.callPackage ./pkgs/transmission-exporter.nix { };
     owncloud-shell-resources = callPackage ./pkgs/owncloud-shell-resources.nix { };
     owncloud-nautilus = callPackage ./pkgs/owncloud-nautilus.nix { };
+    nerd-fonts-misans = callPackage ./pkgs/nerd-fonts-misans.nix { };
+
+    xwayland-satellite = callPackage ./pkgs/xwayland-satellite.nix { };
   }
 )

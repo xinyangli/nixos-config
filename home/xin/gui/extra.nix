@@ -6,7 +6,7 @@
     remmina
     qq
     wechat
-    wpsoffice
+    wpsoffice-cn
     ttf-wps-fonts
 
     gnome-sound-recorder

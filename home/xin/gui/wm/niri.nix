@@ -27,12 +27,5 @@ in
     ];
 
     custom-hm.gui.polkit = "pantheon";
-    custom-hm.gui.gtklock = {
-      enable = true;
-      config = {
-        # gtk-theme = "Catppuccin-GTK-Dark";
-      };
-    };
-
   };
 }

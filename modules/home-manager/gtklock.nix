@@ -87,9 +87,7 @@ in
 
       modules = mkOption {
         type = listOf (either package str);
-        default = [
-          # "${pkgs.gtklock-playerctl-module.outPath}/lib/gtklock/playerctl-module.so"
-        ];
+        default = [ ];
         description = ''
           A list of gtklock modulesto use. Can either be packages, absolute paths, or strings.
         '';
@@ -121,7 +119,9 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = [ cfg.package ];
+    home.packages = [
+      cfg.package
+    ];
 
     xdg.configFile."gtklock/config.ini".source = pkgs.writeText "gtklock-config.ini" finalConfig;
   };

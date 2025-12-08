@@ -15,7 +15,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "owncloud";
     repo = "client-desktop-shell-integration-nautilus";
     rev = "v${finalAttrs.version}";
-    sha256 = "sha256-GaURNFhAAYXwiDTTQT2u2hKPAv2QzvIq7p+N4j9cBr4=";
+    sha256 = "sha256-nCw+cyaMj+KWNZT3T5c8bZDpTQ4GYtAbPwhxWp5RoCQ=";
   };
 
   nativeBuildInputs = [ cmake ];

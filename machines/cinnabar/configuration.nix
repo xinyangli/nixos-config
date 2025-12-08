@@ -457,45 +457,27 @@ in
   # Fonts
   fonts = {
     packages = with pkgs; [
-      nerd-fonts.ubuntu-sans
-      nerd-fonts.ubuntu
-      nerd-fonts.fira-code
-      nerd-fonts.fira-mono
-      nerd-fonts.jetbrains-mono
-      nerd-fonts.roboto-mono
       nerd-fonts.noto
-      noto-fonts
-      noto-fonts-color-emoji
-      liberation_ttf
-      mplus-outline-fonts.githubRelease
-      dina-font
-      proggyfonts
-      ubuntu-classic
-      google-fonts
-      # Chinese
-      wqy_microhei
-      wqy_zenhei
-      noto-fonts-cjk-sans
-      noto-fonts-cjk-serif
       source-han-sans
       source-han-serif
     ];
     fontconfig = {
       defaultFonts = {
         serif = [
-          "Source Han Serif SC"
-          "Ubuntu"
+          "NotoSerif Nerd Font"
         ];
         sansSerif = [
-          "Source Han Sans SC"
-          "Ubuntu"
+          "NotoSans Nerd Font"
         ];
         monospace = [
-          "JetbrainsMono Nerd Font"
           "Noto Sans Mono CJK SC"
-          "Ubuntu"
+        ];
+        emoji = [
+          "Noto Color Emoji"
         ];
       };
+      hinting.enable = true;
+      useEmbeddedBitmaps = true;
     };
     enableDefaultPackages = true;
   };
