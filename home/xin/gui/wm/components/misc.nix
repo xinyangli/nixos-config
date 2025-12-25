@@ -26,7 +26,7 @@ in
         }
         {
           timeout = 300;
-          command = ''${niri} msg action power-off-monitors || ${loginctl} lock-session'';
+          command = ''${niri} msg action power-off-monitors; ${loginctl} lock-session'';
         }
         {
           # Sleep if on battery
@@ -37,7 +37,7 @@ in
       events = [
         {
           event = "before-sleep";
-          command = lib.concatStringsSep "||" [
+          command = lib.concatStringsSep ";" [
             playerPauseCmd
             lockCmd
           ];
@@ -49,7 +49,7 @@ in
         }
         {
           event = "lock";
-          command = lib.concatStringsSep "||" [
+          command = lib.concatStringsSep ";" [
             playerPauseCmd
             lockCmd
           ];
