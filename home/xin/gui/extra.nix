@@ -24,10 +24,19 @@
     # wemeet
     wemeet
 
+    nautilus-open-any-terminal
+
     owncloud-client
     owncloud-nautilus
     owncloud-shell-resources
   ];
+
+  dconf.settings = {
+    "com/github/stunkymonkey/nautilus-open-any-terminal".terminal = "foot";
+  };
+
+  # Enable extension support for nautilus
+  home.sessionVariables.NAUTILUS_4_EXTENSION_DIR = "${pkgs.nautilus-python}/lib/nautilus/extensions-4";
 
   # TODO: Waiting for a new release of librespot, see github: spotifyd #1299
   services.spotifyd = {

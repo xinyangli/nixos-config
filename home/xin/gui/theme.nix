@@ -86,6 +86,7 @@ in
     ubuntu-classic
     google-fonts
     liberation_ttf
+    adwaita-fonts
 
     # Chinese
     nerd-fonts-misans
