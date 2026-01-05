@@ -118,6 +118,7 @@ in
     pkcs11.package = pkgs.tpm2-pkcs11.override { fapiSupport = false; };
     # TPM2TOOLS_TCTI and TPM2_PKCS11_TCTI env variables
     tctiEnvironment.enable = true;
+    applyUdevRules = false;
   };
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
@@ -134,6 +135,12 @@ in
     };
   };
   services.udev.extraRules = ''
+    # FIXME: Upstream (systemd) does not allow regular users to own device nodes, which makes
+    # managing tss group with kanidm impossible. Use uaccess tag here to avoid specifying a group
+    # See https://github.com/systemd/systemd/issues/39056
+    KERNEL=="tpm[0-9]*", TAG+="systemd", MODE="0660"
+    KERNEL=="tpmrm[0-9]*", TAG+="systemd", TAG+="uaccess", MODE="0660"
+
     # 8BitDo Ultimate 2 Wireless over USB
     KERNEL=="hidraw*", ATTRS{idVendor}=="2dc8", ATTRS{idProduct}=="6012", MODE="0660"
 
