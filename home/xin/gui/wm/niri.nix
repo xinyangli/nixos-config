@@ -18,7 +18,10 @@ in
 
   config = {
     xdg.configFile = {
-      niri.source = config.lib.file.mkOutOfStoreSymlink "${configDir}/niri";
+      "niri/config.kdl".source = config.lib.file.mkOutOfStoreSymlink "${configDir}/niri/config.kdl";
+      "niri/nixos_gen_config.kdl".text = ''
+        screenshot-path "${config.home.homeDirectory}/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+      '';
     };
 
     home.packages = with pkgs; [

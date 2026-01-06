@@ -2,6 +2,10 @@
 // "/-" comments out the following node.
 // Check the wiki for a full description of the configuration:
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Overview
+
+// TODO: Optional include will be added on next release, let's wait for that!
+include "nixos_gen_config.kdl"
+
 environment {
     // Make Electron app use gnome portal as safeStorage
     GNOME_DESKTOP_SESSION_ID "this-is-deprecated"
@@ -11,6 +15,7 @@ environment {
 // Find the full list of options on the wiki:
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Input
 input {
+    disable-power-key-handling true
     keyboard {
         xkb {
             // You can set rules, model, layout, variant and options.
@@ -53,63 +58,19 @@ input {
     // focus-follows-mouse max-scroll-amount="0%"
 }
 
-// You can configure outputs by their name, which you can find
-// by running `niri msg outputs` while inside a niri instance.
-// The built-in laptop monitor is usually called "eDP-1".
-// Find more information on the wiki:
-// https://github.com/YaLTeR/niri/wiki/Configuration:-Outputs
-// Remember to uncomment the node by removing "/-"!
-output "eDP-1" {
-    // Uncomment this line to disable this output.
-    // off
-
-    // Resolution and, optionally, refresh rate of the output.
-    // The format is "<width>x<height>" or "<width>x<height>@<refresh rate>".
-    // If the refresh rate is omitted, niri will pick the highest refresh rate
-    // for the resolution.
-    // If the mode is omitted altogether or is invalid, niri will pick one automatically.
-    // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-    // mode "1920x1080@120.030"
-
-    // You can use integer or fractional scale, for example use 1.5 for 150% scale.
-    scale 1.5
-
-    // Transform allows to rotate the output counter-clockwise, valid values are:
-    // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
-    transform "normal"
-
-    position x=3440 y=1300
-    variable-refresh-rate
-}
-
-output "Xiaomi Corporation Mi monitor 5505610135376" {
-    position x=0 y=0
-    mode "3440x1440@100.000"
-}
-
-output "LG Electronics LG HDR 4K 0x000AC053" {
-    position x=0 y=0
-}
+include "outputs.kdl"
 
 switch-events {
     lid-open { spawn "niri" "msg" "output" "eDP-1" "on"; }
 }
 
-workspace "chat" {
-    open-on-output "eDP-1"
-}
+workspace "media" { }
 
-workspace "browser" {
-    open-on-output "DP-1"
-}
+workspace "chat" { }
 
-workspace "terminal" {
-    open-on-output "DP-1"
-}
+workspace "browser" { }
 
-workspace "media" {
-    open-on-output "DP-1"
-}
+workspace "terminal" { }
 
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
@@ -138,7 +99,6 @@ layout {
         // Fixed sets the width in logical pixels exactly.
         // fixed 1920
     }
-
     // You can also customize the heights that "switch-preset-window-height" (Mod+Shift+R) toggles between.
     // preset-window-heights { }
 
@@ -228,18 +188,6 @@ layout {
         place-within-column
     }
 }
-
-// Add lines like this to spawn processes at startup.
-// Note that running niri as a session supports xdg-desktop-autostart,
-// which may be more convenient to use.
-// See the binds section below for more spawn examples.
-// spawn-at-startup "alacritty" "-e" "fish"
-
-// Uncomment this line to ask the clients to omit their client-side decorations if possible.
-// If the client will specifically ask for CSD, the request will be honored.
-// Additionally, clients will be informed that they are tiled, removing some rounded corners.
-// prefer-no-csd
-
 // You can change the path where screenshots are saved.
 // A ~ at the front will be expanded to the home directory.
 // The path is formatted with strftime(3) to give you the screenshot date and time.
@@ -291,9 +239,15 @@ window-rule {
 }
 
 window-rule {
+    match app-id="Nemo-preview-start"
+    open-floating true
+}
+
+window-rule {
     match app-id="org.pulseaudio.pavucontrol$"
     match app-id="com.saivert.pwvucontrol$"
     match app-id=".blueman-manager-wrapped$"
+    match app-id="desktopclient.owncloud.com."
     default-floating-position x=5 y=5 relative-to="top-right"
     min-width 400 
     max-width 800
@@ -302,9 +256,20 @@ window-rule {
     open-floating true
 }
 
+window-rule{
+    match app-id="swayimg"
+    open-floating true
+}
+
 window-rule {
     match app-id="engrampa$"
     open-floating true
+}
+
+window-rule {
+    match app-id="calibre-ebook-viewer" title="Table of Contents"
+    default-column-width { fixed 320; }
+    open-floating false
 }
 
 window-rule {
@@ -315,25 +280,27 @@ window-rule {
 }
 
 window-rule {
-    match app-id="desktopclient.owncloud.com."
-    max-width 1000
-    open-floating true
+    match app-id="org.telegram.desktop"
+    exclude title="Media viewer"
+    match app-id="wechat"
+    exclude title="Voice Call"
+    match app-id="Element"
+    max-width 992
 }
 
 window-rule {
-    match app-id="org.telegram.desktop"
-    max-width 1000
+    match app-id="org.telegram.desktop" title="Media viewer"
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.8; }
+    open-floating true
+    open-maximized-to-edges false
+    open-maximized false
+    open-fullscreen false
 }
 
 window-rule {
     match app-id="org.gnome.Nautilus"
-    default-column-width { proportion 0.5; }
-    default-window-height { proportion 0.75; }
-}
-
-window-rule {
-    match app-id="org.telegram.desktop"
-    open-floating true
+    default-column-width { proportion 0.33; }
 }
 
 prefer-no-csd
@@ -394,7 +361,7 @@ binds {
     Mod+T { spawn "alacritty"; }
     Mod+Space { spawn "vicinae" "toggle"; }
     Mod+P repeat=false { spawn "vicinae" "vicinae://extensions/vicinae/clipboard/history"; }
-    Mod+Alt+L { spawn "gtklock"; }
+    Mod+Alt+L { spawn "loginctl" "lock-session"; }
 
     // You can also use a shell. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument in the end.
@@ -402,8 +369,8 @@ binds {
 
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.
-    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02-"; }
     XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
 
