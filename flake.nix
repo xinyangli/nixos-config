@@ -429,9 +429,9 @@
               (python3.withPackages (ps: with ps; [ requests ]))
               sbctl
               claude-code
-              mcp-nixos
+              # mcp-nixos
               mcps-nix.packages.${system}.mcp-language-server
-              mcps-nix.packages.${system}.mcp-servers
+              # mcps-nix.packages.${system}.mcp-servers
               nixd
             ];
           };

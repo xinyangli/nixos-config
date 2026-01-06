@@ -1,3 +1,13 @@
+From 0d5bc9a1e16438de9442e6d321de250d416e68e0 Mon Sep 17 00:00:00 2001
+From: Xinyang Li <lixinyang411@gmail.com>
+Date: Tue, 6 Jan 2026 18:46:10 +0200
+Subject: [PATCH] local patch in my nixos-config
+
+---
+ lib/routes/caixin/utils-fulltext.ts |  48 +++++++++---
+ lib/routes/caixin/weekly.ts         | 113 +++++++++++++++++++++-------
+ 2 files changed, 124 insertions(+), 37 deletions(-)
+
 diff --git a/lib/routes/caixin/utils-fulltext.ts b/lib/routes/caixin/utils-fulltext.ts
 index 74bed5d3d..1af90d18b 100644
 --- a/lib/routes/caixin/utils-fulltext.ts
@@ -235,3 +245,6 @@ index 2ce6f0b95..058d63955 100644
 +        description: '财新周刊所有文章列表',
      };
  }
+-- 
+2.51.2
+

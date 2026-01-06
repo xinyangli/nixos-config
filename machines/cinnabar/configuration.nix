@@ -375,11 +375,12 @@ in
     gparted
     bibata-cursors
 
-    (epsonscan2.overrideAttrs (
-      finalAttrs: prevAttrs: {
-        patches = prevAttrs.patches ++ [ ./fix-crash.patch ];
-      }
-    ))
+    # TODO: Wait for https://github.com/NixOS/nixpkgs/pull/475916
+    # (epsonscan2.overrideAttrs (
+    #   finalAttrs: prevAttrs: {
+    #     patches = prevAttrs.patches ++ [ ./fix-crash.patch ];
+    #   }
+    # ))
 
     virt-manager
     wineWowPackages.waylandFull
