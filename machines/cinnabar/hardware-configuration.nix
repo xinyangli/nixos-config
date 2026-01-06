@@ -78,6 +78,7 @@ in
 
   hardware.enableAllFirmware = true;
   services.asusd.enable = true;
+  systemd.services.asusd.environment.RUST_LOG="info,asusd=debug,rog_platform=debug,tracing::span=error";
 
   environment.systemPackages = with pkgs; [
     alsa-topology-conf
@@ -120,6 +121,7 @@ in
       intel-vaapi-driver
       libva-vdpau-driver
       libvdpau-va-gl
+      vpl-gpu-rt
       intel-compute-runtime
     ];
   };

@@ -23,8 +23,8 @@ in
       niri = super.niri.overrideAttrs {
         patches = [
           (pkgs.fetchurl {
-            url = "https://patch-diff.githubusercontent.com/raw/YaLTeR/niri/pull/1791.diff";
-            hash = "sha256-oHtim6jsFDiHG0BxPd7n9GJc8BWA46G/yjj2nmFrirg=";
+            url = "https://github.com/wrvsrx/niri/compare/tag_support-shm-sharing_2~19..tag_support-shm-sharing_2.patch";
+            hash = "sha256-RIy6scbIHGlngu28O7nwhN8FF9x5eHUIGhPC48DKQGc=";
           })
         ];
       };
@@ -70,6 +70,20 @@ in
     consoleLogLevel = 3;
     initrd.verbose = false;
     initrd.availableKernelModules = [ "xe" ];
+    initrd.systemd.services.cryptsetup-timeout = {
+      # man systemd-cryptsetup@.service
+      # https://github.com/NixOS/nixpkgs/blob/nixos-25.05/nixos/modules/system/boot/systemd/initrd.nix
+      # https://blog.decent.id/post/nixos-systemd-initrd/
+      # https://discourse.nixos.org/t/migrating-to-boot-initrd-systemd-and-debugging-stage-1-systemd-services/54444/7
+      # As root: nix shell nixpkgs#dracut, lsinitrd /boot/EFI/nixos/...
+      wantedBy = [ "sysinit.target" ];
+      bindsTo = [ "systemd-cryptsetup@crypted.service" ];
+      unitConfig.DefaultDependencies = "no";
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "/bin/sh -c 'sleep 180 && systemctl poweroff'";
+      };
+    };
     kernelParams = [
       "quiet"
       "splash"
@@ -411,10 +425,7 @@ in
     (
       let
         davfsWrapperConfig = pkgs.writeText "davfs-wrapper.conf" ''
-          # 核心指令：指定 secrets 文件的路径
           secrets ${config.sops.templates."davfs2.conf".path}
-
-          # 其他 davfs 配置（可选，推荐加上）
           use_locks 0
           gui_optimize 1
         '';
