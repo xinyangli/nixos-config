@@ -148,6 +148,7 @@ in
       enable = true;
     };
   };
+
   services.udev.extraRules = ''
     # FIXME: Upstream (systemd) does not allow regular users to own device nodes, which makes
     # managing tss group with kanidm impossible. Use uaccess tag here to avoid specifying a group
@@ -342,6 +343,17 @@ in
     "libsoup-2.74.3"
   ];
   environment.systemPackages = with pkgs; [
+    kdePackages.kwin
+    kdePackages.kscreen
+    kdePackages.libkscreen
+    kdePackages.kcmutils
+    kdePackages.kscreenlocker
+    kdePackages.kglobalacceld
+    kdePackages.kde-cli-tools
+    kdePackages.knewstuff
+    kdePackages.systemsettings
+    kdePackages.powerdevil
+
     # ==== Development ==== #
     (
       let
@@ -480,24 +492,10 @@ in
       source-han-serif
     ];
     fontconfig = {
-      defaultFonts = {
-        serif = [
-          "NotoSerif Nerd Font"
-        ];
-        sansSerif = [
-          "NotoSans Nerd Font"
-        ];
-        monospace = [
-          "Noto Sans Mono CJK SC"
-        ];
-        emoji = [
-          "Noto Color Emoji"
-        ];
-      };
       hinting.enable = true;
       useEmbeddedBitmaps = true;
     };
-    enableDefaultPackages = true;
+    enableDefaultPackages = false;
   };
   # Virtualization
   virtualisation = {

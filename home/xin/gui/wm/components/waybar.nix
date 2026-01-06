@@ -26,6 +26,9 @@
       #tray, #custom-notification {
         background-color: alpha(@base, 0.9);
       }
+      #mpris {
+        font-size: 16px;
+      }
       #mpris,
       #network, #wireplumber, #cpu, #memory, #backlight, #battery {
         color: @base;

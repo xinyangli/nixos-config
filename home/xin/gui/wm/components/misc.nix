@@ -50,7 +50,6 @@ in
         {
           event = "lock";
           command = lib.concatStringsSep ";" [
-            playerPauseCmd
             lockCmd
           ];
         }
