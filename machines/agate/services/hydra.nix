@@ -8,6 +8,7 @@
   '';
   services.hydra = {
     enable = true;
+    package = pkgs.hydra.override { stdenv = pkgs.gcc14Stdenv; };
     hydraURL = "http://agate.coho-tet.ts.net:3000/";
     notificationSender = "hydra@localhost";
     buildMachinesFiles = [ ];
