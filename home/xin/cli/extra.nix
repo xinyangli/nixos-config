@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  gitSigningKey = "~/.ssh/id_ed25519_sk.pub";
+  gitSigningKey = "~/.ssh/id_ecdsa.tpm.pub";
   configDir = "${config.my-lib.flakePath config}/config";
 in
 {
@@ -18,6 +18,18 @@ in
     tealdeer
     git-absorb
   ];
+
+  services.ssh-agent =
+    let
+      p = pkgs.tpm2-pkcs11.override { fapiSupport = false; };
+    in
+    {
+      enable = true;
+      pkcs11Whitelist = [
+        "/run/current-system/sw/lib/*"
+        "${p}/lib/*"
+      ];
+    };
 
   # == Terminal enhancement ==
   programs.nix-index-database.comma.enable = true;
