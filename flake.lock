@@ -705,15 +705,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1767437240,
-        "narHash": "sha256-OA0dBHhccdupFXp+/eaFfb8K1dQxk61in4aF5ITGVX8=",
-        "owner": "nix-community",
+        "lastModified": 1767817806,
+        "narHash": "sha256-fnyvcCtERcSTtKftaIfR0p7Nfd2Jlx+aNVGYwPyG+s0=",
+        "owner": "xinyangli",
         "repo": "home-manager",
-        "rev": "1cfa305fba94468f665de1bd1b62dddf2e0cb012",
+        "rev": "bb17029cc8e14b2fe02da3f4e3ec60135a4b82af",
         "type": "github"
       },
       "original": {
-        "owner": "nix-community",
+        "owner": "xinyangli",
+        "ref": "ssh-agent-whitelist",
         "repo": "home-manager",
         "type": "github"
       }
@@ -1248,16 +1249,32 @@
     },
     "nixpkgs-stable_2": {
       "locked": {
-        "lastModified": 1735563628,
-        "narHash": "sha256-OnSAY7XDSx7CtDoqNh8jwVwh4xNL/2HaJxGjryLWzX8=",
+        "lastModified": 1751274312,
+        "narHash": "sha256-/bVBlRpECLVzjV19t5KMdMFWSwKLtb5RyXdjz3LJT+g=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b134951a4c9f3c995fd7be05f3243f8ecd65d798",
+        "rev": "50ab793786d9de88ee30ec4e4c24fb4236fc2674",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "nixos-24.05",
+        "ref": "nixos-24.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-staging": {
+      "locked": {
+        "lastModified": 1767816784,
+        "narHash": "sha256-Sg9LswSKbOEQGrg0wibLiKzcuyNOVucn2ntf6VJKWrQ=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5c28d3c0df07ad610144d3ecea17a6cffa0e332e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "staging",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -1550,6 +1567,7 @@
         "nixos-sbc": "nixos-sbc",
         "nixpkgs": "nixpkgs_6",
         "nixpkgs-stable": "nixpkgs-stable_2",
+        "nixpkgs-staging": "nixpkgs-staging",
         "nur": "nur",
         "rust-overlay": "rust-overlay",
         "sops-nix": "sops-nix",

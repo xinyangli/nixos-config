@@ -153,6 +153,7 @@ in
     signing = {
       key = gitSigningKey;
       format = "ssh";
+      signByDefault = true;
     };
   };
   programs.lazygit.enable = true;

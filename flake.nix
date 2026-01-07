@@ -2,10 +2,12 @@
   inputs = {
     # Pin nixpkgs to a specific commit
     nixpkgs.url = "github:xinyangli/nixpkgs/deploy";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-staging.url = "github:nixos/nixpkgs/staging"; # the newer, the better :)
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      # TODO: https://github.com/nix-community/home-manager/pull/8484
+      url = "github:xinyangli/home-manager/ssh-agent-whitelist";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
