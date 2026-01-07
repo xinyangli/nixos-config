@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "mcp-nixos": {
+      "type": "stdio",
+      "command": "mcp-nixos",
+      "args": [],
+      "env": {}
+    },
+    "sequentialthinking": {
+      "type": "stdio",
+      "command": "mcp-server-sequentialthinking"
+    },
+    "language-server": {
+      "type": "stdio",
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "/home/xin/repo/personal/nixos-config/",
+        "--lsp",
+        "nixd"
+      ],
+      "env": {}
+    }
+  }
+}

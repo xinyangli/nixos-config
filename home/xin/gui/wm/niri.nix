@@ -24,6 +24,15 @@ in
       '';
     };
 
+    xdg.portal = {
+      enable = true;
+      extraPortals = [
+        pkgs.xdg-desktop-portal-gnome
+        pkgs.xdg-desktop-portal-gtk
+      ];
+      configPackages = [ pkgs.niri ];
+    };
+
     home.packages = with pkgs; [
       wl-clipboard
       xwayland-satellite # managed by niri

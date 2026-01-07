@@ -206,15 +206,6 @@ in
     flavor = "mocha";
   };
 
-  xdg.portal = {
-    enable = true;
-    extraPortals = [
-      pkgs.xdg-desktop-portal-gnome
-      pkgs.xdg-desktop-portal-gtk
-    ];
-    configPackages = [ pkgs.niri ];
-  };
-
   systemd.user.services.xdg-desktop-portal-gtk.after = [ "graphical-session.target" ];
   systemd.user.services.xdg-desktop-portal-gnome.after = [ "graphical-session.target" ];
   systemd.user.services.xdg-desktop-portal-gnome.wantedBy = [ "graphical-session.target" ];

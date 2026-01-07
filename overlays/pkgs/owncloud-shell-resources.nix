@@ -13,7 +13,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "owncloud";
     repo = "client-desktop-shell-integration-resources";
     rev = "v${finalAttrs.version}";
-    sha256 = "sha256-wiscpZjXkzrv9mRM8pW8ABV3yQ57S48S2KVuIEmVH5Q=";
+    sha256 = "sha256-BfVrq1hBKJes7pWMdRYM22o66SpoOKgbRi2Z3j1kYSQ=";
   };
 
   nativeBuildInputs = [

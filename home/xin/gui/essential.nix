@@ -58,7 +58,8 @@
         "x-scheme-handler/tg" = "org.telegram.desktop.desktop";
         "x-scheme-handler/tonsite" = "org.telegram.desktop.desktop";
         "x-scheme-handler/terminal" = "foot.desktop";
-        "inode/directory" = "org.gnome.Nautilus.desktop";
+        "inode/directory" = "nemo.desktop";
+        "x-directory/normal" = "nemo.desktop";
         "application/pdf" = "org.pwmt.zathura.desktop";
         "application/epub+zip" = "calibre-ebook-viewer.desktop";
         "application/ereader" = "calibre-ebook-viewer.desktop";
