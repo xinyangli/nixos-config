@@ -1,4 +1,4 @@
-From 0d5bc9a1e16438de9442e6d321de250d416e68e0 Mon Sep 17 00:00:00 2001
+From 45e5be1ff696534525e46741d284604b18c2f827 Mon Sep 17 00:00:00 2001
 From: Xinyang Li <lixinyang411@gmail.com>
 Date: Tue, 6 Jan 2026 18:46:10 +0200
 Subject: [PATCH] local patch in my nixos-config
@@ -9,10 +9,10 @@ Subject: [PATCH] local patch in my nixos-config
  2 files changed, 124 insertions(+), 37 deletions(-)
 
 diff --git a/lib/routes/caixin/utils-fulltext.ts b/lib/routes/caixin/utils-fulltext.ts
-index 74bed5d3d..1af90d18b 100644
+index 3d1b01da0..e7112792d 100644
 --- a/lib/routes/caixin/utils-fulltext.ts
 +++ b/lib/routes/caixin/utils-fulltext.ts
-@@ -8,13 +8,14 @@ import { config } from '@/config';
+@@ -10,13 +10,14 @@ import ofetch from '@/utils/ofetch';
  const rsaPrivateKey =
      '-----BEGIN PRIVATE KEY-----MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCLci8q2u3NGFyFlMUwjCP91PsvGjHdRAq9fmqZLxvue+n+RhzNxnKKYOv35pLgFKWXsGq2TV+5Xrv6xZgNx36IUkqbmrO+eCa8NFmti04wvMfG3DCNdKA7Lue880daNiK3BOhlQlZPykUXt1NftMNS/z+e70W+Vpv1ZxCx5BipqZkdoceM3uin0vUQmqmHqjxi5qKUuov90dXLaMxypCA0TDsIDnX8RPvPtqKff1p2TMW2a0XYe7CPYhRggaQMpmo0TcFutgrM1Vywyr2TPxYR+H/tpuuWRET7tUIQykBYoO1WKfL2dX6cxarjAJfnYnod3sMzppHouyp8Pt7gHVG7AgMBAAECggEAEFshSy6IrADKgWSUyH/3jMNZfwnchW6Ar/9O847CAPQJ2yhQIpa/Qpnhs58Y5S2myqcHrUBgFPcWp3BbyGn43naAh8XahWHEcVjWl/N6BV9vM1UKYN0oGikDR3dljCBDbCIoPBBO3WcFOaXoIpaqPmbwCG1aSdwQyPUA0UzG08eDbuHK6L5jvbe3xv5kLpWTVddrocW+SakbZRAX1Ykp7IujOce235nM7GOfoq4b8jmK5CLg6VIZGQV20wnn9YxuFOndRSjneFberzfzBMhVLpPsQ16M2xDLpZaDTggZnq2L6nZygds8Hda++ga3WbD3TcgjJNYuENu1S88IowYhSQKBgQDFqRA+38mo6KsxVDCNWcuEk2hSq8NEUzRHJpS7/QjZmEIYpFzDXgSGwhZJ0WNsQtaxJeBbc7B/OOqh8TL1reLl5AdTimS1OLHWVf/MUsLVS7Y82hx/hpYWxZnRSq41oI3P8FO/53FiQMYo2wbwqF6uQjB1y8h58aqL3OYpTH/5xQKBgQC0mobALJ+bU4nCPzkVDZuD6RyNWPwS1aE3+925wDSN2rJ0iLIb4N5czWZmHb66VlAtfGbp2q+amsCV4r6UR19A/y8k9SFB0mdtxix6mjEfaGhVJm4B1mkvsn0OHMAanKkohUvCjROQc3sziyp2gqSEQ98G7//VMPx/3dhgyQpVfwKBgQCycsqu6N0n+D6t/0MCKiJaI7bYhCd7JN8aqVM4UN5PjG2Hz8PLwbK2cr0qkbaAA+vN7NMb3Vtn0FvMLnUCZqVlRTP0EQqQrYmoZuXUcpdhd8QkNgnqe/g+wND4qcKTucquA1uo8mtj9/Su5+bhGDC6hBk6D+uDZFHDiX/loyIavQKBgQCXF6AcLjjpDZ52b8Yloti0JtXIOuXILAlQeNoqiG5vLsOVUrcPM7VUFlLQo5no8kTpiOXgRyAaS9VKkAO4sW0zR0n9tUY5dvkokV6sw0rNZ9/BPQFTcDlXug99OvhMSzwJtlqHTNdNRg+QM6E2vF0+ejmf6DEz/mN/5e0cK5UFqQKBgCR2hVfbRtDz9Cm/P8chPqaWFkH5ulUxBpc704Igc6bVH5DrEoWo6akbeJixV2obAZO3sFyeJqBUqaCvqG17Xei6jn3Hc3WMz9nLrAJEI9BTCfwvuxCOyY0IxqAAYT28xYv42I4+ADT/PpCq2Dj5u43X0dapAjZBZDfVVis7q1Bw-----END PRIVATE KEY-----';
  
@@ -30,7 +30,7 @@ index 74bed5d3d..1af90d18b 100644
      const articleID = url.match(/(\d+)\.html/)[1];
  
      const nonce = crypto.randomUUID().replaceAll('-', '').toUpperCase();
-@@ -31,21 +32,50 @@ export async function getFulltext(url: string) {
+@@ -33,21 +34,50 @@ export async function getFulltext(url: string) {
      sig.updateString(rawString);
      const sigValueHex = hextob64(sig.sign());
  
@@ -52,7 +52,7 @@ index 74bed5d3d..1af90d18b 100644
 +
      const isWeekly = url.includes('weekly');
      const res = await ofetch(`https://gateway.caixin.com/api/newauth/checkAuthByIdJsonp`, {
-         params: {
+         query: {
              type: 1,
              page: isWeekly ? 0 : 1,
              rand: Math.random(),
@@ -88,18 +88,18 @@ index 74bed5d3d..1af90d18b 100644
 +    return res.data.audioUrlModel.manAudioUrl
 +}
 diff --git a/lib/routes/caixin/weekly.ts b/lib/routes/caixin/weekly.ts
-index 2ce6f0b95..058d63955 100644
+index c67ef5b04..28a59b68e 100644
 --- a/lib/routes/caixin/weekly.ts
 +++ b/lib/routes/caixin/weekly.ts
-@@ -3,6 +3,7 @@ import cache from '@/utils/cache';
+@@ -4,6 +4,7 @@ import type { DataItem, Route } from '@/types';
+ import cache from '@/utils/cache';
  import got from '@/utils/got';
- import { load } from 'cheerio';
  import { parseDate } from '@/utils/parse-date';
 +import { getFulltext, getAudio } from './utils-fulltext';
  
  export const route: Route = {
      path: '/weekly',
-@@ -13,6 +14,14 @@ export const route: Route = {
+@@ -14,6 +15,14 @@ export const route: Route = {
              source: ['weekly.caixin.com/', 'weekly.caixin.com/*'],
          },
      ],
@@ -114,7 +114,7 @@ index 2ce6f0b95..058d63955 100644
      name: '财新周刊',
      maintainers: ['TonyRL'],
      handler,
-@@ -21,11 +30,13 @@ export const route: Route = {
+@@ -22,11 +31,13 @@ export const route: Route = {
  
  async function handler(ctx) {
      const link = 'https://weekly.caixin.com';
@@ -129,7 +129,7 @@ index 2ce6f0b95..058d63955 100644
          ...$('.mi')
              .toArray()
              .map((item) => ({
-@@ -36,42 +47,88 @@ async function handler(ctx) {
+@@ -37,42 +48,88 @@ async function handler(ctx) {
              .map((item) => ({
                  link: $(item).attr('href'),
              })),
@@ -246,5 +246,5 @@ index 2ce6f0b95..058d63955 100644
      };
  }
 -- 
-2.51.2
+2.52.0
 

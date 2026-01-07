@@ -1,17 +1,6 @@
 { pkgs, lib, ... }:
 {
   home.packages = with pkgs; [
-    # File Manager
-    (xfce.thunar.override {
-      thunarPlugins = [
-        xfce.thunar-archive-plugin
-        xfce.thunar-media-tags-plugin
-        xfce.thunar-volman
-      ];
-    })
-    nautilus
-    mate.engrampa
-
     thunderbird
     telegram-desktop
     element-desktop

@@ -11,6 +11,7 @@
     gimp3-with-plugins
     hugin
     gthumb
-    oculante
+    # TODO: wait for https://github.com/NixOS/nixpkgs/issues/475989
+    # oculante
   ];
 }
