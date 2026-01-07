@@ -45,7 +45,6 @@
 
     my-nixvim = {
       url = "git+https://git.xiny.li/xin/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     catppuccin = {
