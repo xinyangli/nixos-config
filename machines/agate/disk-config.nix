@@ -59,14 +59,6 @@
                   "/rootfs" = {
                     mountpoint = "/";
                   };
-                  "/garage_subvol" = {
-                    mountOptions = [
-                      "noatime"
-                      "nodatacow"
-                      "compress=no"
-                    ];
-                    mountpoint = "/storage/garage";
-                  };
                   # Subvolume name is the same as the mountpoint
                   "/home" = {
                     mountOptions = [ "compress=zstd" ];
@@ -123,6 +115,14 @@
                   "/dev/disk/by-partlabel/disk-hdd1-storage_p1"
                 ];
                 subvolumes = {
+                  "/garage_subvol" = {
+                    mountOptions = [
+                      "noatime"
+                      "nodatacow"
+                      "compress=no"
+                    ];
+                    mountpoint = "/storage/garage";
+                  };
                   "/storage" = {
                     mountOptions = [
                       "compress=zstd"
