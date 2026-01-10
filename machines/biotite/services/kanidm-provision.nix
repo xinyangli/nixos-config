@@ -23,6 +23,12 @@ in
     enable = true;
     autoRemove = true;
     groups = {
+      # Unix Groups
+      unix_admin = {
+        members = [ "xin" ];
+      };
+
+      # Non-Unix Groups
       forgejo-access = {
         members = [ "xin" ];
       };

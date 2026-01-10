@@ -3,7 +3,6 @@
     # Pin nixpkgs to a specific commit
     nixpkgs.url = "github:xinyangli/nixpkgs/deploy";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
-    nixpkgs-staging.url = "github:nixos/nixpkgs/staging"; # the newer, the better :)
 
     home-manager = {
       # TODO: https://github.com/nix-community/home-manager/pull/8484
@@ -26,6 +25,11 @@
 
     sops-nix = {
       url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    run0-sudo-shim = {
+      url = "github:lordgrimmauld/run0-sudo-shim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -100,6 +104,7 @@
       home-manager,
       nixos-hardware,
       sops-nix,
+      run0-sudo-shim,
       flake-utils,
       nur,
       catppuccin,
@@ -153,6 +158,7 @@
         self.nixosModules.default
         sops-nix.nixosModules.sops
         comin.nixosModules.comin
+        run0-sudo-shim.nixosModules.default
       ];
       nodeNixosModules = {
         weilite = [
@@ -217,7 +223,7 @@
       mkNixos =
         {
           hostname,
-          system ? null,
+          modules ? [ ],
         }:
         nixpkgs.lib.nixosSystem {
           modules =
@@ -230,7 +236,8 @@
                   networking.hostName = lib.mkDefault hostname;
                 }
               )
-            ];
+            ]
+            ++ modules;
         };
       # TODO:
       mkColmenaHive =

@@ -20,53 +20,62 @@ in
 {
   options.commonSettings.auth = {
     enable = mkEnableOption "Common auth settings for servers";
-  };
-
-  config = mkIf cfg.enable {
-    services.kanidm = {
-      package = kanidm_pkg;
-      enableClient = true;
-      clientSettings = {
-        uri = "https://${idpUrl}";
-      };
-      enablePam = true;
-      unixSettings = {
-        pam_allowed_login_groups = [ "linux_users" ];
-        default_shell = "${lib.getExe pkgs.fish}";
-      };
-    };
-
-    services.openssh = {
-      enable = true;
-      authorizedKeysCommand = "/etc/ssh/auth %u";
-      authorizedKeysCommandUser = "kanidm-ssh-runner";
-      openFirewall = true;
-      settings = {
-        PasswordAuthentication = false;
-        KbdInteractiveAuthentication = false;
-        PermitRootLogin = lib.mkForce "no";
-      };
-    };
-
-    environment.etc."ssh/auth" = {
-      mode = "0555";
-      text = ''
-        #!/bin/sh
-        ${kanidm_pkg}/bin/kanidm_ssh_authorizedkeys $1
-      '';
-    };
-    users.groups.wheel.members = [ "xin@${idpUrl}" ];
-    users.groups.kanidm-ssh-runner = { };
-    users.users.kanidm-ssh-runner = {
-      isSystemUser = true;
-      group = "kanidm-ssh-runner";
-    };
-
-    services.fail2ban.enable = true;
-
-    security.sudo = {
-      execWheelOnly = true;
-      wheelNeedsPassword = false;
+    sshAccess = mkEnableOption "kanidm-managed ssh access to this machine" // {
+      default = true;
     };
   };
+
+  config = lib.mkMerge [
+    (mkIf cfg.enable {
+      services.userborn.enable = true;
+      users.users.root.hashedPassword = "$y$j9T$oJ8a7zKc3EV9HOf8qYKC6/$ZEq0Kl8rapeN/WKyJ8eXnTGoTpLb2W/LWLcS8QlNPPB";
+      services.kanidm = {
+        package = kanidm_pkg;
+        enableClient = true;
+        clientSettings = {
+          uri = "https://${idpUrl}";
+        };
+        enablePam = true;
+        unixSettings = {
+          pam_allowed_login_groups = [ "linux_users" ];
+          default_shell = "${lib.getExe pkgs.fish}";
+        };
+      };
+      security.polkit = {
+        enable = true;
+        persistentAuthentication = true;
+        adminIdentities = [ "unix-group:unix_admin@${idpUrl}" ];
+      };
+      security.run0-sudo-shim.enable = true;
+    })
+
+    (mkIf (cfg.enable && cfg.sshAccess) {
+      services.openssh = mkIf cfg.sshAccess {
+        enable = true;
+        authorizedKeysCommand = "/etc/ssh/auth %u";
+        authorizedKeysCommandUser = "kanidm-ssh-runner";
+        openFirewall = true;
+        settings = {
+          PasswordAuthentication = false;
+          KbdInteractiveAuthentication = false;
+          PermitRootLogin = lib.mkForce "no";
+        };
+      };
+
+      environment.etc."ssh/auth" = {
+        mode = "0555";
+        text = ''
+          #!/bin/sh
+          ${kanidm_pkg}/bin/kanidm_ssh_authorizedkeys $1
+        '';
+      };
+      users.groups.kanidm-ssh-runner = { };
+      users.users.kanidm-ssh-runner = {
+        isSystemUser = true;
+        group = "kanidm-ssh-runner";
+      };
+
+      services.fail2ban.enable = true;
+    })
+  ];
 }

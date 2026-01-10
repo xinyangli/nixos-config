@@ -36,7 +36,6 @@
   sops.environment.HOME = "/var/empty";
 
   services.userborn.enable = true;
-  users.users.root.hashedPassword = "$y$j9T$vgLUF3/R0RJpDu7e22fSW.$CPomHsuRziERtNGUnnMZZDQG.Vj7LCe5PUOSbvkwSV3";
 
   commonSettings = {
     auth.enable = true;

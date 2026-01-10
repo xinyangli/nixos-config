@@ -311,8 +311,8 @@ in
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.xin = {
+    enable = false;
     isNormalUser = true;
-    hashedPassword = "$y$j9T$oJ8a7zKc3EV9HOf8qYKC6/$ZEq0Kl8rapeN/WKyJ8eXnTGoTpLb2W/LWLcS8QlNPPB";
     description = "xin";
     extraGroups = [
       "networkmanager"
@@ -334,16 +334,16 @@ in
     "libsoup-2.74.3"
   ];
   environment.systemPackages = with pkgs; [
-    kdePackages.kwin
-    kdePackages.kscreen
-    kdePackages.libkscreen
-    kdePackages.kcmutils
-    kdePackages.kscreenlocker
-    kdePackages.kglobalacceld
-    kdePackages.kde-cli-tools
-    kdePackages.knewstuff
-    kdePackages.systemsettings
-    kdePackages.powerdevil
+    # kdePackages.kwin
+    # kdePackages.kscreen
+    # kdePackages.libkscreen
+    # kdePackages.kcmutils
+    # kdePackages.kscreenlocker
+    # kdePackages.kglobalacceld
+    # kdePackages.kde-cli-tools
+    # kdePackages.knewstuff
+    # kdePackages.systemsettings
+    # kdePackages.powerdevil
 
     # ==== Development ==== #
     (
@@ -374,9 +374,9 @@ in
     # ))
 
     virt-manager
-    wineWowPackages.waylandFull
-    winetricks
-    bottles
+    # wineWowPackages.waylandFull
+    # winetricks
+    # bottles
   ];
 
   users.groups.dialout.members = [ "xin" ];
