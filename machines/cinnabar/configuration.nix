@@ -32,7 +32,10 @@ in
   ];
 
   commonSettings = {
-    auth.enable = true;
+    auth = {
+      enable = true;
+      enableHowdy = true;
+    };
     nix = {
       signing.enable = true;
     };

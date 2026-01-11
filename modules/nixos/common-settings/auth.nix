@@ -23,6 +23,7 @@ in
     sshAccess = mkEnableOption "kanidm-managed ssh access to this machine" // {
       default = true;
     };
+    enableHowdy = mkEnableOption "howdy for logging into the machine";
   };
 
   config = lib.mkMerge [
@@ -76,6 +77,11 @@ in
       };
 
       services.fail2ban.enable = true;
+    })
+    (mkIf (cfg.enable && cfg.enableHowdy) {
+      security.pam.services.login.howdyAuth = true;
+      services.howdy.enable = true;
+      services.linux-enable-ir-emitter.enable = true;
     })
   ];
 }
