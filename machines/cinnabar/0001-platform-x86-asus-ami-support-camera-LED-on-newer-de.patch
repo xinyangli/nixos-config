@@ -1,0 +1,103 @@
+From faf8891e7ed08b7cd1db964d1627b4eea3c56437 Mon Sep 17 00:00:00 2001
+From: Xinyang Li <lixinyang411@gmail.com>
+Date: Tue, 13 Jan 2026 00:16:44 +0200
+Subject: [PATCH] platform/x86: asus-ami: support camera LED on newer devices
+
+---
+ drivers/platform/x86/asus-wmi.c | 40 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 39 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index 4aec7ec69250..2dff2b9819b8 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -260,6 +260,7 @@ struct asus_wmi {
+ 	int lightbar_led_wk;
+ 	struct led_classdev micmute_led;
+ 	struct led_classdev camera_led;
++	struct led_classdev camera_led_neg;
+ 	struct workqueue_struct *led_workqueue;
+ 	struct work_struct tpd_led_work;
+ 	struct work_struct wlan_led_work;
+@@ -1657,10 +1658,22 @@ static enum led_brightness tpd_led_get(struct led_classdev *led_cdev)
+ 	return read_tpd_led_state(asus);
+ }
+ 
++static enum led_brightness camera_neg_led_get(struct led_classdev *led_cdev)
++{
++	struct asus_wmi *asus;
++	u32 result;
++
++	pr_info("neg_led get called");
++	asus = container_of(led_cdev, struct asus_wmi, camera_led_neg);
++	asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_CAMERA_LED_NEG, &result);
++	pr_info("neg_led get result: %x", result);
++
++	return !(result & ASUS_WMI_DSTS_BRIGHTNESS_MASK);
++}
++
+ static void kbd_led_update(struct asus_wmi *asus)
+ {
+ 	int ctrl_param = 0;
+-
+ 	ctrl_param = 0x80 | (asus->kbd_led_wk & 0x7F);
+ 	asus_wmi_set_devstate(ASUS_WMI_DEVID_KBD_BACKLIGHT, ctrl_param, NULL);
+ }
+@@ -1850,6 +1863,7 @@ static void asus_wmi_led_exit(struct asus_wmi *asus)
+ 	led_classdev_unregister(&asus->lightbar_led);
+ 	led_classdev_unregister(&asus->micmute_led);
+ 	led_classdev_unregister(&asus->camera_led);
++	led_classdev_unregister(&asus->camera_led_neg);
+ 
+ 	if (asus->led_workqueue)
+ 		destroy_workqueue(asus->led_workqueue);
+@@ -1938,8 +1952,25 @@ static int asus_wmi_led_init(struct asus_wmi *asus)
+ 
+ 		rv = led_classdev_register(&asus->platform_device->dev,
+ 						&asus->micmute_led);
++		if (rv)
++			pr_err("failed to register platform::micmute");
++		if (rv)
++			goto error;
++		pr_info("registered platform::micmute");
++	}
++
++	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_CAMERA_LED_NEG)) {
++		pr_info("camera_led_neg is presented");
++		asus->camera_led_neg.name = "asus::camera_neg";
++		asus->camera_led_neg.max_brightness = 1;
++		asus->camera_led_neg.brightness_get = camera_neg_led_get;
++
++		rv = led_classdev_register(&asus->platform_device->dev,
++						&asus->camera_led_neg);
+ 		if (rv)
+ 			goto error;
++	} else {
++		pr_info("camera_led_neg is missing");
+ 	}
+ 
+ 	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_CAMERA_LED)) {
+@@ -1950,6 +1981,8 @@ static int asus_wmi_led_init(struct asus_wmi *asus)
+ 
+ 		rv = led_classdev_register(&asus->platform_device->dev,
+ 						&asus->camera_led);
++		if (rv)
++			pr_info("failed to register asus::camera");
+ 		if (rv)
+ 			goto error;
+ 	}
+@@ -4388,6 +4421,11 @@ static void asus_wmi_handle_event_code(int code, struct asus_wmi *asus)
+ 		return;
+ 	}
+ 
++	if (code == 0x82 || code == 0x85) {
++		camera_neg_led_get(&asus->camera_led_neg);
++		return;
++	}
++
+ 	if (code == NOTIFY_KBD_BRTUP) {
+ 		kbd_led_set_by_kbd(asus, asus->kbd_led_wk + 1);
+ 		return;
+-- 
+2.52.0
+
