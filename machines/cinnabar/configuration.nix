@@ -64,6 +64,11 @@ in
     scheduler = "scx_lavd";
   };
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  boot.kernelModules = [ "acpi_call" ];
+  boot.extraModulePackages = [
+    config.boot.kernelPackages.acpi_call
+    (pkgs.callPackage ./camera_led_kernel_module.nix { kernel = config.boot.kernelPackages.kernel; })
+  ];
 
   # Bootloader.
   boot = {
