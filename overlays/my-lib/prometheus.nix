@@ -1,11 +1,13 @@
 let
   mkFunction = f: (targets: (map f targets));
   mkPort = port: if isNull port then "" else ":${toString port}";
+  mkElipsis = label: ''{{ .Labels.instance | reReplaceAll "^(.{10}).+" "<$1>" }}'';
 
   # get text before "." in the url
   subdomain = url: builtins.elemAt (builtins.elemAt (builtins.split "([a-zA-Z0-9]+)\..*" url) 1) 0;
 in
 {
+  inherit mkElipsis;
   mkScrapes = mkFunction (
     {
       name,
@@ -132,7 +134,7 @@ in
             severity = "critical";
           };
           annotations = {
-            summary = "{{ $labels.job }} failed on {{ $labels.instance }}.";
+            summary = "{{ $labels.name }} failed on ${mkElipsis "$labels.instance"}.";
           };
         }
         {
@@ -143,7 +145,7 @@ in
             severity = "warning";
           };
           annotations = {
-            summary = "High load average on {{ $labels.instance }}.";
+            summary = "High load average on ${mkElipsis "$labels.instance"}.";
             description = "The 1-minute load average ({{ $value }}) exceeds 80% the number of CPUs.";
           };
         }
@@ -166,7 +168,7 @@ in
             severity = "warning";
           };
           annotations = {
-            summary = "Disk usage exceeeds 85% on {{ $labels.instance }}";
+            summary = "${mkElipsis ".GroupLabels.instance"}: Disk 85%+ [{{ range $i, $alert := .Alerts }}{{ if $i }}, {{ end }}${mkElipsis "$alert.Labels.mountpoint"}{{ end }}]";
           };
         }
         {
@@ -178,7 +180,7 @@ in
             severity = "critical";
           };
           annotations = {
-            summary = "Disk usage will exceed 95% in 12 hours on {{ $labels.instance }}";
+            summary = "Disk usage will exceed 95% in 12 hours on ${mkElipsis "$labels.instance"}";
           };
         }
         {
@@ -189,7 +191,7 @@ in
             severity = "warning";
           };
           annotations = {
-            summary = "Swap usage above 80% on {{ $labels.instance }}";
+            summary = "Swap usage above 80% on ${mkElipsis "$labels.instance"}";
           };
         }
         {

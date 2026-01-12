@@ -119,7 +119,7 @@ in
                 name = "ntfy";
                 webhook_configs = [
                   {
-                    url = "${ntfyUrl}/prometheus-alerts?tpl=yes&m=%7B%7Brange%20.alerts%7D%7D%7B%7B%20if%20eq%20.status%20%22resolved%22%20%7D%7D%E2%9C%85%7B%7B%20else%20%7D%7D%7B%7B%20if%20eq%20.status%20%22firing%22%20%7D%7D%F0%9F%94%A5%7B%7Bend%7D%7D%7B%7Bend%7D%7D%7B%7B.labels.alertname%7D%7D%0A%7B%7B.annotations.summary%7D%7D%0A%7B%7Bend%7D%7D";
+                    url = "${ntfyUrl}/prometheus-alerts?tpl=yes&m=%7B%7Brange%20.alerts%7D%7D%7B%7Bif%20eq%20.status%20%22resolved%22%7D%7D%E2%9C%85%7B%7Belse%7D%7D%F0%9F%94%A5%7B%7Bend%7D%7D%20%7B%7B.annotations.summary%7D%7D%0A%7B%7Bend%7D%7D";
                     send_resolved = true;
                     max_alerts = 10;
                   }
@@ -155,7 +155,7 @@ in
                 severity = "critical";
               };
               annotations = {
-                summary = "Instance {{ $labels.instance }} of {{ $labels.job }} is down.";
+                summary = "Job {{ $labels.job }} on instance {{ $labels.instance | reReplaceAll \"^(.{10}).*\" \"$1\" }} is down.";
               };
             }
           ];
