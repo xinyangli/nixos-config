@@ -30,6 +30,14 @@ package = pkgs.spotifyd.overrideAttrs (
 );
 ```
 
+### Tests
+
+Interactive tests: 
+
+```
+nix-build . -A nixosTests.login.driverInteractive
+```
+
 ## Waiting for update
 
 ### spotifyd

@@ -11,33 +11,9 @@ let
   '';
 in
 {
-  sops.secrets = {
-    "restic/repo_url" = {
-      sopsFile = ../secrets.yaml;
-    };
-    "restic/repo_password" = {
-      sopsFile = ../secrets.yaml;
-    };
-  };
-
-  custom.restic = {
+  commonSettings.backup = {
     enable = true;
-    paths = [
-      "/backup/db"
-      "/backup/var/lib"
-    ];
-    backupPrepareCommand = [
-      ''
-        mkdir -p /backup/var
-        ${pkgs.btrfs-progs}/bin/btrfs subvolume snapshot -r /var/lib /backup/var/lib
-      ''
-    ];
-    backupCleanupCommand = [
-      ''
-        ${pkgs.btrfs-progs}/bin/btrfs subvolume delete /backup/var/lib
-      ''
-    ];
-    btrfsRoots = [ ];
+    btrfsDevice = "/dev/vda2";
   };
 
   services.postgresqlBackup = {

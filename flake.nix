@@ -423,6 +423,10 @@
         };
       in
       {
+        checks = {
+          backup-test = pkgs.testers.nixosTest (import ./tests/backup.nix);
+        };
+
         devShells = {
           default = pkgs.mkShell {
             packages = with pkgs; [

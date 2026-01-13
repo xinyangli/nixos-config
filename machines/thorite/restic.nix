@@ -11,29 +11,9 @@ let
   '';
 in
 {
-  sops.secrets = {
-    "restic/repo_url" = { };
-    "restic/repo_password" = { };
-  };
-
-  custom.restic = {
+  commonSettings.backup = {
     enable = true;
-    paths = [
-      "/backup/db"
-      "/backup/var/lib"
-    ];
-    backupPrepareCommand = [
-      ''
-        mkdir -p /backup/var
-        ${pkgs.btrfs-progs}/bin/btrfs subvolume snapshot -r /var/lib /backup/var/lib
-      ''
-    ];
-    backupCleanupCommand = [
-      ''
-        ${pkgs.btrfs-progs}/bin/btrfs subvolume delete /backup/var/lib
-      ''
-    ];
-    btrfsRoots = [ ];
+    btrfsDevice = "/dev/sda2";
   };
 
   services.postgresqlBackup = lib.mkIf config.services.postgresql.enable {
