@@ -54,6 +54,10 @@
 
   services.spotifyd = {
     enable = true;
+    settings = {
+      no_audio_cache = false;
+      bitrate = 320;
+    };
   };
 
   systemd.user.services.owncloud = {

@@ -4,6 +4,7 @@
     thunderbird
     telegram-desktop
     element-desktop
+    fractal
 
     swayimg
     vlc
@@ -25,20 +26,23 @@
       "${pkgs.thunderbird}/share/applications/thunderbird.desktop"
       "${pkgs.firefox}/share/applications/firefox.desktop"
       "${pkgs.telegram-desktop}/share/applications/org.telegram.desktop.desktop"
-      "${pkgs.element-desktop}/share/applications/element-desktop.desktop"
+      "${pkgs.fractal}/share/applications/org.gnome.Fractal.desktop"
     ];
   };
   xdg.mimeApps =
     let
       imageMimes = [
-        "image/avif" "image/bmp" "image/gif" "image/heif" "image/jpeg" "image/jpg" "image/jxl"
-        "image/pbm" "image/pjpeg" "image/png" "image/svg+xml" "image/tiff" "image/webp"
+        "image/avif" "image/bmp" "image/gif" "image/heif" "image/jpeg"
+        "image/jpg" "image/jxl" "image/pbm" "image/pjpeg" "image/png"
+        "image/svg+xml" "image/tiff" "image/webp"
       ];
       imageAssociations = lib.genAttrs imageMimes (_: "swayimg.desktop");
       textMimes = [
-        "text/english" "text/plain" "text/x-makefile" "text/x-c++hdr" "text/x-c++src" "text/x-chdr"
-        "text/x-csrc" "text/x-java" "text/x-moc" "text/x-pascal" "text/x-tcl" "text/x-tex"
-        "text/x-python"  "inode/x-empty" "application/x-shellscript" "text/x-c" "text/x-c++"
+        "text/english" "text/plain" "text/x-makefile" "text/x-c++hdr"
+        "text/x-c++src" "text/x-chdr" "text/x-csrc" "text/x-java"
+        "text/x-moc" "text/x-pascal" "text/x-tcl" "text/x-tex"
+        "text/x-python" "inode/x-empty" "application/x-shellscript"
+        "text/x-c" "text/x-c++"
       ];
       textAssociations = lib.genAttrs textMimes (_: "neovide.desktop");
     in

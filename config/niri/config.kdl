@@ -225,6 +225,7 @@ window-rule {
     match app-id="^wechat$"
     match app-id="^thunderbird$"
     match app-id="^Element$"
+    match app-id="org.gnome.Fractal"
     match app-id="^org.telegram.desktop$"
 
     block-out-from "screen-capture"
@@ -310,7 +311,7 @@ window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
     draw-border-with-background false
-    opacity 0.93
+    // opacity 0.93
 }
 
 window-rule {
@@ -323,6 +324,7 @@ window-rule {
     match at-startup=true app-id=r#"^thunderbird$"#
     match at-startup=true app-id=r#"^wechat$"#
     match at-startup=true app-id="Element"
+    match app-id="org.gnome.Fractal"
     open-on-workspace "chat"
 }
 
@@ -358,21 +360,19 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+T { spawn "alacritty"; }
+    Mod+T { spawn "foot"; }
     Mod+Space { spawn "vicinae" "toggle"; }
-    Mod+P repeat=false { spawn "vicinae" "vicinae://extensions/vicinae/clipboard/history"; }
+    // Mod+P repeat=false { spawn "vicinae" "vicinae://extensions/vicinae/clipboard/history"; }
+    // TODO: We could use KEY_DISPLAY_TOGGLE from 6.19, see https://github.com/torvalds/linux/commit/e521dc1687834d0e8c7506f1fdf00daab4ebb51d
+    Mod+P repeat=false { spawn-sh "niri msg --json outputs | jq -e '.[\"eDP-1\"].current_mode == null' && niri msg output eDP-1 on || niri msg output eDP-1 off"; }
     Mod+Alt+L { spawn "loginctl" "lock-session"; }
 
-    // You can also use a shell. Do this if you need pipes, multiple commands, etc.
-    // Note: the entire command goes as a single argument in the end.
-    // Mod+T { spawn "bash" "-c" "notify-send hello && exec alacritty"; }
-
-    // Example volume keys mappings for PipeWire & WirePlumber.
-    // The allow-when-locked=true property makes them work even when the session is locked.
     XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02-"; }
     XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl set +5%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl set 5%-"; }
 
     Mod+Backspace { close-window; }
     Mod+Q { close-window; }

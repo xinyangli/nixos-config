@@ -35,6 +35,7 @@ in
 
     home.packages = with pkgs; [
       wl-clipboard
+      brightnessctl
       xwayland-satellite # managed by niri
     ];
 
