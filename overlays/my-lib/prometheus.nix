@@ -1,7 +1,7 @@
 let
   mkFunction = f: (targets: (map f targets));
   mkPort = port: if isNull port then "" else ":${toString port}";
-  mkElipsis = label: ''{{ .Labels.instance | reReplaceAll "^(.{10}).+" "<$1>" }}'';
+  mkElipsis = label: ''{{ ${label} | reReplaceAll "^(.{10}).+" "<$1>" }}'';
 
   # get text before "." in the url
   subdomain = url: builtins.elemAt (builtins.elemAt (builtins.split "([a-zA-Z0-9]+)\..*" url) 1) 0;
@@ -162,25 +162,35 @@ in
         }
         {
           alert = "HighDiskUsage";
-          expr = ''(1 - node_filesystem_free_bytes{fstype!~"vfat|ramfs"} / node_filesystem_size_bytes) * 100 > 85'';
+          expr = ''
+            (
+              1 - (avg by(instance, device, fstype) (node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs"})) 
+              / 
+              (avg by(instance, device, fstype) (node_filesystem_size_bytes{fstype!~"tmpfs|ramfs"})) 
+              > 0.85
+            )
+            and 
+            (
+              avg by(instance, device, fstype) (node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs"}) < 20 * 1024 * 1024 * 1024
+            )
+          '';
           for = "5m";
           labels = {
             severity = "warning";
           };
           annotations = {
-            summary = "${mkElipsis ".GroupLabels.instance"}: Disk 85%+ [{{ range $i, $alert := .Alerts }}{{ if $i }}, {{ end }}${mkElipsis "$alert.Labels.mountpoint"}{{ end }}]";
+            summary = "${mkElipsis "$labels.instance"}: Disk usage 85%+ {{ $labels.device }} ({{ $labels.fstype }})";
           };
         }
         {
           alert = "DiskWillFull";
-          expr = ''predict_linear(node_filesystem_free_bytes{fstype!~"vfat|ramfs"}[1h], 12 * 3600) < (node_filesystem_size_bytes * 0.05)'';
-
-          for = "3m";
+          expr = ''1 - predict_linear((avg by(instance, device, fstype) (node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs"}))[2h:5m], 12 * 3600) / (avg by(instance, device, fstype) (node_filesystem_size_bytes{fstype!~"tmpfs|ramfs"})) > 0.95'';
+          for = "10m";
           labels = {
             severity = "critical";
           };
           annotations = {
-            summary = "Disk usage will exceed 95% in 12 hours on ${mkElipsis "$labels.instance"}";
+            summary = "${mkElipsis "$labels.instance"} {{ $labels.device }} ({{ $labels.fstype }}): Disk will get 95%+ usage in 12 hours";
           };
         }
         {
