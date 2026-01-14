@@ -368,7 +368,6 @@ in
       in
       python-with-my-packages
     )
-    davfs2
 
     # ==== GUI Softwares ==== #
     gparted
@@ -387,11 +386,7 @@ in
     # bottles
   ];
 
-  users.groups.dialout.members = [ "xin" ];
-
   system.stateVersion = "22.05";
-
-  system.switch.enable = true;
 
   sops.secrets = {
     "restic/repo_url" = {
@@ -402,87 +397,12 @@ in
       owner = "xin";
       sopsFile = ./secrets.yaml;
     };
-    "davfs2/photosync_password" = {
-      sopsFile = ./secrets.yaml;
-      mode = "0600";
-    };
-  };
-
-  sops.templates."davfs2.conf" = {
-    content = ''
-      https://agate.coho-tet.ts.net:6065/photosync photosync ${
-        config.sops.placeholder."davfs2/photosync_password"
-      }
-    '';
-  };
-
-  custom = {
-    restic = {
-      enable = true;
-      paths = [
-        "/backup/rootfs/var/lib"
-        "/backup/home"
-      ];
-    };
   };
 
   # MTP support
   services.gvfs.enable = true;
 
   services.flatpak.enable = true;
-
-  services.davfs2.enable = true;
-
-  systemd.mounts = [
-    (
-      let
-        davfsWrapperConfig = pkgs.writeText "davfs-wrapper.conf" ''
-          secrets ${config.sops.templates."davfs2.conf".path}
-          use_locks 0
-          gui_optimize 1
-        '';
-      in
-      {
-        what = "https://agate.coho-tet.ts.net:6065/photosync";
-        where = "/media/photosync";
-        type = "davfs";
-        options = "conf=${davfsWrapperConfig},rw,uid=1000,nodev,nosuid,nofail";
-
-        wants = [
-          "network-online.target"
-        ];
-        after = [
-          "network-online.target"
-        ];
-        mountConfig = {
-          TimeoutSec = "30";
-        };
-      }
-    )
-  ];
-  systemd.automounts = [
-    {
-      where = "/media/photosync";
-      wantedBy = [ "multi-user.target" ];
-      automountConfig = {
-        TimeoutIdleSec = "600";
-      };
-    }
-  ];
-
-  fileSystems = {
-    "/media/photosync" = {
-      device = "https://agate.coho-tet.ts.net:6065/photosync";
-      fsType = "davfs";
-      options = [
-        "rw"
-        "uid=1000"
-        "nodev"
-        "nosuid"
-        "nofail"
-      ];
-    };
-  };
 
   # Fonts
   fonts = {
@@ -510,12 +430,4 @@ in
   };
 
   services.nixseparatedebuginfod2.enable = true;
-  services.bloop = {
-    install = true;
-    extraOptions = [
-      "-J-Xmx2G"
-      "-J-XX:MaxInlineLevel=20"
-      "-J-XX:+UseParallelGC"
-    ];
-  };
 }
