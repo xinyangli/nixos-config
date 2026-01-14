@@ -370,7 +370,7 @@
               system = "x86_64-linux";
             };
             modules = [
-              ./home/xin/minimal-cli.nix.nix
+              ./home/xin/minimal-cli.nix
               ./modules/home-manager
               idmHmModule
               overlayModule
