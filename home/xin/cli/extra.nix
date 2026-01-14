@@ -130,7 +130,12 @@ in
       signByDefault = true;
     };
   };
-  programs.lazygit.enable = true;
+  programs.lazygit = {
+    enable = true;
+    settings = {
+      git.overrideGpg = true;
+    };
+  };
   programs.difftastic = {
     enable = true;
     git = {
