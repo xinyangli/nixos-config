@@ -29,6 +29,8 @@
     enable = true;
     nix-output-monitor.enable = true;
   };
+  programs.git.enable = true;
+  programs.tmux.enable = true;
   programs.fish = {
     enable = true;
     shellAliases = {

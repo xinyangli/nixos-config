@@ -365,6 +365,18 @@
             ]
             ++ sharedHmModules;
           };
+          "xin-x86_64-minimal-cli" = home-manager.lib.homeManagerConfiguration {
+            pkgs = import nixpkgs {
+              system = "x86_64-linux";
+            };
+            modules = [
+              ./home/xin/minimal-cli.nix.nix
+              ./modules/home-manager
+              idmHmModule
+              overlayModule
+            ]
+            ++ sharedHmModules;
+          };
         };
 
       nixosConfigurations = {
