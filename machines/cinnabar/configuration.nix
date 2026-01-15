@@ -433,4 +433,5 @@ in
   };
 
   services.nixseparatedebuginfod2.enable = true;
+  programs.mininet.enable = true;
 }
