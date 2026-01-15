@@ -250,6 +250,9 @@ in
           GTK_USE_PORTAL "0"
           GDK_DEBUG "no-portals"
         }
+        output "eDP-1" {
+          off
+        }
         spawn-at-startup "${getExe pkgs.swayidle}" "-w" "timeout" "60" "${getExe pkgs.brightnessctl} -s set 2" "resume" "${getExe pkgs.brightnessctl} -r" "timeout" "300" "${getExe pkgs.niri} msg action power-off-monitors"
         spawn-at-startup "sh" "-c" "${pkgs.regreet}/bin/regreet; niri msg action quit --skip-confirmation"
       '';
