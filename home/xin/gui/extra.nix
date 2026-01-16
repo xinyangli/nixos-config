@@ -55,8 +55,10 @@
   services.spotifyd = {
     enable = true;
     settings = {
-      no_audio_cache = false;
-      bitrate = 320;
+      global = {
+        no_audio_cache = false;
+        bitrate = 320;
+      };
     };
   };
 
