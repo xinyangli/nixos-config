@@ -14,6 +14,13 @@
     ripgrep
     grc
   ];
+  nix.package = pkgs.nixVersions.latest;
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+  };
   programs.zoxide.enable = true;
 
   programs.atuin = {
