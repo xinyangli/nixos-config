@@ -377,6 +377,18 @@
             ]
             ++ sharedHmModules;
           };
+          "xin-x86_64-full-cli" = home-manager.lib.homeManagerConfiguration {
+            pkgs = import nixpkgs {
+              system = "x86_64-linux";
+            };
+            modules = [
+              ./home/xin/full-cli.nix
+              ./modules/home-manager
+              idmHmModule
+              overlayModule
+            ]
+            ++ sharedHmModules;
+          };
         };
 
       nixosConfigurations = {
