@@ -36,5 +36,9 @@ in
         hashedPassword = "$y$j9T$pNp.6ennlf4rmgd61FC/Q.$Xy1WZOy4OYzUxT3yNyYCVIn6ENFIz3If/.GjUnXMBs0";
       };
     };
+    extraVirtualAliases = {
+      "abuse@xiny.li" = "xin@xiny.li";
+      "postmaster@xiny.li" = "xin@xiny.li";
+    };
   };
 }
