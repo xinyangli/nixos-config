@@ -11,6 +11,7 @@
     ./services/gotosocial.nix
     ./services/synapse.nix
     ./services/restic.nix
+    ./services/mailserver.nix
     ./services/miniflux.nix
     ./services/hedgedoc.nix
     ./services/forgejo.nix

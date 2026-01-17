@@ -4,6 +4,8 @@
     nixpkgs.url = "github:xinyangli/nixpkgs/deploy";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
 
+    simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
+
     home-manager = {
       # TODO: https://github.com/nix-community/home-manager/pull/8484
       url = "github:xinyangli/home-manager/ssh-agent-whitelist";
@@ -111,6 +113,7 @@
       my-nixvim,
       nix-vscode-extensions,
       colmena,
+      simple-nixos-mailserver,
       nix-index-database,
       disko,
       comin,
@@ -194,6 +197,7 @@
         ];
         biotite = [
           disko.nixosModules.disko
+          simple-nixos-mailserver.nixosModule
           ./machines/biotite
         ];
         baryte = [

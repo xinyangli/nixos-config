@@ -88,7 +88,11 @@ in
     persons = {
       xin = {
         displayName = "Xinyang Li";
-        mailAddresses = [ "lixinyang411@gmail.com" ];
+        mailAddresses = [
+          "lixinyang411@gmail.com"
+          "me@xiny.li"
+          "xin@xiny.li"
+        ];
       };
 
       zhuo = {

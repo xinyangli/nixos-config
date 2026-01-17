@@ -2,6 +2,7 @@
   settings = {
     alertmanagerPort = 9093;
     idpUrl = "auth.xiny.li";
+    mailUrl = "mail.xiny.li";
     gotosocialUrl = "https://gts.xiny.li";
     minifluxUrl = "https://rss.xiny.li";
     hedgedocDomain = "docs.xiny.li";
