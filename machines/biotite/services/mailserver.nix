@@ -22,7 +22,7 @@ in
   mailserver = {
     enable = true;
     stateVersion = 3;
-    fqdn = "mail.xiny.li";
+    fqdn = mailUrl;
     domains = [ "xiny.li" ];
 
     x509.useACMEHost = config.mailserver.fqdn;
@@ -34,6 +34,9 @@ in
       };
       "notify@xiny.li" = {
         hashedPassword = "$y$j9T$pNp.6ennlf4rmgd61FC/Q.$Xy1WZOy4OYzUxT3yNyYCVIn6ENFIz3If/.GjUnXMBs0";
+      };
+      "forgejo-notify@xiny.li" = {
+        hashedPassword = "$y$j9T$8myJrmpVLqxQiWDN2zoRJ/$.g8a4TXwp07Jw1irWqq7ggBkTfyAuebfOQ6L8ZzXgD6";
       };
     };
     extraVirtualAliases = {

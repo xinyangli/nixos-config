@@ -6,7 +6,12 @@
 }:
 let
   inherit (lib) getExe;
-  inherit (config.my-lib.settings) idpUrl forgejoDomain forgejoGitDomain;
+  inherit (config.my-lib.settings)
+    idpUrl
+    mailUrl
+    forgejoDomain
+    forgejoGitDomain
+    ;
   settings = {
     service.DISABLE_REGISTRATION = true;
     server = {
@@ -26,6 +31,8 @@ let
     };
     service = {
       ENABLE_BASIC_AUTHENTICATION = false;
+      ENABLE_INTERNAL_SIGNIN = false;
+      ENABLE_NOTIFY_MAIL = true;
     };
     oauth2 = {
       ENABLED = false; # Disable forgejo as oauth2 provider
@@ -40,6 +47,18 @@ let
     metrics = {
       # ENABLED = true;
     };
+    picture = {
+      ENABLE_FEDERATED_AVATAR = true;
+    };
+    mailer = {
+      ENABLED = true;
+      PROTOCOL = "smtps";
+      SMTP_ADDR = mailUrl;
+      SMTP_PORT = 465;
+      USER = "forgejo-notify@xiny.li";
+      PASSWD_URI = "file:${config.sops.secrets."forgejo/smtp_password".path}";
+      FROM = "forgejo-notify@xiny.li";
+    };
     other = {
       SHOW_FOOTER_VERSION = false;
     };
@@ -47,6 +66,9 @@ let
 in
 {
   sops.secrets."forgejo/client_secret" = { };
+  sops.secrets."forgejo/smtp_password" = {
+    owner = config.services.forgejo.user;
+  };
   sops.templates."forgejo/env" = {
     content = ''
       CLIENT_SECRET=${config.sops.placeholder."forgejo/client_secret"}
