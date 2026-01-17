@@ -24,6 +24,17 @@ in
     stateVersion = 3;
     fqdn = mailUrl;
     domains = [ "xiny.li" ];
+    srs.enable = true;
+    mailserver.dmarcReporting = true;
+
+    fullTextSearch = {
+      enable = true;
+      languages = [
+        "en"
+        "zh"
+      ];
+      memoryLimit = "2000";
+    };
 
     x509.useACMEHost = config.mailserver.fqdn;
 
