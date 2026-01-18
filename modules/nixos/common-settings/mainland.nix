@@ -172,7 +172,7 @@ let
     }
     group {
       default_group {
-        policy: fixed(1)
+        policy: fixed(0)
       }
     }
     routing {
