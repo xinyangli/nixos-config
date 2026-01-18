@@ -50,6 +50,10 @@
       {
         exec = "${script}";
       };
+    "org/gnome/evolution/mail" = {
+      thread-children-ascending = false;
+      thread-latest = true;
+    };
   };
 
   services.spotifyd = {

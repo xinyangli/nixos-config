@@ -434,4 +434,11 @@ in
 
   services.nixseparatedebuginfod2.enable = true;
   programs.mininet.enable = true;
+
+  # TODO: this should be move to home-manager
+  programs.evolution = {
+    enable = true;
+    plugins = [ pkgs.evolution-ews ];
+  };
+  services.gnome.evolution-data-server.enable = true;
 }
