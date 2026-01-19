@@ -63,6 +63,21 @@ let
       };
     };
   };
+
+  mountS3ForImmich = pkgs.writeShellScript "mount-s3-for-immich" ''
+    set -e
+    MOUNT_POINT="/var/lib/immich/s3-host-mount"
+
+    ${pkgs.coreutils}/bin/mkdir -p "$MOUNT_POINT"
+    ${pkgs.coreutils}/bin/stat "$MOUNT_POINT"
+    exec ${pkgs.mountpoint-s3}/bin/mount-s3 photos "$MOUNT_POINT" \
+        --endpoint-url http://127.0.0.1:3900 \
+        --region cn-north-1 \
+        --allow-root \
+        --auto-unmount \
+        --maximum-throughput-gbps 10 \
+        --foreground
+  '';
 in
 # t3aq1iDy28591FZ72ZvMRhlNYww3trgva4ogWS-3
 {
@@ -70,6 +85,8 @@ in
     sops.secrets = {
       "immich/oauth_client_secret" = { };
       "immich/auto_stack_apikey" = { };
+      "immich/s3_access_key_id" = { };
+      "immich/s3_secret_access_key" = { };
     };
 
     sops.templates."immich/config.json" = {
@@ -84,15 +101,12 @@ in
       '';
     };
 
-    systemd.mounts = [
-      {
-        what = "/storage/nixos/immich";
-        where = "/var/lib/immich";
-        options = "bind";
-        before = [ "immich-server.service" ];
-        wantedBy = [ "immich-server.service" ];
-      }
-    ];
+    sops.templates."immich/s3_env" = {
+      content = ''
+        AWS_ACCESS_KEY_ID=${config.sops.placeholder."immich/s3_access_key_id"}
+        AWS_SECRET_ACCESS_KEY=${config.sops.placeholder."immich/s3_secret_access_key"}
+      '';
+    };
 
     systemd.timers.immich-auto-stack = {
       enable = true;
@@ -132,12 +146,39 @@ in
         };
       };
 
+    programs.fuse = {
+      enable = true;
+      userAllowOther = true;
+    };
+
+    systemd.services.immich-s3-mounter = {
+      description = "Privileged S3 Mount Service";
+      wantedBy = [ "immich-server.service" ];
+      before = [ "immich-server.service" ];
+
+      path = [ "/run/wrappers" ];
+      serviceConfig = {
+        User = "immich";
+        Group = "immich";
+        ExecStart = "${mountS3ForImmich}";
+        EnvironmentFile = config.sops.templates."immich/s3_env".path;
+        UMask = 0077;
+        DeviceAllow = "/dev/fuse rwm";
+      };
+    };
+
     systemd.services.immich-server = {
+      environment = {
+        IMMICH_CONFIG_FILE = config.sops.templates."immich/config.json".path;
+      };
       serviceConfig = {
         BindReadOnlyPaths = [
           "/storage/pictures/xin/originals:/mnt/immich/external-library/xin"
+          "/var/lib/immich/s3-host-mount:/mnt/immich/external-library/s3_photos"
         ];
-        Environment = "IMMICH_CONFIG_FILE=${config.sops.templates."immich/config.json".path}";
+        BindPaths = [
+          "/storage/nixos/immich:/var/lib/immich"
+        ];
       };
     };
 
