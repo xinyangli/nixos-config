@@ -10,6 +10,7 @@ keys:
   - &host-biotite age1v5h946jfke6ae8pcgz52mhj26cacqcpl9dmmrrkf37x55rnq2v3szqctvv
   - &host-thorite age12ng08vjx5jde5ncqutwkd5vm4ygfwy33mzhzwe0lkxzglulgpqusc89r96
   - &host-agate age1p5yxfcg0cf0a8urmjllmy5njensfgw45ajg2kss54hz6lxsc4cjs509ee2
+  - &host-hafnon age135k8nw46rfwfequ7g6drjxtjnj72pd2t0dwc9ks7ls6fq22dyc8qtlm2w9
 creation_rules:
   - path_regex: machines/secrets.yaml
     key_groups:
@@ -24,6 +25,7 @@ creation_rules:
       - *host-fra-00
       - *host-la-00
       - *host-agate
+      - *host-hafnon
   - path_regex: machines/agate/secrets.yaml
     key_groups:
     - age:
@@ -80,6 +82,11 @@ creation_rules:
     - age:
       - *xin
       - *host-weilite
+  - path_regex: machines/hafnon/secrets.yaml
+    key_groups:
+    - age:
+      - *xin
+      - *host-hafnon
   - path_regex: home/xin/secrets.yaml
     key_groups:
     - age:

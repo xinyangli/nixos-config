@@ -35,3 +35,6 @@ builds:
   - include:
       - nixosConfigurations.weilite
     branch: testing-weilite
+  - include:
+      - nixosConfigurations.hafnon
+    branch: testing-hafnon

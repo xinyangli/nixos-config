@@ -20,6 +20,19 @@ in
         description = "Max cache size for knot-resolver in MB";
         default = 100;
       };
+      tsDNS = mkOption {
+        type = lib.types.str;
+        default = "100.100.100.100";
+      };
+      fallbackDNS = mkOption {
+        type = lib.types.str;
+        default = ''
+          policy.add(policy.all(policy.TLS_FORWARD({
+            { "8.8.8.8", hostname="dns.google" },
+            { "8.8.4.4", hostname="dns.google" },
+          })))
+        '';
+      };
     };
     tailscale = {
       enable = mkEnableOption "Tailscale client" // {
@@ -43,7 +56,7 @@ in
       };
 
       services.tailscale = {
-        enable = true;
+        enable = lib.mkDefault true;
         openFirewall = true;
         permitCertUid = mkIf config.services.caddy.enable config.services.caddy.user;
         extraUpFlags = [ "--accept-routes" ] ++ (lib.optional cfg.localdns.enable "--accept-dns=false");
@@ -138,7 +151,7 @@ in
             '';
             tsSettings = ''
               internalDomains = policy.todnames({'${internalDomain}'})
-              policy.add(policy.suffix(policy.STUB({'100.100.100.100'}), internalDomains))
+              policy.add(policy.suffix(policy.STUB({'${cfg.localdns.tsDNS}'}), internalDomains))
             '';
             proxySettings = ''
               policy.add(policy.domains(
@@ -154,16 +167,7 @@ in
                 { "223.5.5.5", hostname="dns.alidns.com" },
                 { "223.6.6.6", hostname="dns.alidns.com" },
               }), chinaDomains))
-              policy.add(policy.all(policy.TLS_FORWARD({
-                { "8.8.8.8", hostname="dns.google" },
-                { "8.8.4.4", hostname="dns.google" },
-              })))
-            '';
-            overseaSettings = ''
-              policy.add(policy.all(policy.TLS_FORWARD({
-                { "8.8.8.8", hostname="dns.google" },
-                { "8.8.4.4", hostname="dns.google" },
-              })))
+              ${cfg.localdns.fallbackDNS}
             '';
           in
           globalSettings
@@ -172,7 +176,7 @@ in
             if (config.inMainland && config.commonSettings.network.enableProxy) then
               proxySettings + mainlandSettings
             else
-              overseaSettings
+              cfg.localdns.fallbackDNS
           );
       };
     })

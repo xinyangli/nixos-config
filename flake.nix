@@ -171,6 +171,10 @@
           disko.nixosModules.disko
           ./machines/agate
         ];
+        hafnon = [
+          disko.nixosModules.disko
+          ./machines/hafnon
+        ];
         cinnabar = [
           disko.nixosModules.disko
           catppuccin.nixosModules.catppuccin
@@ -406,6 +410,10 @@
 
         agate = mkNixos {
           hostname = "agate";
+        };
+
+        hafnon = mkNixos {
+          hostname = "hafnon";
         };
 
         baryte = mkNixos {
