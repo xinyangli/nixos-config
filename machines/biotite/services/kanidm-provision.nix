@@ -10,6 +10,7 @@ let
     matrixAuthUrl
     ocisUrl
     rusticalUrl
+    jellyfinUrl
     ;
 in
 {
@@ -79,6 +80,12 @@ in
         members = [ "xin" ];
       };
       rustical-users = {
+        members = [ "xin" ];
+      };
+      jellyfin-admins = {
+        members = [ "xin" ];
+      };
+      jellyfin-users = {
         members = [ "xin" ];
       };
       idm_people_self_mail_write = {
@@ -288,6 +295,27 @@ in
             "profile"
             "groups"
           ];
+        };
+      };
+      jellyfin = {
+        displayName = "Jellyfin";
+        originUrl = "${jellyfinUrl}/frontend/login/oidc/callback";
+        originLanding = "${jellyfinUrl}/sso/OID/redirect/kanidm";
+        scopeMaps = {
+          jellyfin-users = [
+            "openid"
+            "profile"
+            "groups"
+          ];
+        };
+        claimMaps = {
+          jellyfin_role = {
+            joinType = "array";
+            valuesByGroup = {
+              jellyfin-admins = [ "Admin" ];
+              jellyfin-users = [ "User" ];
+            };
+          };
         };
       };
     };
