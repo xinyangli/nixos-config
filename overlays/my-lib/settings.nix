@@ -15,7 +15,7 @@
     matrixAuthUrl = "https://matrix-auth.xiny.li";
     synapseDelegateUrl = "https://synapse.xiny.li";
     rusticalUrl = "https://calendar.xiny.li";
-    jellyfinUrl = "https://agate.coho-tet.ts.net:8096";
+    jellyfinUrl = "https://agate.coho-tet.ts.net:8920";
 
     transmissionExporterUrl = "agate.coho-tet.ts.net:19091";
     ocisUrl = "https://drive.xiny.li:8443";
