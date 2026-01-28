@@ -1255,6 +1255,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-jellyfin": {
+      "locked": {
+        "lastModified": 1760947023,
+        "narHash": "sha256-AsDDXmEy6OCk6dz0L1971UBGk/QGzWaNEAr5cG6nL8s=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "4957a9976f96ff95e4adad5c693433cefb361d3e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "4957a9976f96ff95e4adad5c693433cefb361d3e",
+        "type": "github"
+      }
+    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1754788789,
@@ -1609,6 +1625,29 @@
         "type": "github"
       }
     },
+    "ranet-ipsec": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1766094443,
+        "narHash": "sha256-hXHJroc9+jMMesSYwirz6cu/ZrpaSTfLW5X20aBzZgE=",
+        "owner": "NickCao",
+        "repo": "ranet",
+        "rev": "b0858a53f5728a400e42798bb2bc50f0daa6bb2e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NickCao",
+        "repo": "ranet",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "catppuccin": "catppuccin",
@@ -1626,8 +1665,10 @@
         "nixos-hardware": "nixos-hardware",
         "nixos-sbc": "nixos-sbc",
         "nixpkgs": "nixpkgs_7",
+        "nixpkgs-jellyfin": "nixpkgs-jellyfin",
         "nixpkgs-stable": "nixpkgs-stable_2",
         "nur": "nur",
+        "ranet-ipsec": "ranet-ipsec",
         "run0-sudo-shim": "run0-sudo-shim",
         "rust-overlay": "rust-overlay_2",
         "simple-nixos-mailserver": "simple-nixos-mailserver",
