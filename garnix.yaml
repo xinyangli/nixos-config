@@ -15,6 +15,9 @@ builds:
       - nixosConfigurations.baryte
     branch: deploy-next
   - include:
+      - nixosConfigurations.agate
+    branch: testing-agate
+  - include:
       - nixosConfigurations.biotite
     branch: testing-biotite
   - include:
