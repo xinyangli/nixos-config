@@ -3,7 +3,6 @@
     # Pin nixpkgs to a specific commit
     nixpkgs.url = "github:xinyangli/nixpkgs/deploy";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
-    nixpkgs-jellyfin.url = "github:nixos/nixpkgs/4957a9976f96ff95e4adad5c693433cefb361d3e";
 
     simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
 
@@ -110,7 +109,6 @@
     {
       self,
       nixpkgs,
-      nixpkgs-jellyfin,
       home-manager,
       nixos-hardware,
       sops-nix,
@@ -153,16 +151,6 @@
             chinese-fonts-overlay.overlays.default
             ranet-ipsec.overlays.default
             (import ./overlays/add-pkgs.nix)
-            (
-              _: prev:
-              let
-                pkgs = import nixpkgs-jellyfin { system = prev.stdenv.hostPlatform.system; };
-              in
-              with pkgs;
-              {
-                inherit jellyfin jellyfin-web;
-              }
-            )
           ];
         };
       };
