@@ -309,7 +309,7 @@ in
           ];
         };
         claimMaps = {
-          grafana_role = {
+          jellyfin_role = {
             joinType = "array";
             valuesByGroup = {
               jellyfin-admins = [ "Admin" ];
