@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   cfg = config.services.jellyfin;
 in
@@ -6,7 +11,10 @@ in
   services.jellyfin.enable = true;
 
   systemd.services.jellyfin.serviceConfig = {
-    BindReadOnlyPaths = [
+    ProtectSystem = lib.mkForce "strict";
+    StateDirectory = "jellyfin";
+    CacheDirectory = "jellyfin";
+    BindPaths = [
       "/storage/media:${cfg.dataDir}/media"
     ];
   };
