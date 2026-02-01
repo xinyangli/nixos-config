@@ -11,6 +11,7 @@ in
       listen-unix = "/var/run/ntfy-sh/ntfy.sock";
       listen-unix-mode = 432; # octal 0660
       base-url = ntfyUrl;
+      enable-login = true;
       auth-file = "/var/lib/ntfy-sh/user.db";
       auth-default-access = "read-write";
       auth-users = [
