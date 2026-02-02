@@ -849,10 +849,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1770027386,
-        "narHash": "sha256-cmrQR5f7JxvQuktzBrBx6NOskduP3qGtPMkc/ym6pZ0=",
+        "lastModified": 1770037459,
+        "narHash": "sha256-GDPtQKJQ6UwFhYUGg00i/0IZW3qUOio/RZUUot3LCLQ=",
         "ref": "refs/heads/master",
-        "rev": "182c929d94532ac8614720623e74d46bb1489dec",
+        "rev": "63dba3600272e01069624c66c2da7057ae2cd7e9",
         "revCount": 4,
         "type": "git",
         "url": "https://git.xiny.li/xin/InternetTraffic"
