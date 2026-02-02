@@ -102,6 +102,7 @@ let
       pname(blackbox_exporter) -> direct
       pname(tailscaled) -> direct
       pname(transmission-daemon) -> direct
+      pname(iperf3) -> direct
       dscp(0x8) -> direct
 
       dip(224.0.0.0/3, 'ff00::/8') -> direct
