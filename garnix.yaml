@@ -15,7 +15,11 @@ builds:
       - nixosConfigurations.baryte
     branch: deploy-next
   - include:
-      - nixosConfigurations.agate
+      - nixosConfigurations.*
+    exclude:
+      - nixosConfigurations.osmium
+      - nixosConfigurations.raspite
+      - nixosConfigurations.baryte
     branch: testing-agate
   - include:
       - nixosConfigurations.biotite
@@ -29,8 +33,13 @@ builds:
   - include:
       - nixosConfigurations.fra-00
     branch: testing-fra-00
+
   - include:
-      - nixosConfigurations.la-00
+      - nixosConfigurations.*
+    exclude:
+      - nixosConfigurations.osmium
+      - nixosConfigurations.raspite
+      - nixosConfigurations.baryte
     branch: testing-la-00
   - include:
       - nixosConfigurations.thorite
