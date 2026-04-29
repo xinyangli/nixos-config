@@ -53,7 +53,7 @@ in
       trusted-users = [ "root" ];
 
       substituters = [
-        "https://pek-0.cache.xiny.li:8443/general"
+        # "https://pek-0.cache.xiny.li:8443/general"
         "https://nix-community.cachix.org"
         "https://cache.garnix.io"
       ];
