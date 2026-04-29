@@ -157,6 +157,9 @@ in
     };
   };
 
+  services.udev.packages = [
+    pkgs.logitech-udev-rules
+  ];
   services.udev.extraRules = ''
     # FIXME: Upstream (systemd) does not allow regular users to own device nodes, which makes
     # managing tss group with kanidm impossible. Use uaccess tag here to avoid specifying a group
@@ -181,7 +184,7 @@ in
 
   # Setup wireguard
   # Set your time zone.
-  time.timeZone = "Europe/Helsinki";
+  time.timeZone = "Asia/Shanghai";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -250,9 +253,6 @@ in
           GTK_USE_PORTAL "0"
           GDK_DEBUG "no-portals"
         }
-        output "eDP-1" {
-          off
-        }
         spawn-at-startup "${getExe pkgs.swayidle}" "-w" "timeout" "60" "${getExe pkgs.brightnessctl} -s set 2" "resume" "${getExe pkgs.brightnessctl} -r" "timeout" "300" "${getExe pkgs.niri} msg action power-off-monitors"
         spawn-at-startup "sh" "-c" "${pkgs.regreet}/bin/regreet; niri msg action quit --skip-confirmation"
       '';
@@ -289,7 +289,10 @@ in
         };
       };
       "logiM720" = {
-        ids = [ "046d:b015" ];
+        ids = [
+          "046d:b015"
+          "0fac:1ade"
+        ];
         settings = {
           main = {
             mouse2 = "leftmeta";

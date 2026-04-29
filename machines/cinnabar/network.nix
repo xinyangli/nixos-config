@@ -22,6 +22,7 @@
 
   # Open ports in the firewall.
   networking.firewall.enable = true;
+  networking.firewall.allowedTCPPorts = [ 5000 ];
   # Use nftables to manager firewall
   networking.nftables.enable = true;
 
@@ -32,5 +33,10 @@
 
   programs.kdeconnect = {
     enable = true;
+  };
+
+  services.cloudflare-warp = {
+    enable = true;
+    openFirewall = true;
   };
 }
