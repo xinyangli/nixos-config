@@ -24,6 +24,8 @@
     # wemeet
     wemeet
 
+    longbridge
+
     (nemo-with-extensions.override {
       extensions = [
         nemo-python

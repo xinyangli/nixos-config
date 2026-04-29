@@ -22,5 +22,6 @@
     nerd-fonts-misans = callPackage ./pkgs/nerd-fonts-misans.nix { };
 
     xwayland-satellite = callPackage ./pkgs/xwayland-satellite.nix { };
+    longbridge = callPackage ./pkgs/longbridge.nix { };
   }
 )
