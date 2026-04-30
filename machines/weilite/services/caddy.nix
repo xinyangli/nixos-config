@@ -39,7 +39,7 @@
         plugins = [
           "github.com/caddy-dns/cloudflare@v0.2.1"
         ];
-        hash = "sha256-AcWko5513hO8I0lvbCLqVbM1eWegAhoM0J0qXoWL/vI=";
+        hash = "sha256-hEIqK6F+9OCcd4JueVSidfUgQsVPWo0/imciD1UnqRo=";
       };
       virtualHosts."derper00.10118244.xyz:8443".extraConfig = ''
         ${acmeCF}

@@ -15,7 +15,7 @@ let
 
   cfg = config.commonSettings.auth;
 
-  kanidm_pkg = pkgs.kanidm_1_8;
+  kanidm_pkg = pkgs.kanidm_1_9;
 in
 {
   options.commonSettings.auth = {
