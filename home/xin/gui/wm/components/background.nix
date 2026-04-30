@@ -8,7 +8,7 @@ let
   wallpaper_directory = config.home.homeDirectory + "/Pictures/Wallpapers";
   wallpaper_switch = pkgs.writeShellScript "wallpaper-switch" ''
     img=$(ls ${wallpaper_directory} | shuf | head -1)
-    ${lib.getExe pkgs.swww} img ${wallpaper_directory}/$img
+    ${lib.getExe pkgs.awww} img ${wallpaper_directory}/$img
   '';
 in
 {

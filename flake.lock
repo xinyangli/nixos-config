@@ -768,16 +768,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1767817806,
-        "narHash": "sha256-fnyvcCtERcSTtKftaIfR0p7Nfd2Jlx+aNVGYwPyG+s0=",
-        "owner": "xinyangli",
+        "lastModified": 1777518431,
+        "narHash": "sha256-SwgiG2T5pbyo33Vz7/vUCAhEMgwCK8Pa2nDSx5a6/WE=",
+        "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "bb17029cc8e14b2fe02da3f4e3ec60135a4b82af",
+        "rev": "2e54a938cdd4c8e414b2518edc3d82308027c670",
         "type": "github"
       },
       "original": {
-        "owner": "xinyangli",
-        "ref": "ssh-agent-whitelist",
+        "owner": "nix-community",
         "repo": "home-manager",
         "type": "github"
       }

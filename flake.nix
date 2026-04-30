@@ -12,8 +12,7 @@
     simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/main";
 
     home-manager = {
-      # TODO: https://github.com/nix-community/home-manager/pull/8484
-      url = "github:xinyangli/home-manager/ssh-agent-whitelist";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
