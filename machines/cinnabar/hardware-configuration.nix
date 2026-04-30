@@ -34,10 +34,10 @@ let
     })
   ) { };
   my-alsa-ucm = pkgs.alsa-ucm-conf.overrideAttrs (oldAttrs: {
-    version = "1.2.14";
+    version = "1.2.15.3";
     src = pkgs.fetchurl {
-      url = "mirror://alsa/lib/alsa-ucm-conf-1.2.14.tar.bz2";
-      hash = "sha256-MumAn1ktkrl4qhAy41KTwzuNDx7Edfk3Aiw+6aMGnCE=";
+      url = "mirror://alsa/lib/alsa-ucm-conf-1.2.15.3.tar.bz2";
+      hash = "sha256-n3noE8CPyGz6Rt11xPzaGkpRtILbJgfh/PqvuS9YijE=";
     };
     # Override the installPhase to avoid problematic substitutions
     installPhase = ''
@@ -78,7 +78,8 @@ in
 
   hardware.enableAllFirmware = true;
   services.asusd.enable = true;
-  systemd.services.asusd.environment.RUST_LOG="info,asusd=debug,rog_platform=debug,tracing::span=error";
+  systemd.services.asusd.environment.RUST_LOG =
+    "info,asusd=debug,rog_platform=debug,tracing::span=error";
 
   environment.systemPackages = with pkgs; [
     alsa-topology-conf

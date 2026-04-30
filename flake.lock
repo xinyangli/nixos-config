@@ -94,15 +94,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1777398395,
-        "narHash": "sha256-SXlXUP3hdOLeACtGbx1Q5ShhJs3WgP2SPhCnv9Ew+Hw=",
+        "lastModified": 1768256610,
+        "narHash": "sha256-IyL6nZo242nDLoLQVwkqAZXp8FO5kBfjL6Fuh+gZO10=",
         "owner": "catppuccin",
         "repo": "nix",
-        "rev": "ea21443e55c1acca99a69076539e71eaffb87db5",
+        "rev": "0734ad8c91342df34f1a1e5c183d053d70ba87c7",
         "type": "github"
       },
       "original": {
         "owner": "catppuccin",
+        "ref": "release-25.11",
         "repo": "nix",
         "type": "github"
       }
@@ -1011,6 +1012,24 @@
         "type": "github"
       }
     },
+    "nix-claude-code": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_7"
+      },
+      "locked": {
+        "lastModified": 1777431559,
+        "narHash": "sha256-8Ra0juP9mBLrTUeIIUIRnosOtL0Mhal3V04HZp8JaAU=",
+        "owner": "ryoppippi",
+        "repo": "nix-claude-code",
+        "rev": "795baa3b4ca2c71ce0b836c11535d21deb60a637",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ryoppippi",
+        "repo": "nix-claude-code",
+        "type": "github"
+      }
+    },
     "nix-github-actions": {
       "inputs": {
         "nixpkgs": [
@@ -1350,6 +1369,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_10": {
+      "locked": {
+        "lastModified": 1776475594,
+        "narHash": "sha256-mxLieVl5lqjd+QUvgHbvpVrvb9d8zox7m+MiRO6FHu8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9a3a5b8400951b3497d2ef8f239f8451175cf3a1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable-small",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1733212471,
@@ -1432,6 +1467,22 @@
     },
     "nixpkgs_7": {
       "locked": {
+        "lastModified": 1774106199,
+        "narHash": "sha256-US5Tda2sKmjrg2lNHQL3jRQ6p96cgfWh3J1QBliQ8Ws=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "6c9a78c09ff4d6c21d0319114873508a6ec01655",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_8": {
+      "locked": {
         "lastModified": 1777443440,
         "narHash": "sha256-yx6bq+JJAd6bLS6jvcrtek1S6lXeqPb4VPpHUyKuCpM=",
         "owner": "xinyangli",
@@ -1446,7 +1497,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_8": {
+    "nixpkgs_9": {
       "locked": {
         "lastModified": 1777268161,
         "narHash": "sha256-bxrdOn8SCOv8tN4JbTF/TXq7kjo9ag4M+C8yzzIRYbE=",
@@ -1458,22 +1509,6 @@
       "original": {
         "owner": "nixos",
         "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_9": {
-      "locked": {
-        "lastModified": 1776475594,
-        "narHash": "sha256-mxLieVl5lqjd+QUvgHbvpVrvb9d8zox7m+MiRO6FHu8=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "9a3a5b8400951b3497d2ef8f239f8451175cf3a1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable-small",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -1518,7 +1553,7 @@
     "nur": {
       "inputs": {
         "flake-parts": "flake-parts_8",
-        "nixpkgs": "nixpkgs_8"
+        "nixpkgs": "nixpkgs_9"
       },
       "locked": {
         "lastModified": 1777443687,
@@ -1647,11 +1682,12 @@
         "lanzaboote": "lanzaboote",
         "mcps-nix": "mcps-nix",
         "my-nixvim": "my-nixvim",
+        "nix-claude-code": "nix-claude-code",
         "nix-index-database": "nix-index-database",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-hardware": "nixos-hardware",
         "nixos-sbc": "nixos-sbc",
-        "nixpkgs": "nixpkgs_7",
+        "nixpkgs": "nixpkgs_8",
         "nixpkgs-stable": "nixpkgs-stable_2",
         "nur": "nur",
         "ranet-ipsec": "ranet-ipsec",
@@ -1709,7 +1745,7 @@
         "blobs": "blobs",
         "flake-compat": "flake-compat_5",
         "git-hooks": "git-hooks_3",
-        "nixpkgs": "nixpkgs_9"
+        "nixpkgs": "nixpkgs_10"
       },
       "locked": {
         "lastModified": 1777287493,

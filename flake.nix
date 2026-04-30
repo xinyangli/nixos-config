@@ -59,7 +59,7 @@
     };
 
     catppuccin = {
-      url = "github:catppuccin/nix";
+      url = "github:catppuccin/nix/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -108,6 +108,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
+
+    nix-claude-code = {
+      url = "github:ryoppippi/nix-claude-code";
+    };
   };
 
   outputs =
@@ -135,6 +139,7 @@
       vicinae,
       chinese-fonts-overlay,
       ranet-ipsec,
+      nix-claude-code,
       ...
     }:
     let
@@ -492,7 +497,7 @@
               nh
               (python3.withPackages (ps: with ps; [ requests ]))
               sbctl
-              claude-code
+              nix-claude-code.packages.${system}.default
               # mcp-nixos
               mcps-nix.packages.${system}.mcp-language-server
               # mcps-nix.packages.${system}.mcp-servers

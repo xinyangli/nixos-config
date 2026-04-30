@@ -14,7 +14,11 @@ pkgs.stdenv.mkDerivation {
     ;
 
   patches = [
-    ./0001-platform-x86-asus-ami-support-camera-LED-on-newer-de.patch
+    (pkgs.fetchpatch {
+      name = "asus-wmi-fix-camera-key-led-on-zenbook-s14.patch";
+      url = "https://lore.kernel.org/all/adg6GzkykThAB_4u@djouze-zen/raw";
+      hash = "sha256-hL5zSb6SaKS/7sl3BOFJItdgMcncgO1x8Np5AqnhP/s=";
+    })
   ];
 
   kernel_dev = kernel.dev;

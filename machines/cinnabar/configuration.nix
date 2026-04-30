@@ -23,8 +23,9 @@ in
       niri = super.niri.overrideAttrs {
         patches = [
           (pkgs.fetchurl {
-            url = "https://github.com/wrvsrx/niri/compare/tag_support-shm-sharing_2~19..tag_support-shm-sharing_2.patch";
-            hash = "sha256-RIy6scbIHGlngu28O7nwhN8FF9x5eHUIGhPC48DKQGc=";
+            name = "niri-shm-sharing.patch";
+            url = "https://github.com/wrvsrx/niri/compare/tag_support-shm-sharing_4~19..tag_support-shm-sharing_4.patch";
+            hash = "sha256-LLbzjrUmCXOCqboGKFc19Lw7hyE2tMHJdadWtltfn5U=";
           })
         ];
       };
@@ -121,11 +122,11 @@ in
     };
   };
 
-  systemd.sleep.extraConfig = ''
-    SuspendEstimationSec=5m
-    HibernateDelaySec=4h
-    HibernateOnACPower=false
-  '';
+  systemd.sleep.settings.Sleep = {
+    SuspendEstimationSec = "5m";
+    HibernateDelaySec = "4h";
+    HibernateOnACPower = false;
+  };
 
   documentation = {
     nixos.enable = false;

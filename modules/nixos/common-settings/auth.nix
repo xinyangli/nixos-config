@@ -37,8 +37,8 @@ in
           uri = "https://${idpUrl}";
         };
         enablePam = true;
-        unixSettings = {
-          pam_allowed_login_groups = [ "linux_users" ];
+        unix.settings = {
+          kanidm.pam_allowed_login_groups = [ "linux_users" ];
           default_shell = "${lib.getExe pkgs.fish}";
         };
       };
@@ -79,8 +79,12 @@ in
       services.fail2ban.enable = true;
     })
     (mkIf (cfg.enable && cfg.enableHowdy) {
-      security.pam.services.login.howdyAuth = true;
-      services.howdy.enable = true;
+      security.pam.howdy.enable = true;
+      services.howdy = {
+        enable = true;
+        control = "sufficient";
+        settings = { };
+      };
       services.linux-enable-ir-emitter.enable = true;
     })
   ];
