@@ -64,13 +64,31 @@ let
     };
   };
 
+  # nixpkgs ships 1.17.0 whose vendored metrics-0.24.1 fails to build under
+  # rustc 1.94 (rust-lang/rust#141402). 1.22.x has a newer metrics dep.
+  mountpoint-s3 = pkgs.mountpoint-s3.overrideAttrs (old: rec {
+    version = "1.22.3";
+    src = pkgs.fetchFromGitHub {
+      owner = "awslabs";
+      repo = "mountpoint-s3";
+      tag = "v${version}";
+      hash = "sha256-22tx8ozXkzBNAflDPc7cdfUh9TWD6aB/Fe/z/dPZ694=";
+      fetchSubmodules = true;
+    };
+    cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+      inherit src;
+      name = "mountpoint-s3-${version}-vendor";
+      hash = "sha256-SSSXqgJ3OERCVw81iXqXRRpVXgdwhlefHhI/qvQyl4g=";
+    };
+  });
+
   mountS3ForImmich = pkgs.writeShellScript "mount-s3-for-immich" ''
     set -e
     MOUNT_POINT="/var/lib/immich/s3-host-mount"
 
     ${pkgs.coreutils}/bin/mkdir -p "$MOUNT_POINT"
     ${pkgs.coreutils}/bin/stat "$MOUNT_POINT"
-    exec ${pkgs.mountpoint-s3}/bin/mount-s3 photos "$MOUNT_POINT" \
+    exec ${mountpoint-s3}/bin/mount-s3 photos "$MOUNT_POINT" \
         --endpoint-url http://127.0.0.1:3900 \
         --region cn-north-1 \
         --allow-root \
