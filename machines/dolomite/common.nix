@@ -24,7 +24,7 @@
     };
 
     custom.monitoring = {
-      promtail.enable = true;
+      fluent-bit.enable = true;
     };
 
     commonSettings = {

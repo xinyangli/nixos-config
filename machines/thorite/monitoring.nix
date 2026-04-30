@@ -43,7 +43,7 @@ in
           };
         };
       };
-      promtail.enable = true;
+      fluent-bit.enable = true;
     };
 
     services.caddy.virtualHosts.${grafanaUrl}.extraConfig =

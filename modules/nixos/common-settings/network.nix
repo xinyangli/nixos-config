@@ -105,11 +105,15 @@ in
 
     (mkIf cfg.localdns.enable {
       services.resolved = mkIf config.networking.useNetworkd {
-        llmnr = "false";
-        extraConfig = ''
-          ${lib.optionalString (!config.commonSettings.network.enableProxy) "DNS=127.0.0.1 ::1"}
-          DNSStubListener=no
-        '';
+        settings.Resolve = lib.mkMerge [
+          {
+            LLMNR = "false";
+            DNSStubListener = "no";
+          }
+          (lib.mkIf (!config.commonSettings.network.enableProxy) {
+            DNS = "127.0.0.1 ::1";
+          })
+        ];
       };
 
       system.nssDatabases.hosts = mkIf config.networking.useNetworkd (

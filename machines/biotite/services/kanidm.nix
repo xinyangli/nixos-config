@@ -24,15 +24,17 @@ in
 
   services.kanidm = {
     package = lib.mkForce pkgs.kanidmWithSecretProvisioning_1_8;
-    enableServer = true;
-    serverSettings = {
-      domain = idpUrl;
-      origin = "https://${idpUrl}";
-      bindaddress = "[::]:${toString kanidm_listen_port}";
-      tls_key = ''${config.security.acme.certs.${idpUrl}.directory}/key.pem'';
-      tls_chain = ''${config.security.acme.certs.${idpUrl}.directory}/fullchain.pem'';
-      online_backup.versions = 7;
-      # db_path = "/var/lib/kanidm/kanidm.db";
+    server = {
+      enable = true;
+      settings = {
+        domain = idpUrl;
+        origin = "https://${idpUrl}";
+        bindaddress = "[::]:${toString kanidm_listen_port}";
+        tls_key = ''${config.security.acme.certs.${idpUrl}.directory}/key.pem'';
+        tls_chain = ''${config.security.acme.certs.${idpUrl}.directory}/fullchain.pem'';
+        online_backup.versions = 7;
+        # db_path = "/var/lib/kanidm/kanidm.db";
+      };
     };
   };
 
@@ -46,7 +48,7 @@ in
           header_up Host {upstream_hostport}
           header_down Access-Control-Allow-Origin "*"
           transport http {
-              tls_server_name ${config.services.kanidm.serverSettings.domain}
+              tls_server_name ${config.services.kanidm.server.settings.domain}
           }
       }
     '';

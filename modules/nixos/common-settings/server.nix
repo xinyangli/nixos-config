@@ -38,13 +38,13 @@ in
       RuntimeDirectoryMode = "0700";
     };
 
-    custom.monitoring = {
-      promtail.enable = true;
-    };
-
     custom.prometheus.exporters = {
       enable = true;
       node.enable = true;
+    };
+
+    custom.monitoring = {
+      fluent-bit.enable = true;
     };
   };
 }

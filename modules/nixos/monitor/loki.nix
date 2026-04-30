@@ -72,7 +72,7 @@ in
           default = { };
         };
       };
-      promtail.enable = mkEnableOption "promtail";
+      fluent-bit.enable = mkEnableOption "fluent-bit shipping the systemd journal to loki";
     };
   };
 
@@ -156,126 +156,45 @@ in
         systemd.services.loki.restartTriggers = [ rulerFile ];
       }
     )
-    (mkIf cfg.promtail.enable {
-      services.promtail = {
+    (mkIf cfg.fluent-bit.enable {
+      services.fluent-bit = {
         enable = true;
-        configuration = {
-
-          server = {
-            http_listen_address = "${config.networking.hostName}.${internalDomain}";
-            http_listen_port = 28183;
-            grpc_listen_port = 0;
+        settings = {
+          service = {
+            flush = 1;
+            log_level = "info";
           };
-
-          positions.filename = "/tmp/positions.yml";
-
-          clients = [
-            {
-              url = "http://thorite.${internalDomain}:${toString lokiPort}/loki/api/v1/push";
-            }
-          ];
-
-          scrape_configs = [
-            {
-              job_name = "journal";
-              # Copied from Mic92's config
-              journal = {
-                max_age = "12h";
-                json = true;
-                labels.job = "systemd-journal";
-              };
-              pipeline_stages = [
-                {
-                  json.expressions = {
-                    transport = "_TRANSPORT";
-                    unit = "_SYSTEMD_UNIT";
-                    msg = "MESSAGE";
-                    coredump_cgroup = "COREDUMP_CGROUP";
-                    coredump_exe = "COREDUMP_EXE";
-                    coredump_cmdline = "COREDUMP_CMDLINE";
-                    coredump_uid = "COREDUMP_UID";
-                    coredump_gid = "COREDUMP_GID";
-                  };
-                }
-                {
-                  # Set the unit (defaulting to the transport like audit and kernel)
-                  template = {
-                    source = "unit";
-                    template = "{{if .unit}}{{.unit}}{{else}}{{.transport}}{{end}}";
-                  };
-                }
-                {
-                  regex = {
-                    expression = "(?P<coredump_unit>[^/]+)$";
-                    source = "coredump_cgroup";
-                  };
-                }
-                {
-                  template = {
-                    source = "msg";
-                    # FIXME would be cleaner to have this in a match block, but could not get it to work
-                    template = "{{if .coredump_exe}}{{.coredump_exe}} core dumped (user: {{.coredump_uid}}/{{.coredump_gid}}, command: {{.coredump_cmdline}}){{else}}{{.msg}}{{end}}";
-                  };
-                }
-                { labels.coredump_unit = "coredump_unit"; }
-                {
-                  # Normalize session IDs (session-1234.scope -> session.scope) to limit number of label values
-                  replace = {
-                    source = "unit";
-                    expression = "^(session-\\d+.scope)$";
-                    replace = "session.scope";
-                  };
-                }
-                { labels.unit = "unit"; }
-                {
-                  # Write the proper message instead of JSON
-                  output.source = "msg";
-                }
-                # silence nscd:
-                # ignore random portscans on the internet
-                { drop.expression = "refused connection: IN="; }
-              ];
-              relabel_configs = [
-                {
-                  source_labels = [ "__journal__hostname" ];
-                  target_label = "host";
-                }
-              ];
-            }
-            # {
-            #   job_name = "caddy";
-            #   static_configs = [
-            #     {
-            #       targets = [ "localhost" ];
-            #       labels = {
-            #         job = "caddy";
-            #         __path__ = "/var/log/caddy/*log";
-            #         agent = "caddy-promtail";
-            #       };
-            #     }
-            #   ];
-            #   pipeline_stages = [
-            #     {
-            #       json = {
-            #         expressions = {
-            #           duration = "duration";
-            #           status = "status";
-            #         };
-            #       };
-            #     }
-            #     {
-            #       labels = {
-            #         duration = null;
-            #         status = null;
-            #       };
-            #     }
-            #   ];
-            # }
-          ];
+          pipeline = {
+            inputs = [
+              {
+                name = "systemd";
+                tag = "host.*";
+                read_from_tail = "on";
+              }
+            ];
+            filters = [
+              {
+                name = "modify";
+                match = "*";
+                add = "host ${config.networking.hostName}";
+              }
+            ];
+            outputs = [
+              {
+                name = "loki";
+                match = "*";
+                host = "thorite.${internalDomain}";
+                port = lokiPort;
+                labels = "job=systemd-journal,host=${config.networking.hostName}";
+                label_keys = "$_SYSTEMD_UNIT,$_HOSTNAME";
+                line_format = "json";
+              }
+            ];
+          };
         };
       };
 
-      services.caddy.logFormat = ''
+      services.caddy.logFormat = lib.mkIf config.services.caddy.enable ''
         format json
         level INFO
       '';

@@ -33,12 +33,13 @@ in
         "en"
         "zh"
       ];
+      filters = [ ];
       memoryLimit = 2000;
     };
 
     x509.useACMEHost = config.mailserver.fqdn;
 
-    loginAccounts = {
+    accounts = {
       "xin@xiny.li" = {
         hashedPassword = "$y$j9T$/wzIqvSyeWXynQ9wWro2L0$A16VahPnXbXC.pNR9cQPn52r3T4vsQM.UmXn2nD9dWD";
         aliases = [ "me@xiny.li" ];
@@ -50,7 +51,7 @@ in
         hashedPassword = "$y$j9T$8myJrmpVLqxQiWDN2zoRJ/$.g8a4TXwp07Jw1irWqq7ggBkTfyAuebfOQ6L8ZzXgD6";
       };
     };
-    extraVirtualAliases = {
+    aliases = {
       "abuse@xiny.li" = "xin@xiny.li";
       "postmaster@xiny.li" = "xin@xiny.li";
     };

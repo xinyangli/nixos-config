@@ -17,6 +17,7 @@ in
           root_url = grafanaUrl;
           domain = lib.removePrefix "https://" grafanaUrl;
         };
+        security.secret_key = "SW2YcwTIb9zpOOhoPsMm";
         "auth.generic_oauth" = {
           enabled = true;
           name = "Kanidm";

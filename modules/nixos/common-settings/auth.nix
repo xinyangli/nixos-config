@@ -32,11 +32,13 @@ in
       users.users.root.hashedPassword = "$y$j9T$oJ8a7zKc3EV9HOf8qYKC6/$ZEq0Kl8rapeN/WKyJ8eXnTGoTpLb2W/LWLcS8QlNPPB";
       services.kanidm = {
         package = kanidm_pkg;
-        enableClient = true;
-        clientSettings = {
-          uri = "https://${idpUrl}";
+        client = {
+          enable = true;
+          settings = {
+            uri = "https://${idpUrl}";
+          };
         };
-        enablePam = true;
+        unix.enable = true;
         unix.settings = {
           kanidm.pam_allowed_login_groups = [ "linux_users" ];
           default_shell = "${lib.getExe pkgs.fish}";

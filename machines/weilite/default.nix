@@ -64,11 +64,6 @@
     sops = {
       defaultSopsFile = ./secrets.yaml;
       age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-      secrets = {
-        "restic/localpass" = {
-          owner = "restic";
-        };
-      };
     };
 
     custom.prometheus.exporters = {
@@ -82,7 +77,7 @@
     };
 
     custom.monitoring = {
-      promtail.enable = true;
+      fluent-bit.enable = true;
     };
 
     systemd.mounts = [
