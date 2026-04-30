@@ -174,9 +174,54 @@ in
             ];
             filters = [
               {
-                name = "modify";
+                name = "lua";
                 match = "*";
-                add = "host ${config.networking.hostName}";
+                script = pkgs.writeText "fluent-bit-journal.lua" ''
+                  local function basename(s)
+                    return s:match("([^/]+)$") or s
+                  end
+
+                  function process(tag, ts, record)
+                    local message = record["MESSAGE"] or ""
+
+                    -- Drop high-volume noise we never want to ship
+                    if string.find(message, "refused connection: IN=", 1, true) then
+                      return -1, 0, 0
+                    end
+
+                    local unit = record["_SYSTEMD_UNIT"] or record["_TRANSPORT"] or ""
+                    local host = record["_HOSTNAME"] or ""
+                    local coredump_unit = nil
+
+                    if record["COREDUMP_EXE"] then
+                      message = string.format(
+                        "%s core dumped (user: %s/%s, command: %s)",
+                        record["COREDUMP_EXE"],
+                        record["COREDUMP_UID"] or "",
+                        record["COREDUMP_GID"] or "",
+                        record["COREDUMP_CMDLINE"] or ""
+                      )
+                      if record["COREDUMP_CGROUP"] then
+                        coredump_unit = basename(record["COREDUMP_CGROUP"])
+                      end
+                    end
+
+                    -- Collapse session-1234.scope -> session.scope so we don't
+                    -- explode the cardinality of the unit label.
+                    unit = unit:gsub("^session%-%d+%.scope$", "session.scope")
+
+                    local new_record = {
+                      message = message,
+                      host = host,
+                      unit = unit,
+                    }
+                    if coredump_unit then
+                      new_record.coredump_unit = coredump_unit
+                    end
+                    return 1, ts, new_record
+                  end
+                '';
+                call = "process";
               }
             ];
             outputs = [
@@ -185,8 +230,9 @@ in
                 match = "*";
                 host = "thorite.${internalDomain}";
                 port = lokiPort;
-                labels = "job=systemd-journal,host=${config.networking.hostName}";
-                label_keys = "$_SYSTEMD_UNIT,$_HOSTNAME";
+                labels = "job=systemd-journal";
+                label_keys = "$host,$unit,$coredump_unit";
+                remove_keys = "host,unit,coredump_unit";
                 line_format = "json";
               }
             ];
