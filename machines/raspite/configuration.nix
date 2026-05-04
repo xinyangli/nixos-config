@@ -24,6 +24,10 @@
   ];
 
   networking.firewall.allowedTCPPorts = [ 8443 ];
+  # mDNS unicast replies for matter-server commissioning. conntrack does not
+  # relate the multicast query to the unicast response (different dst tuple),
+  # so without this the default INPUT chain drops them.
+  networking.firewall.allowedUDPPorts = [ 5353 ];
 
   environment.systemPackages = with pkgs; [
     git

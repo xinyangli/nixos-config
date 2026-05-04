@@ -57,7 +57,35 @@
       "mqtt"
       "roborock"
       "openai_conversation"
+      "matter"
     ];
+  };
+
+  systemd.services.matter-server = {
+    description = "OHF Matter Server (matter.js)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    before = [ "home-assistant.service" ];
+    wantedBy = [ "multi-user.target" ];
+    environment = {
+      HOME = "/var/lib/matterjs-server";
+    };
+    serviceConfig = {
+      ExecStart = lib.concatStringsSep " " [
+        (lib.getExe pkgs.matterjs-server)
+        "--port" "5580"
+        "--storage-path" "/var/lib/matterjs-server"
+        "--log-level" "debug"
+        # Matter discovery uses IPv6 link-local mDNS, which requires picking a
+        # specific interface on multi-homed hosts. Without this matterjs-server
+        # may bind to tailscale (coho-tet.ts.net) and miss LAN advertisements.
+        "--primary-interface" "eth0"
+      ];
+      DynamicUser = true;
+      StateDirectory = "matterjs-server";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
   };
 
   systemd.services.home-assistant.environment = {
