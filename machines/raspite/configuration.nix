@@ -43,5 +43,25 @@
     interfaces.eth0.useDHCP = true;
   };
 
+  networking.wireless.iwd = {
+    enable = true;
+    settings = {
+      General.EnableNetworkConfiguration = true;
+      Settings.AutoConnect = true;
+    };
+  };
+
+  systemd.network = {
+    networks."10-eth" = {
+      matchConfig.MACAddress = "dc:a6:32:a8:09:cf";
+      networkConfig = {
+        DHCP = "yes";
+        IPv6AcceptRA = true;
+      };
+      dhcpV4Config.RouteMetric = 100;
+      ipv6AcceptRAConfig.RouteMetric = 100;
+      linkConfig.RequiredForOnline = "routable";
+    };
+  };
   time.timeZone = "Asia/Shanghai";
 }
