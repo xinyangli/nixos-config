@@ -15,7 +15,7 @@ in
       auth-file = "/var/lib/ntfy-sh/user.db";
       auth-default-access = "read-write";
       auth-users = [
-        "xin:$2b$05$ZkX6nsKXSiKtKvvYuW72NuJGSyqE2Zcp/M/LHknrder8sGrjvT/NG:admin"
+        "xin:$2a$10$PhcrXQBBwD4.p0xYlp1BHOWj8fQvkTixV8XuY1Xt3W4L5.FV8MRAK:admin"
       ];
     };
   };

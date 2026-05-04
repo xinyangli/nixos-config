@@ -1,0 +1,71 @@
+Forward UDP packets received on mDNS broadcast channels to the main
+listener.
+
+matter.js opens N+1 sockets bound to 0.0.0.0:5353 inside the same
+process (1 main listener + N broadcast channels for sending). All bind
+with SO_REUSEADDR. The Linux kernel hashes a unicast 4-tuple to one of
+these sockets deterministically; if the chosen socket is a broadcast
+channel — which has no JS-level onData handler — libuv reads the packet
+and silently drops it at the JS event layer, so DnssdNames never sees
+it and CommissionableMdnsScanner never delivers the device.
+
+Confirmed empirically on raspite: the device's only unicast response in
+a 3 min discovery window arrived on broadcast-channel-v6, never on
+listener-v6, and commissioning failed with "No commissionable device
+was discovered".
+
+This patch wires every broadcast channel's inbound to the listener that
+onMessage() registered, so packets are processed regardless of which
+socket the kernel picked. Also leaves diagnostic probes in place so
+behavior can be re-verified after deploy.
+
+Upstream issue: should be filed against project-chip/matter.js
+(@matter/general/src/net/udp/UdpMulticastServer.ts).
+--- a/node_modules/@matter/general/dist/esm/net/udp/UdpMulticastServer.js
++++ b/node_modules/@matter/general/dist/esm/net/udp/UdpMulticastServer.js
+@@ -146,11 +146,14 @@
+   onMessage(listener) {
++    this._onMessageListener = listener;
+     this.#serverIpv4?.onData((netInterface, peerAddress, _port, message) => {
++      logger.info(`PROBE rx via listener-v4 from=${peerAddress} iface=${netInterface}`);
+       if (netInterface === void 0) {
+         return;
+       }
+       listener(message, peerAddress, netInterface);
+     });
+     this.#serverIpv6.onData((netInterface, peerAddress, _port, message) => {
++      logger.info(`PROBE rx via listener-v6 from=${peerAddress} iface=${netInterface}`);
+       if (netInterface === void 0) {
+         return;
+       }
+@@ -199,12 +202,20 @@
+     }
+   }
+   async createBroadcastChannel(netInterface, isIPv42) {
+-    return await this.network.createUdpChannel({
++    const channel = await this.network.createUdpChannel({
+       lifetime: this.#lifetime,
+       type: isIPv42 ? "udp4" : "udp6",
+       listeningPort: this.#broadcastPort,
+       netInterface,
+       reuseAddress: true
+     });
++    channel.onData((iface, peerAddress, _port, message) => {
++      logger.info(`PROBE rx via broadcast-channel-${isIPv42 ? "v4" : "v6"} from=${peerAddress} iface=${iface}`);
++      if (this._onMessageListener === void 0 || iface === void 0) {
++        return;
++      }
++      this._onMessageListener(message, peerAddress, iface);
++    });
++    return channel;
+   }
+   async close() {
+     var _stack = [];
+--- a/node_modules/@matter/general/dist/esm/net/dns-sd/DnssdNames.js
++++ b/node_modules/@matter/general/dist/esm/net/dns-sd/DnssdNames.js
+@@ -176,6 +176,7 @@
+   #handleMessage(message) {
++    console.log(`[PROBE] dnssd handleMessage answers=${message.answers?.length} additionals=${message.additionalRecords?.length} sourceIntf=${message.sourceIntf}`);
+     let newlyDiscovered;
+     try {
+       newlyDiscovered = this.#processMessage(message);

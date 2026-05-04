@@ -23,5 +23,6 @@
 
     xwayland-satellite = callPackage ./pkgs/xwayland-satellite.nix { };
     longbridge = callPackage ./pkgs/longbridge.nix { };
+    matterjs-server = callPackage ./pkgs/matterjs-server.nix { };
   }
 )
