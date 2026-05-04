@@ -59,6 +59,9 @@
       "openai_conversation"
       "matter"
     ];
+    customComponents = with pkgs.home-assistant-custom-components; [
+      xiaomi_home
+    ];
   };
 
   systemd.services.matter-server = {

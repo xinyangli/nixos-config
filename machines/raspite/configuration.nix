@@ -22,6 +22,7 @@
       makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
     })
   ];
+  nixpkgs.config.allowUnfree = true;
 
   networking.firewall.allowedTCPPorts = [ 8443 ];
   # mDNS unicast replies for matter-server commissioning. conntrack does not
