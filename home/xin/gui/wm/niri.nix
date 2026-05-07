@@ -39,6 +39,6 @@ in
       xwayland-satellite # managed by niri
     ];
 
-    custom-hm.gui.polkit = "pantheon";
+    # custom-hm.gui.polkit = "pantheon";
   };
 }

@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 {
   home.packages = with pkgs; [
     thunderbird
@@ -23,7 +23,7 @@
     enable = true;
     readOnly = true;
     entries = [
-      "${pkgs.thunderbird}/share/applications/thunderbird.desktop"
+      "${pkgs.evolution}/share/applications/org.gnome.Evolution.desktop"
       "${pkgs.firefox}/share/applications/firefox.desktop"
       "${pkgs.telegram-desktop}/share/applications/org.telegram.desktop.desktop"
       "${pkgs.fractal}/share/applications/org.gnome.Fractal.desktop"
@@ -172,6 +172,7 @@
 
   programs.firefox = {
     enable = true;
+    configPath = "${config.xdg.configHome}/mozilla/firefox";
     profiles.default = {
       isDefault = true;
       extensions.force = true;

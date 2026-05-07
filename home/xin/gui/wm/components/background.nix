@@ -12,7 +12,7 @@ let
   '';
 in
 {
-  services.swww.enable = true;
+  services.awww.enable = true;
   systemd.user.services.bg-switch = {
     Install = {
       WantedBy = [ config.wayland.systemd.target ];

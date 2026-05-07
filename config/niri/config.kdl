@@ -64,14 +64,6 @@ switch-events {
     lid-open { spawn "niri" "msg" "output" "eDP-1" "on"; }
 }
 
-workspace "media" { }
-
-workspace "chat" { }
-
-workspace "browser" { }
-
-workspace "terminal" { }
-
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Layout
