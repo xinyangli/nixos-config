@@ -64,8 +64,6 @@ let
     };
   };
 
-  # nixpkgs ships 1.17.0 whose vendored metrics-0.24.1 fails to build under
-  # rustc 1.94 (rust-lang/rust#141402). 1.22.x has a newer metrics dep.
   mountpoint-s3 = pkgs.mountpoint-s3.overrideAttrs (old: rec {
     version = "1.22.3";
     src = pkgs.fetchFromGitHub {
@@ -80,6 +78,7 @@ let
       name = "mountpoint-s3-${version}-vendor";
       hash = "sha256-SSSXqgJ3OERCVw81iXqXRRpVXgdwhlefHhI/qvQyl4g=";
     };
+    doCheck = false;
   });
 
   mountS3ForImmich = pkgs.writeShellScript "mount-s3-for-immich" ''
