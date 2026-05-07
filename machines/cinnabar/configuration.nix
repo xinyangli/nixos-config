@@ -113,6 +113,8 @@ in
     };
   };
 
+  services.fwupd.enable = true;
+
   services.logind = {
     settings.Login = {
       HandlePowerKey = "suspend-then-hibernate";

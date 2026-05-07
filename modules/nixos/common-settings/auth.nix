@@ -85,7 +85,14 @@ in
       services.howdy = {
         enable = true;
         control = "sufficient";
-        settings = { };
+        settings = {
+          core = {
+            detection_notice = true;
+          };
+          video = {
+            force_mjpeg = true;
+          };
+        };
       };
       services.linux-enable-ir-emitter.enable = true;
     })

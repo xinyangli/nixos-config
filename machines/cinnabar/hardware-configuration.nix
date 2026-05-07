@@ -77,6 +77,7 @@ in
   };
 
   hardware.enableAllFirmware = true;
+  services.hardware.bolt.enable = true;
   services.asusd.enable = true;
   systemd.services.asusd.environment.RUST_LOG =
     "info,asusd=debug,rog_platform=debug,tracing::span=error";
