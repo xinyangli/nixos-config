@@ -41,6 +41,7 @@
     auth.enable = true;
     nix = {
       enable = true;
+      signing.enable = true;
     };
     comin.enable = true;
     network.localdns.enable = true;
