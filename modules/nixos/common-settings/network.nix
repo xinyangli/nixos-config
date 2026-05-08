@@ -126,7 +126,7 @@ in
       );
 
       networking.resolvconf = {
-        enable = !config.networking.useNetworkd;
+        enable = lib.mkDefault (!config.networking.useNetworkd);
         dnsExtensionMechanism = false;
         # We should disable local resolver if dae is enabled
         # to let dns traffic go through dae
