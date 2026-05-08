@@ -76,13 +76,17 @@
     serviceConfig = {
       ExecStart = lib.concatStringsSep " " [
         (lib.getExe pkgs.matterjs-server)
-        "--port" "5580"
-        "--storage-path" "/var/lib/matterjs-server"
-        "--log-level" "debug"
+        "--port"
+        "5580"
+        "--storage-path"
+        "/var/lib/matterjs-server"
+        "--log-level"
+        "debug"
         # Matter discovery uses IPv6 link-local mDNS, which requires picking a
         # specific interface on multi-homed hosts. Without this matterjs-server
         # may bind to tailscale (coho-tet.ts.net) and miss LAN advertisements.
-        "--primary-interface" "eth0"
+        "--primary-interface"
+        "eth0"
       ];
       DynamicUser = true;
       StateDirectory = "matterjs-server";
@@ -290,6 +294,16 @@
         };
         "0xa4c1385b43afdf5e" = {
           friendly_name = "油烟机插座";
+        };
+        "0x54ef44100114225f" = {
+          friendly_name = "次卧窗帘";
+        };
+        "0xe8e07efffeabcbe5" = {
+          friendly_name = "客厅窗帘";
+          reverse_direction = true;
+        };
+        "0xa4c1384b96b4fbb3" = {
+          friendly_name = "餐桌灯";
         };
       };
     };
