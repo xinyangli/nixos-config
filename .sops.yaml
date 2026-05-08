@@ -2,7 +2,7 @@ keys:
   - &xin age1uw059wcwfvd9xuj0hpqzqpeg7qemecspjrsatg37wc7rs2pumfdsgken0c
   - &host-calcite age1ytwfqfeez3dqtazyjltn7mznccwx3ua8djhned7n8mxqhw4p6e5s97skfa
   - &host-cinnabar age1s5p5spdu6xhgy4plk956fy7qsfl73fxec62xcyuuk6q5ksank4ks6rpduk
-  - &host-raspite age1nugzw24upk8pz5lyz2z89qk8se4gpcsg3ypcs58nykncr56sevrsm8qpvj
+  - &host-raspite age10ms9pyq2hu2t5l69svwt5e70vf9zq4k348j9akfp3ak2f53dggsql5j49z
   - &host-la-00 age19nyprgh65mrl6435uswq9c5stkrkr4mhzkdkxahwessxfs0gcggqwmgt9a
   - &host-massicot age1jle2auermhswqtehww9gqada8car5aczrx43ztzqf9wtcld0sfmqzaecta
   - &host-weilite age17r3fxfmt6hgwe984w4lds9u0cnkf5ttq8hnqt800ayfmx7t8t5gqjddyml
@@ -26,6 +26,7 @@ creation_rules:
       - *host-la-00
       - *host-agate
       - *host-hafnon
+      - *host-raspite
   - path_regex: machines/agate/secrets.yaml
     key_groups:
     - age:
