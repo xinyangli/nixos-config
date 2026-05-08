@@ -1,6 +1,8 @@
 { config, ... }:
 let
   inherit (config.my-lib.settings) ntfyUrl;
+
+  cominBcrypt = "$2a$10$elJoaRScjUm9r1UIXlqllur/8H/PDfTKbgs6d/ygFmBgRTp.H/Ewe";
 in
 {
 
@@ -15,7 +17,11 @@ in
       auth-file = "/var/lib/ntfy-sh/user.db";
       auth-default-access = "read-write";
       auth-users = [
-        "xin:$2a$10$PhcrXQBBwD4.p0xYlp1BHOWj8fQvkTixV8XuY1Xt3W4L5.FV8MRAK:admin"
+        "comin:${cominBcrypt}:user"
+      ];
+      auth-access = [
+        "comin:comin-reboot:rw"
+        "everyone:comin-reboot:deny"
       ];
     };
   };
