@@ -5,6 +5,7 @@
 }:
 let
   inherit (lib)
+    mkDefault
     mkEnableOption
     mkIf
     ;
@@ -27,7 +28,7 @@ in
         }
       ];
       hostname = config.networking.hostName;
-      executor.type = "garnix";
+      executor.type = mkDefault "garnix";
     };
   };
 }

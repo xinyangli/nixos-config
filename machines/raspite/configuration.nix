@@ -24,6 +24,15 @@
   ];
   nixpkgs.config.allowUnfree = true;
 
+  services.comin.executor = {
+    type = "hydra";
+    hydra = {
+      base_url = "http://agate.coho-tet.ts.net:3000";
+      project = "xin";
+      jobset = "nixos-config-deploy";
+    };
+  };
+
   networking.firewall.allowedTCPPorts = [ 8443 ];
   # mDNS unicast replies for matter-server commissioning. conntrack does not
   # relate the multicast query to the unicast response (different dst tuple),
