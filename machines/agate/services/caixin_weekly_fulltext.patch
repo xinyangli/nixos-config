@@ -51,7 +51,7 @@ index 3d1b01da0..e7112792d 100644
 +    }
 +
      const isWeekly = url.includes('weekly');
-     const res = await ofetch(`https://gateway.caixin.com/api/newauth/checkAuthByIdJsonp`, {
+     const res = await ofetch('https://gateway.caixin.com/api/newauth/checkAuthByIdJsonp', {
          query: {
              type: 1,
              page: isWeekly ? 0 : 1,
