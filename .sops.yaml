@@ -27,6 +27,12 @@ creation_rules:
       - *host-agate
       - *host-hafnon
       - *host-raspite
+  - path_regex: modules/nixos/mesh/secrets.yaml
+    key_groups:
+    - age:
+      - *xin
+      - *host-fra-00
+      - *host-la-00
   - path_regex: machines/agate/secrets.yaml
     key_groups:
     - age:

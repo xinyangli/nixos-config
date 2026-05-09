@@ -13,6 +13,7 @@ in
     ./ipsec.nix
     ./bird.nix
     ./registry.nix
+    ./peers.nix
   ];
 
   config = lib.mkMerge [

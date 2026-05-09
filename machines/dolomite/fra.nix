@@ -69,4 +69,23 @@
   };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+
+  custom.mesh-network = {
+    ipsec = {
+      enable = true;
+      commonName = "fra-00";
+      endpoints = [
+        {
+          serialNumber = "0";
+          addressFamily = "ip4";
+          address = "185.217.108.59";
+        }
+      ];
+      interfaces = [ "ens0" ];
+    };
+    bird = {
+      enable = true;
+      routes = [ "fda1:6cbb:db78::1/128" ];
+    };
+  };
 }

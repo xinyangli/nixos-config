@@ -135,6 +135,10 @@ in
         wantedBy = [ "multi-user.target" ];
         reloadTriggers = [ config.environment.etc."ranet/config.json".source ];
       };
+    networking.firewall.interfaces = lib.genAttrs cfg.ipsec.interfaces (_: {
+      allowedUDPPorts = [ cfg.ipsec.port ];
+    });
+
     services.strongswan-swanctl = {
       enable = true;
       strongswan.extraConfig = ''

@@ -56,5 +56,24 @@
     services.resolved.enable = true;
 
     services.sing-box.settings.dns.strategy = "ipv4_only";
+
+    custom.mesh-network = {
+      ipsec = {
+        enable = true;
+        commonName = "la-00";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = "67.230.168.47";
+          }
+        ];
+        interfaces = [ "ens18" ];
+      };
+      bird = {
+        enable = true;
+        routes = [ "fda1:6cbb:db78::2/128" ];
+      };
+    };
   };
 }
