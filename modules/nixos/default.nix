@@ -12,6 +12,7 @@
     ./common-settings/server.nix
     ./disk-partitions
     ./backup.nix
+    ./mesh
     ./monitor
     ./rustical.nix
     ./matrix-authentication-service.nix
