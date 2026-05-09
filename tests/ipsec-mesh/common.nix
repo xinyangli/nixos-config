@@ -52,7 +52,11 @@
     };
 
     custom.mesh-network = {
-      organization = "meshtest";
+      # mkForce: peers.nix declares the prod fleet (organization "xinyangli",
+      # real hosts), and the mesh module imports it unconditionally. The
+      # test runs an isolated mesh, so we must drop the prod definitions
+      # rather than merge with them.
+      organization = lib.mkForce "meshtest";
       ipsec = {
         enable = true;
         commonName = hostname;
@@ -76,7 +80,7 @@
         routerIdInterface = "eth1";
       };
       orgPubKey = ./keys/org.pub;
-      nodes = {
+      nodes = lib.mkForce {
         alpha = {
           commonName = "alpha";
           endpoints = [

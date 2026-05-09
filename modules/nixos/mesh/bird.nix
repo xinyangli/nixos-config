@@ -29,8 +29,15 @@ in
     };
     routerIdInterface = mkOption {
       type = types.str;
-      default = "eth0";
-      description = "interface bird derives its router id from (must have IPv4 assigned).";
+      default =
+        if cfg.ipsec.interfaces != [ ]
+        then lib.head cfg.ipsec.interfaces
+        else "eth0";
+      defaultText = lib.literalExpression ''lib.head config.custom.mesh-network.ipsec.interfaces'';
+      description = ''
+        Interface bird derives its router id from (must have IPv4 assigned).
+        Defaults to the first WAN interface declared under `ipsec.interfaces`.
+      '';
     };
   };
 
