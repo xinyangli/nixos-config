@@ -118,6 +118,8 @@ in
                 "biotite"
                 "la-00"
                 "fra-00"
+                "agate"
+                "raspite"
               ];
             }
           ];
