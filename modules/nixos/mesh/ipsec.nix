@@ -133,7 +133,15 @@ in
           "sys-subsystem-net-devices-gravity.device"
         ];
         wantedBy = [ "multi-user.target" ];
-        reloadTriggers = [ config.environment.etc."ranet/config.json".source ];
+        # Both files matter: config.json changes when this host's local
+        # endpoint changes; registry.json changes when the fleet
+        # membership in peers.nix changes. Without the second trigger,
+        # adding a new peer to peers.nix never reaches ranet and the
+        # mesh is silently incomplete after deploy.
+        reloadTriggers = [
+          config.environment.etc."ranet/config.json".source
+          config.environment.etc."gravity/registry.json".source
+        ];
       };
     networking.firewall.interfaces = lib.genAttrs cfg.ipsec.interfaces (_: {
       allowedUDPPorts = [ cfg.ipsec.port ];
