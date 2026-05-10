@@ -81,7 +81,7 @@
           address = "185.217.108.59";
         }
       ];
-      interfaces = [ "ens0" ];
+      interfaces = [ "ens3" ];
     };
     bird = {
       enable = true;
