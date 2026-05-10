@@ -163,7 +163,12 @@ in
         }
         charon-systemd {
           journal {
-            default = -1
+            # 1 = control flow + IKE state transitions. -1 silences charon
+            # entirely, which makes auth failures impossible to diagnose;
+            # bump to 1 for at least the rollout window.
+            default = 1
+            ike = 2
+            cfg = 2
           }
         }
       '';
