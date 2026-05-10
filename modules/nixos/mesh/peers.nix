@@ -26,6 +26,26 @@
           }
         ];
       };
+      thorite = {
+        commonName = "thorite";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = "23.165.200.99";
+          }
+        ];
+      };
+      biotite = {
+        commonName = "biotite";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = "45.142.178.32";
+          }
+        ];
+      };
     };
   };
 }

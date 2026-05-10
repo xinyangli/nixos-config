@@ -32,6 +32,25 @@
       serverComponents.enable = true;
     };
 
+    custom.mesh-network = {
+      ipsec = {
+        enable = true;
+        commonName = "thorite";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = "23.165.200.99";
+          }
+        ];
+        interfaces = [ "ens3" ];
+      };
+      bird = {
+        enable = true;
+        routes = [ "fda1:6cbb:db78::3/128" ];
+      };
+    };
+
     nixpkgs.system = "x86_64-linux";
     system.stateVersion = "24.11";
   };

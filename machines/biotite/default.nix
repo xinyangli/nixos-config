@@ -43,6 +43,25 @@
     serverComponents.enable = true;
   };
 
+  custom.mesh-network = {
+    ipsec = {
+      enable = true;
+      commonName = "biotite";
+      endpoints = [
+        {
+          serialNumber = "0";
+          addressFamily = "ip4";
+          address = "45.142.178.32";
+        }
+      ];
+      interfaces = [ "ens3" ];
+    };
+    bird = {
+      enable = true;
+      routes = [ "fda1:6cbb:db78::4/128" ];
+    };
+  };
+
   sops = {
     defaultSopsFile = ./secrets.yaml;
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];

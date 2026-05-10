@@ -33,6 +33,8 @@ creation_rules:
       - *xin
       - *host-fra-00
       - *host-la-00
+      - *host-thorite
+      - *host-biotite
   - path_regex: machines/agate/secrets.yaml
     key_groups:
     - age:
