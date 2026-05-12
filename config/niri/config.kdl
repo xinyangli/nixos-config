@@ -332,6 +332,20 @@ window-rule {
     max-width 200
 }
 
+window-rule {
+    match app-id=r#"^org\.telegram\.desktop$"#
+    match app-id="Evolution"
+    match app-id=r#"^wechat$"#
+    match app-id="Element"
+    match app-id="foot"
+    match app-id="waybar"
+    match app-id="org.gnome.Fractal"
+    background-effect {
+        blur true
+    }
+    opacity 0.9
+}
+
 hotkey-overlay {
     skip-at-startup
 }

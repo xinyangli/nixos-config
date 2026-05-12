@@ -31,8 +31,8 @@
       }
       #mpris,
       #network, #wireplumber, #cpu, #memory, #backlight, #battery {
-        color: @base;
-        background-color: transparent;
+        color: @text;
+        background-color: alpha(@base, 0.1);
       }
 
       /* Hover on filled elements */
@@ -121,8 +121,8 @@
       }
 
       #clock {
-        color: @base;
-        background-color: transparent;
+        color: @text;
+        background-color: alpha(@base, 0.1);
         font-weight: bold;
       }
     '';
