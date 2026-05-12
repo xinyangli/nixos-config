@@ -25,7 +25,7 @@ in
       };
       frontend.allow_password_login = false;
     };
-    environmentFile = config.sops.templates."rustical.env".path;
+    environmentFiles = [ config.sops.templates."rustical.env".path ];
   };
 
   services.caddy.virtualHosts.${rusticalUrl}.extraConfig = ''
