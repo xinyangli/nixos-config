@@ -224,6 +224,8 @@ in
   systemd.user.services.xdg-desktop-portal-gnome.after = [ "graphical-session.target" ];
   systemd.user.services.xdg-desktop-portal-gnome.wantedBy = [ "graphical-session.target" ];
 
+  # TODO: Remove after https://github.com/NixOS/nixpkgs/pull/519416 reach unstable
+  services.accounts-daemon.enable = true;
   programs.regreet = {
     enable = true;
     settings = {

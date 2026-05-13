@@ -46,6 +46,16 @@
           }
         ];
       };
+      cinnabar = {
+        commonName = "cinnabar";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = null;
+          }
+        ];
+      };
     };
   };
 }
