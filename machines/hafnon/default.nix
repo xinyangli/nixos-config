@@ -70,6 +70,30 @@
     hostName = "hafnon";
   };
 
+  custom.mesh-network = {
+    ipsec = {
+      enable = true;
+      commonName = "hafnon";
+      endpoints = [
+        {
+          serialNumber = "0";
+          addressFamily = "ip4";
+          address = "homo.j8.network";
+        }
+        {
+          serialNumber = "1";
+          addressFamily = "ip4";
+          address = "homo-3p.j8.network";
+        }
+      ];
+      interfaces = [ "ens18" ];
+    };
+    bird = {
+      enable = true;
+      routes = [ "fda1:6cbb:db78::6/128" ];
+    };
+  };
+
   systemd.network = {
     enable = true;
     wait-online.anyInterface = false;

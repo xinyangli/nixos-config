@@ -36,7 +36,7 @@ in
       };
       port = mkOption {
         type = types.port;
-        default = 13000;
+        default = 63001;
       };
       interfaces = mkOption {
         type = types.listOf types.str;
