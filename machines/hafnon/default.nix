@@ -38,7 +38,7 @@
         enable = true;
         fallbackDNS = ''
           policy.add(policy.all(policy.FORWARD({
-            "100.100.100.100", "100.100.101.101",
+            "100.112.247.225"
           })))
         '';
       };
@@ -74,16 +74,17 @@
     enable = true;
     wait-online.anyInterface = false;
     networks = {
-      "10-wan" = {
+      "10-lan" = {
         matchConfig = {
-          MACAddress = "bc:24:11:97:b8:ce";
+          MACAddress = "bc:24:11:e5:4f:f7";
         };
-        address = [ "10.10.10.2/16" ];
-        gateway = [ "10.10.0.1" ];
+        address = [ "100.112.247.229/27" ];
+        gateway = [ "100.112.247.225" ];
+        dns = [ "100.112.247.225" ];
 
-        # Optional: Add DNS servers if you haven't defined them globally
         networkConfig = {
-          IPv6AcceptRA = false;
+          DHCP = "ipv6";
+          IPv6AcceptRA = true;
         };
       };
     };
