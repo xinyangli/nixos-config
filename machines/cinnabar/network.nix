@@ -37,6 +37,8 @@
   };
 
   networking.useNetworkd = true;
+  networking.resolvconf.enable = true;
+  services.resolved.enable = false;
   custom.mesh-network = {
     ipsec = {
       enable = true;

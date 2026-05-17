@@ -95,6 +95,15 @@ in
         };
       };
       services.linux-enable-ir-emitter.enable = true;
+
+      systemd.services."polkit-agent-helper@" = {
+        serviceConfig = {
+          PrivateDevices = false;
+          DeviceAllow = [
+            "char-video4linux rw" # /dev/video* for the IR camera
+          ];
+        };
+      };
     })
   ];
 }
