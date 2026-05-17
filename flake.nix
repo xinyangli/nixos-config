@@ -4,11 +4,6 @@
     nixpkgs.url = "github:xinyangli/nixpkgs/deploy";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
 
-    internet-traffic-assignments = {
-      url = "git+https://git.xiny.li/xin/InternetTraffic";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/main";
 
     home-manager = {
@@ -117,7 +112,6 @@
     {
       self,
       nixpkgs,
-      internet-traffic-assignments,
       home-manager,
       nixos-hardware,
       sops-nix,
@@ -188,7 +182,6 @@
         agate = [
           disko.nixosModules.disko
           ./machines/agate
-          internet-traffic-assignments.nixosModules.assignment2
         ];
         hafnon = [
           disko.nixosModules.disko
@@ -205,7 +198,6 @@
           disko.nixosModules.disko
           ./machines/dolomite/bandwagon.nix
           ./machines/dolomite/common.nix
-          internet-traffic-assignments.nixosModules.assignment2
         ];
         fra-00 = [
           disko.nixosModules.disko
