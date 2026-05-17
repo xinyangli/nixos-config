@@ -74,6 +74,7 @@
     ipsec = {
       enable = true;
       commonName = "hafnon";
+      port = 27201;
       endpoints = [
         {
           serialNumber = "0";

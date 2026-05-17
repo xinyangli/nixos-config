@@ -28,6 +28,10 @@ in
                       type = types.nullOr types.str;
                       default = null;
                     };
+                    port = mkOption {
+                      type = types.port;
+                      default = 63001;
+                    };
                   };
                 }
               );
@@ -66,7 +70,7 @@ in
               serial_number = ep.serialNumber;
               address_family = ep.addressFamily;
               address = ep.address;
-              port = cfg.ipsec.port;
+              port = ep.port;
             }) node.endpoints;
           }) cfg.nodes;
         }
