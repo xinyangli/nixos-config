@@ -86,7 +86,7 @@
           address = "homo-3p.j8.network";
         }
       ];
-      interfaces = [ "ens18" ];
+      interfaces = [ "ens19" ];
     };
     bird = {
       enable = true;
