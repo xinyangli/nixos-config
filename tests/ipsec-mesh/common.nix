@@ -23,9 +23,10 @@
   config = {
     networking.hostName = hostname;
     networking.useDHCP = false;
-    # Required by the mesh module's assertion: the gravity VRF and gravity-lo
-    # dummy are declared via systemd-networkd, so without networkd the VRF
-    # never materialises and the updown script's `master gravity` would fail.
+    # Required by the mesh module's assertion: the gravity VRF (which also
+    # carries the per-host ULA directly) is declared via systemd-networkd,
+    # so without networkd the VRF never materialises and the updown
+    # script's `master gravity` would fail.
     networking.useNetworkd = true;
     systemd.network.enable = true;
     networking.firewall.enable = false;

@@ -54,7 +54,7 @@ in
         protocol device { }
         protocol direct {
           ipv6 { };
-          interface "gravity-lo";
+          interface "gravity";
         }
         protocol kernel {
           # `kernel table 100` is what makes routes land in the gravity VRF's
@@ -68,7 +68,7 @@ in
             # (the link-local only has scope on its own xfrm tunnel, and
             # peer has no /128 for it).
             #
-            # Pin `krt_prefsrc` to our gravity-lo ULA so outgoing traffic
+            # Pin `krt_prefsrc` to our gravity ULA so outgoing traffic
             # carries a globally routable source within the mesh. Replies
             # then come back along the same babel-installed path.
             ${if prefsrcAddr != null then ''

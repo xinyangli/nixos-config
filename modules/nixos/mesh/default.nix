@@ -32,6 +32,7 @@ in
         }
       ];
 
+      systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false;
       systemd.network.netdevs."40-gravity" = {
         netdevConfig = {
           Name = "gravity";
@@ -41,6 +42,23 @@ in
       };
       systemd.network.networks."40-gravity" = {
         matchConfig.Name = "gravity";
+        # Per-host mesh ULA(s) live directly on the VRF master, not on a
+        # separate dummy. Two reasons:
+        #   1. Address management on the VRF master makes the kernel
+        #      install the matching `local <addr> dev gravity` entry in
+        #      the VRF's local table — required for inbound xfrm
+        #      packets to be delivered to a local socket. The same
+        #      address on a VRF-slave dummy interface hits a kernel
+        #      quirk where the local route is *not* created, so
+        #      replies surface on gn* and then get routed back out
+        #      the dummy (a black hole). See ipsec mesh debugging
+        #      notes from 2026-05.
+        #   2. It drops the otherwise-pointless `gravity-lo` dummy.
+        #      bird's `protocol direct` reads the address from
+        #      `interface "gravity"` directly. (fernvenue's blog at
+        #      https://blog.fernvenue.com/zh/archives/using-vrf-with-ipsec/
+        #      uses the same pattern.)
+        address = cfg.bird.routes;
         linkConfig.RequiredForOnline = "no";
       };
 
@@ -72,22 +90,29 @@ in
           ActivationPolicy = "up";
         };
       };
-
-      # Mesh transits demand IPv6 forwarding between gn* interfaces.
-      boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = 1;
     })
     (lib.mkIf (cfg.ipsec.enable && cfg.bird.routes != [ ]) {
-      systemd.network.netdevs."41-gravity-lo" = {
-        netdevConfig = {
-          Name = "gravity-lo";
-          Kind = "dummy";
-        };
-      };
-      systemd.network.networks."41-gravity-lo" = {
-        matchConfig.Name = "gravity-lo";
-        networkConfig.VRF = "gravity";
-        address = cfg.bird.routes;
-        linkConfig.RequiredForOnline = "no";
+      boot.kernel.sysctl = {
+        "net.vrf.strict_mode" = 1;
+        "net.ipv6.conf.default.forwarding" = 1;
+        "net.ipv4.conf.default.forwarding" = 1;
+        "net.ipv4.conf.default.rp_filter" = 0;
+        "net.ipv6.conf.all.forwarding" = 1;
+        "net.ipv4.conf.all.forwarding" = 1;
+        "net.ipv4.conf.all.rp_filter" = 0;
+        "net.ipv6.conf.*.forwarding" = 1;
+        "net.ipv4.conf.*.forwarding" = 1;
+        "net.ipv4.conf.*.rp_filter" = 0;
+        "net.netfilter.nf_conntrack_max" = lib.mkDefault 1048576;
+        # https://www.kernel.org/doc/html/latest/networking/vrf.html#applications
+        # established sockets will be created in the VRF based on the ingress interface
+        # in case ingress traffic comes from inside the VRF targeting VRF external addresses
+        # the connection would silently fail
+        "net.ipv4.tcp_l3mdev_accept" = lib.mkDefault 0;
+        "net.ipv4.udp_l3mdev_accept" = lib.mkDefault 0;
+        "net.ipv4.raw_l3mdev_accept" = lib.mkDefault 0;
+        "net.ipv4.icmp_errors_extension_mask" = lib.fromHexString "0x01";
+        "net.ipv6.icmp.errors_extension_mask" = lib.fromHexString "0x01";
       };
     })
   ];
