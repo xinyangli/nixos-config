@@ -364,8 +364,8 @@
           idmHmModule = {
             home = {
               stateVersion = "25.11";
-              homeDirectory = "/home/${idmUsername}";
-              username = idmUsername;
+              homeDirectory = nixpkgs.lib.mkDefault "/home/${idmUsername}";
+              username = nixpkgs.lib.mkDefault idmUsername;
             };
           };
         in
