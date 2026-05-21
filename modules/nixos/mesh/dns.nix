@@ -66,7 +66,6 @@ in
         ];
       };
     };
-    systemd.services.knot.serviceConfig.BindToDevice = "gravity";
 
     # `gravity` is already in `firewall.trustedInterfaces` via bird.nix
     # (see modules/nixos/mesh/bird.nix), so port 53 is implicitly open

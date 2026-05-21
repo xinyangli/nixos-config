@@ -68,13 +68,20 @@ in
       systemd.network.networks.gravity = {
         matchConfig.Name = config.systemd.network.netdevs.gravity.netdevConfig.Name;
         address = cfg.address;
-        routes = map (a: {
-          Destination = a;
-          Type = "local";
-          Table = 100;
-          Protocol = "kernel";
-          Metric = 1;
-        }) cfg.address;
+        routes =
+          (map (a: {
+            Destination = a;
+            Type = "local";
+            Table = 100;
+            Protocol = "kernel";
+            Metric = 1;
+          }) cfg.address)
+          ++ [
+            {
+              Destination = "fda1:6cbb:db78::/56";
+              Source = "fda1:6cbb:db78::/56";
+            }
+          ];
         # "degraded" = online once an address is assigned. "no" would
         # exclude it from networkd-wait-online entirely, which on hosts
         # where gravity/gn* are the only networkd interfaces (wlo1 is
