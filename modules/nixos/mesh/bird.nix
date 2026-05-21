@@ -10,10 +10,19 @@ let
   cfg = config.custom.mesh-network;
   # Strip the `/N` prefix-length so we can hand bird a bare address for
   # `krt_prefsrc`. Empty list → null sentinel; the filter falls through.
+  # The first address is treated as this host's primary identity (any
+  # later entries are typically anycasts shared with other hosts).
   prefsrcAddr =
-    if cfg.bird.routes != [ ]
-    then lib.head (lib.splitString "/" (lib.head cfg.bird.routes))
-    else null;
+    if cfg.address != [ ] then lib.head (lib.splitString "/" (lib.head cfg.address)) else null;
+  hostnameToRouterID =
+    name:
+    let
+      inherit (builtins) hashString substring;
+      inherit (lib) fromHexString;
+      hash = hashString "sha256" name;
+      byte = i: fromHexString (substring (i * 2) 2 hash);
+    in
+    "${toString (byte 0)}.${toString (byte 1)}.${toString (byte 2)}.${toString (byte 3)}";
 in
 {
   options.custom.mesh-network.bird = {
@@ -27,18 +36,6 @@ in
       default = "20 s";
       description = "babel update interval (bird natural unit, e.g. \"20 s\").";
     };
-    routerIdInterface = mkOption {
-      type = types.str;
-      default =
-        if cfg.ipsec.interfaces != [ ]
-        then lib.head cfg.ipsec.interfaces
-        else "eth0";
-      defaultText = lib.literalExpression ''lib.head config.custom.mesh-network.ipsec.interfaces'';
-      description = ''
-        Interface bird derives its router id from (must have IPv4 assigned).
-        Defaults to the first WAN interface declared under `ipsec.interfaces`.
-      '';
-    };
   };
 
   config = mkIf cfg.bird.enable {
@@ -49,43 +46,28 @@ in
       # together if the naming scheme moves.
       config = ''
         log syslog all;
-        router id from "${cfg.bird.routerIdInterface}";
-
-        protocol device { }
-        protocol direct {
-          ipv6 { };
-          interface "gravity";
+        ipv6 sadr table sadr6;
+        protocol device {
+          scan time 5;
+        }
+        protocol static {
+          ipv6 sadr { table sadr6; };
+          ${lib.concatMapStrings (a: ''
+            route ${a} from ::/0 unreachable;
+          '') cfg.address}
         }
         protocol kernel {
-          # `kernel table 100` is what makes routes land in the gravity VRF's
-          # routing table — `vrf "gravity"` alone only affects socket binding.
           kernel table 100;
-          ipv6 {
-            # Babel's link-local next-hops mean bird hands the kernel a
-            # route whose only candidate source is the local gn* link-local.
-            # The kernel then sources outgoing packets from that link-local
-            # — which the peer's stack accepts but cannot route a reply to
-            # (the link-local only has scope on its own xfrm tunnel, and
-            # peer has no /128 for it).
-            #
-            # Pin `krt_prefsrc` to our gravity ULA so outgoing traffic
-            # carries a globally routable source within the mesh. Replies
-            # then come back along the same babel-installed path.
-            ${if prefsrcAddr != null then ''
-            export filter {
-              krt_prefsrc = ${prefsrcAddr};
-              accept;
-            };
-            '' else ''
+          ipv6 sadr {
+            table sadr6;
             export all;
-            ''}
             import none;
           };
-          learn;
         }
         protocol babel {
           vrf "gravity";
-          ipv6 {
+          ipv6 sadr {
+            table sadr6;
             export all;
             import all;
           };
@@ -100,13 +82,13 @@ in
             rx buffer 2000;
           };
         }
-        ${lib.optionalString cfg.bird.exit.enable ''
-          protocol static default6 {
-            ipv6 { };
-            route ::/0 via "gravity";
-          }
-        ''}
       '';
+      # ${lib.optionalString cfg.bird.exit.enable ''
+      #   protocol static default6 {
+      #     ipv6 { };
+      #     route ::/0 via "gravity";
+      #   }
+      # ''}
     };
 
     networking.firewall.trustedInterfaces = [ "gravity" ];

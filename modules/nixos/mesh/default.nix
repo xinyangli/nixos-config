@@ -16,6 +16,20 @@ in
     ./peers.nix
   ];
 
+  options.custom.mesh-network.address = lib.mkOption {
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+    example = [ "fda1:6cbb:db78::5/128" ];
+    description = ''
+      Mesh-internal addresses to assign to this host's gravity interface.
+      Bird's `protocol direct` exports them into babel so peers can route
+      to them. The first entry is treated as the host's primary identity
+      (used as `krt_prefsrc` for outbound mesh traffic); additional
+      entries can be shared across hosts to implement anycast — babel-rtt
+      then directs clients to the lowest-RTT holder.
+    '';
+  };
+
   config = lib.mkMerge [
     (lib.mkIf cfg.ipsec.enable {
       # Owned here (not in ipsec.nix) so non-mesh hosts that import this
@@ -32,66 +46,72 @@ in
         }
       ];
 
-      systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false;
-      systemd.network.netdevs."40-gravity" = {
+      # NM otherwise adopts gravity/gn* as "connected (externally)" and
+      # flushes routes including the kernel's `local <addr> dev gravity`.
+      networking.networkmanager.unmanaged = lib.mkIf config.networking.networkmanager.enable [
+        "interface-name:gravity"
+        "interface-name:gn*"
+      ];
+
+      systemd.network.netdevs.gravity = {
         netdevConfig = {
           Name = "gravity";
           Kind = "vrf";
         };
         vrfConfig.Table = 100;
       };
-      systemd.network.networks."40-gravity" = {
-        matchConfig.Name = "gravity";
-        # Per-host mesh ULA(s) live directly on the VRF master, not on a
-        # separate dummy. Two reasons:
-        #   1. Address management on the VRF master makes the kernel
-        #      install the matching `local <addr> dev gravity` entry in
-        #      the VRF's local table — required for inbound xfrm
-        #      packets to be delivered to a local socket. The same
-        #      address on a VRF-slave dummy interface hits a kernel
-        #      quirk where the local route is *not* created, so
-        #      replies surface on gn* and then get routed back out
-        #      the dummy (a black hole). See ipsec mesh debugging
-        #      notes from 2026-05.
-        #   2. It drops the otherwise-pointless `gravity-lo` dummy.
-        #      bird's `protocol direct` reads the address from
-        #      `interface "gravity"` directly. (fernvenue's blog at
-        #      https://blog.fernvenue.com/zh/archives/using-vrf-with-ipsec/
-        #      uses the same pattern.)
-        address = cfg.bird.routes;
-        linkConfig.RequiredForOnline = "no";
+      # Default `ManageForeignRoutes=true` deletes the kernel's
+      # auto-installed `local <addr> dev gravity` entry in table 100.
+      systemd.network.config.networkConfig.ManageForeignRoutes = false;
+
+      systemd.network.networks.gravity = {
+        matchConfig.Name = config.systemd.network.netdevs.gravity.netdevConfig.Name;
+        address = cfg.address;
+        # "degraded" = online once an address is assigned. "no" would
+        # exclude it from networkd-wait-online entirely, which on hosts
+        # where gravity/gn* are the only networkd interfaces (wlo1 is
+        # NM-owned on cinnabar) leaves wait-online with nothing to wait
+        # on. "carrier" hangs because a VRF master has no real carrier.
+        linkConfig.RequiredForOnline = "degraded";
+        # pri 2000: VRF traffic with no in-VRF route gets `unreachable`
+        # instead of leaking via main/tailscale tables onto the WAN.
+        # pri 3000: late `lookup local`, replacing the pri-0 rule that
+        # gravity-rules deletes (only when cfg.address != []).
+        routingPolicyRules = [
+          {
+            Priority = 2000;
+            Family = "both";
+            L3MasterDevice = true;
+            Type = "unreachable";
+          }
+          {
+            Priority = 3000;
+            Family = "both";
+            Table = "local";
+          }
+        ];
       };
 
-      # The xfrm interfaces (gn*) are *created* by the strongSwan
-      # updown script (charon needs `if_id` to match the SA), but VRF
-      # enslavement and bring-up are owned by systemd-networkd. This
-      # avoids racing networkd's own observation of the new link: any
-      # carrier transition networkd notices ends with the network
-      # config (VRF, multicast, MTU) re-applied, so the master cannot
-      # silently drift back to "none" the way it does when both sides
-      # try to manage state imperatively.
-      systemd.network.networks."42-gn" = {
-        matchConfig.Name = "gn*";
-        networkConfig = {
-          VRF = "gravity";
-          # Babel uses IPv6 link-local hellos over each gn* tunnel,
-          # so we must let networkd assign one. No DHCP/RA — these
-          # are point-to-point xfrm tunnels.
-          LinkLocalAddressing = "ipv6";
-          IPv6AcceptRA = false;
-          DHCP = "no";
-        };
-        linkConfig = {
-          Multicast = true;
-          MTUBytes = "1400";
-          RequiredForOnline = "no";
-          # The xfrm device starts down; bring it up explicitly
-          # (defensive — networkd will normally do this anyway).
-          ActivationPolicy = "up";
-        };
-      };
     })
-    (lib.mkIf (cfg.ipsec.enable && cfg.bird.routes != [ ]) {
+    (lib.mkIf (cfg.ipsec.enable && cfg.address != [ ]) {
+      # Drop the kernel's default pri-0 `from all lookup local` so the
+      # l3mdev rule at 1000 wins for inbound VRF traffic. Replacement
+      # `lookup local` lives at pri 3000 on gravity.network.
+      systemd.services.gravity-rules = {
+        path = [ pkgs.iproute2 ];
+        script = ''
+          ip -4 ru del pref 0 || true
+          ip -6 ru del pref 0 || true
+        '';
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        after = [ "network-pre.target" ];
+        before = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+      };
+
       boot.kernel.sysctl = {
         "net.vrf.strict_mode" = 1;
         "net.ipv6.conf.default.forwarding" = 1;

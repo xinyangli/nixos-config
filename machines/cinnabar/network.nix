@@ -50,15 +50,10 @@
           address = null;
         }
       ];
-      interfaces = [
-        "wlo1"
-        "enp84s0"
-      ];
+      interfaces = [ ];
     };
-    bird = {
-      enable = true;
-      routes = [ "fda1:6cbb:db78::5/128" ];
-    };
+    bird.enable = true;
+    address = [ "fda1:6cbb:db78::5/128" ];
   };
 
   services.cloudflare-warp = {

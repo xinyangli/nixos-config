@@ -29,7 +29,6 @@
     # script's `master gravity` would fail.
     networking.useNetworkd = true;
     systemd.network.enable = true;
-    networking.firewall.enable = false;
 
     virtualisation.vlans = [ 1 ];
     networking.interfaces.eth1.ipv4.addresses = [
@@ -71,33 +70,32 @@
         port = 13000;
         interfaces = [ "eth1" ];
       };
+      address = [ "${announcedAddr}/128" ];
       bird = {
         enable = true;
-        routes = [ "${announcedAddr}/128" ];
         # Tightened from the 20s prod default so babel converges within the
         # test's time budget.
         helloInterval = "1 s";
         updateInterval = "1 s";
-        routerIdInterface = "eth1";
       };
       orgPubKey = ./keys/org.pub;
       nodes = lib.mkForce {
         alpha = {
           commonName = "alpha";
           endpoints = [
-            { serialNumber = "0"; addressFamily = "ip4"; address = "192.168.1.1"; }
+            { serialNumber = "0"; addressFamily = "ip4"; address = "192.168.1.1"; port = 13000; }
           ];
         };
         beta = {
           commonName = "beta";
           endpoints = [
-            { serialNumber = "0"; addressFamily = "ip4"; address = "192.168.1.2"; }
+            { serialNumber = "0"; addressFamily = "ip4"; address = "192.168.1.2"; port = 13000; }
           ];
         };
         gamma = {
           commonName = "gamma";
           endpoints = [
-            { serialNumber = "0"; addressFamily = "ip4"; address = "192.168.1.3"; }
+            { serialNumber = "0"; addressFamily = "ip4"; address = "192.168.1.3"; port = 13000; }
           ];
         };
       };
