@@ -89,10 +89,8 @@
       ];
       interfaces = [ "ens19" ];
     };
-    bird = {
-      enable = true;
-      routes = [ "fda1:6cbb:db78::6/128" ];
-    };
+    bird.enable = true;
+    address = [ "fda1:6cbb:db78::6/128" ];
   };
 
   systemd.network = {

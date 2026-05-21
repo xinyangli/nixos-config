@@ -70,10 +70,8 @@
         ];
         interfaces = [ "ens18" ];
       };
-      bird = {
-        enable = true;
-        routes = [ "fda1:6cbb:db78::2/128" ];
-      };
+      bird.enable = true;
+      address = [ "fda1:6cbb:db78::2/128" ];
     };
   };
 }
