@@ -47,6 +47,7 @@
       };
       bird.enable = true;
       address = [ "fda1:6cbb:db78::3/128" ];
+      dns.server.enable = true;
     };
 
     nixpkgs.system = "x86_64-linux";

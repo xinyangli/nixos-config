@@ -58,6 +58,7 @@
     };
     bird.enable = true;
     address = [ "fda1:6cbb:db78::4/128" ];
+    dns.server.enable = true;
   };
 
   sops = {

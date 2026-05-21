@@ -12,6 +12,7 @@ in
   imports = [
     ./ipsec.nix
     ./bird.nix
+    ./dns.nix
     ./registry.nix
     ./peers.nix
   ];

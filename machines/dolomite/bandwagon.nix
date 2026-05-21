@@ -65,6 +65,7 @@
       };
       bird.enable = true;
       address = [ "fda1:6cbb:db78::2/128" ];
+      dns.server.enable = true;
     };
   };
 }

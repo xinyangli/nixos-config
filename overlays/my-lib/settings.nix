@@ -25,6 +25,7 @@
     ];
 
     internalDomain = "coho-tet.ts.net";
+    gravityInternalDomain = "u.xiny.li";
 
     garageFactor = 1;
   };
