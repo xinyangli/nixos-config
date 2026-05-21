@@ -68,31 +68,26 @@ in
       systemd.network.networks.gravity = {
         matchConfig.Name = config.systemd.network.netdevs.gravity.netdevConfig.Name;
         address = cfg.address;
-        routes =
-          (map (a: {
-            Destination = a;
-            Type = "local";
-            Table = 100;
-            Protocol = "kernel";
-            Metric = 1;
-          }) cfg.address)
-          ++ [
-            {
-              Destination = "fda1:6cbb:db78::/56";
-              Source = "fda1:6cbb:db78::/56";
-            }
-          ];
+        routes = map (a: {
+          Destination = a;
+          Type = "local";
+          Table = 100;
+          Protocol = "kernel";
+          Metric = 1;
+        }) cfg.address;
         # "degraded" = online once an address is assigned. "no" would
         # exclude it from networkd-wait-online entirely, which on hosts
         # where gravity/gn* are the only networkd interfaces (wlo1 is
         # NM-owned on cinnabar) leaves wait-online with nothing to wait
         # on. "carrier" hangs because a VRF master has no real carrier.
         linkConfig.RequiredForOnline = "degraded";
-        # pri 2000: VRF traffic with no in-VRF route gets `unreachable`
-        # instead of leaking via main/tailscale tables onto the WAN.
-        # pri 3000: late `lookup local`, replacing the pri-0 rule that
-        # gravity-rules deletes (only when cfg.address != []).
         routingPolicyRules = [
+          {
+            Priority = 500;
+            Family = "ipv6";
+            To = "fda1:6cbb:db78::/56";
+            Table = 100;
+          }
           {
             Priority = 2000;
             Family = "both";
