@@ -83,12 +83,6 @@ in
           };
         }
       '';
-      # ${lib.optionalString cfg.bird.exit.enable ''
-      #   protocol static default6 {
-      #     ipv6 { };
-      #     route ::/0 via "gravity";
-      #   }
-      # ''}
     };
 
     networking.firewall.trustedInterfaces = [ "gravity" ];

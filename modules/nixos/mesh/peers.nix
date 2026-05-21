@@ -65,12 +65,6 @@
             address = "homo.j8.network";
             port = 27201;
           }
-          {
-            serialNumber = "1";
-            addressFamily = "ip4";
-            address = "homo-3p.j8.network";
-            port = 27201;
-          }
         ];
       };
     };
