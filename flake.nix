@@ -475,6 +475,7 @@
         checks = {
           backup-test = pkgs.testers.nixosTest (import ./tests/backup.nix);
           ipsec-mesh-test = pkgs.testers.nixosTest (import ./tests/ipsec-mesh);
+          mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
         };
 
         devShells = {
