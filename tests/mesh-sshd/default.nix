@@ -1,20 +1,14 @@
 { pkgs, lib, ... }:
 
-# Validates `custom.mesh-network.sshd.enable`, which spawns a second sshd
-# bound to the gravity VRF via systemd's BindNetworkInterface= (added in
-# v260). The VRF binding has to actually scope the listener: connections
-# arriving through the VRF must be accepted, while ones arriving via the
-# default routing scope on the same port must be refused — otherwise the
-# whole point of running a parallel mesh sshd is moot.
+# Validates `custom.mesh-network.sshd.enable`: a second sshd unit cloned
+# from services.openssh's `sshd.service`, with BindNetworkInterface=gravity
+# layered on top. Both daemons share the same sshd_config, host keys, and
+# PAM stack, so they both listen on the host port (22) — but in different
+# routing scopes. To verify the VRF binding actually scopes the listener,
+# we stop the host sshd mid-test and observe that the mesh port is still
+# reachable from the VRF but not from the default scope.
 
 let
-  # The mesh-sshd listens on a port distinct from the host sshd so we can
-  # unambiguously attribute reachability/unreachability to BindNetworkInterface=
-  # rather than to two sshds racing for the same bind() in different scopes.
-  meshSshPort = 2222;
-
-  # Generated at eval time and embedded in both nodes; lets root@alpha ssh
-  # into root@beta without password/agent dance inside the VM.
   testKey = pkgs.runCommand "mesh-sshd-test-key" { nativeBuildInputs = [ pkgs.openssh ]; } ''
     mkdir -p $out
     ssh-keygen -t ed25519 -N "" -C "mesh-sshd-test" -f $out/id_ed25519
@@ -34,9 +28,6 @@ let
       })
     ];
 
-    # peers.nix in common.nix declares alpha/beta/gamma; this test only
-    # uses two of them. mkForce-trim to alpha+beta so charon doesn't keep
-    # retrying IKE_SA_INIT against a non-existent gamma for the whole run.
     custom.mesh-network.nodes = lib.mkForce {
       alpha = {
         commonName = "alpha";
@@ -52,14 +43,10 @@ let
       };
     };
 
-    custom.mesh-network.sshd = {
-      enable = true;
-      port = meshSshPort;
-    };
-
-    # services.openssh provides host keys + the sshd_config that mesh-sshd
-    # reuses. Keep host sshd on the default port to confirm it isn't
-    # disturbed by the parallel mesh instance.
+    # custom.mesh-network.sshd.enable defaults true alongside ipsec; just
+    # rely on the default here. The module inherits the host sshd unit
+    # wholesale, so anything we configure on services.openssh applies to
+    # both instances.
     services.openssh = {
       enable = true;
       settings.PermitRootLogin = "yes";
@@ -80,7 +67,6 @@ in
   testScript = ''
     start_all()
 
-    # ---------- Phase 1: mesh is up ----------
     for m in (alpha, beta):
         m.wait_for_unit("strongswan-swanctl.service")
         m.wait_for_unit("gravity-ipsec.service")
@@ -88,19 +74,15 @@ in
         m.wait_for_unit("sshd.service")
         m.wait_for_unit("mesh-sshd.service")
 
-    # Bird needs to install a babel route to the peer's mesh address before
-    # we attempt any ssh; otherwise the VRF lookup yields no route and ssh
-    # fails on "network is unreachable" rather than on the auth path.
+    # Bird must have installed a babel route to the peer's mesh address
+    # before we attempt any ssh, otherwise the VRF lookup fails before
+    # auth even runs.
     for src, dst in [(alpha, "fd00:42::2"), (beta, "fd00:42::1")]:
         src.wait_until_succeeds(
             f"ip -6 route show vrf gravity {dst}/128 | grep -q .",
             timeout=120,
         )
 
-    # ---------- Phase 2: install the test ssh key on the client ----------
-    # The key was baked into the VM at build time via authorizedKeys.keyFiles;
-    # the private half lives in the nix store at ${testKey}/id_ed25519 and
-    # is readable by root inside the VM.
     for m in (alpha, beta):
         m.succeed("install -d -m 700 /root/.ssh")
         m.succeed("install -m 600 ${testKey}/id_ed25519 /root/.ssh/id_ed25519")
@@ -113,55 +95,48 @@ in
         "-i /root/.ssh/id_ed25519"
     )
 
-    # ---------- Phase 3: BindNetworkInterface= is wired into the unit ----------
-    # `systemctl show` reads the live unit; if systemd v260 stripped the
-    # directive (e.g. on a kernel without the BPF feature) it'd return
-    # empty here and the subsequent VRF-scoping behavior wouldn't hold.
+    # ---------- Phase 1: BindNetworkInterface= is wired ----------
     for m in (alpha, beta):
         bound = m.succeed(
             "systemctl show mesh-sshd.service -p BindNetworkInterface --value"
         ).strip()
         assert bound == "gravity", (
-            f"{m.name}: expected mesh-sshd.service BindNetworkInterface=gravity, got: {bound!r}"
+            f"{m.name}: expected BindNetworkInterface=gravity, got: {bound!r}"
         )
 
-    # ---------- Phase 4: ssh over the mesh succeeds ----------
-    # Client also goes through the gravity VRF so its outbound socket
-    # routes via the mesh tunnel. From there, the server's mesh-sshd
-    # (BindNetworkInterface=gravity) must accept the connection.
-    out = alpha.succeed(
-        f"ip vrf exec gravity ssh {ssh_opts} -p ${toString meshSshPort} "
-        "root@fd00:42::2 hostname"
-    ).strip()
-    assert out == "beta", f"expected mesh ssh to land on beta, got: {out!r}"
-
-    out = beta.succeed(
-        f"ip vrf exec gravity ssh {ssh_opts} -p ${toString meshSshPort} "
-        "root@fd00:42::1 hostname"
-    ).strip()
-    assert out == "alpha", f"expected reverse mesh ssh to land on alpha, got: {out!r}"
-
-    # ---------- Phase 5: mesh-sshd port is invisible outside the VRF ----------
-    # Same port, but the client's socket is in the default VRF and the
-    # destination is beta's *underlay* address. The mesh-sshd listener is
-    # scoped to gravity, so this connection must NOT reach it. With
-    # tcp_l3mdev_accept=0 and no other listener on this port in the
-    # default scope, ssh should fail (refused or timeout).
-    rc, out = alpha.execute(
-        f"ssh {ssh_opts} -p ${toString meshSshPort} "
-        "root@192.168.1.2 hostname"
-    )
-    assert rc != 0, (
-        f"expected ssh to beta's underlay:${toString meshSshPort} to fail "
-        f"(mesh-sshd is VRF-scoped); succeeded with output: {out!r}"
-    )
-
-    # ---------- Phase 6: host sshd on port 22 still works over underlay ----------
-    # Sanity check: the parallel mesh-sshd hasn't broken or shadowed the
-    # default sshd, which still answers on its normal scope/port.
+    # ---------- Phase 2: both daemons run, both ssh paths work ----------
+    # Underlay → host sshd (default scope). Mesh → mesh-sshd. Same port,
+    # different scopes. We can't tell from a successful ssh which sshd
+    # answered, but both succeeding proves both listeners are live.
     out = alpha.succeed(
         f"ssh {ssh_opts} -p 22 root@192.168.1.2 hostname"
     ).strip()
-    assert out == "beta", f"expected host sshd to answer on underlay:22, got: {out!r}"
+    assert out == "beta", f"underlay ssh: got {out!r}"
+
+    out = alpha.succeed(
+        f"ip vrf exec gravity ssh {ssh_opts} -p 22 root@fd00:42::2 hostname"
+    ).strip()
+    assert out == "beta", f"mesh ssh: got {out!r}"
+
+    # ---------- Phase 3: stopping host sshd proves the scopes are separate ----------
+    # With sshd.service stopped on beta, only mesh-sshd remains. If the
+    # VRF binding works, mesh ssh keeps working and underlay ssh starts
+    # failing — that's the entire point of the module.
+    beta.succeed("systemctl stop sshd.service")
+
+    out = alpha.succeed(
+        f"ip vrf exec gravity ssh {ssh_opts} -p 22 root@fd00:42::2 hostname"
+    ).strip()
+    assert out == "beta", (
+        f"mesh ssh after sshd stop: expected mesh-sshd to still answer, got {out!r}"
+    )
+
+    rc, out = alpha.execute(
+        f"ssh {ssh_opts} -p 22 root@192.168.1.2 hostname"
+    )
+    assert rc != 0, (
+        f"underlay ssh after sshd stop should fail (mesh-sshd is VRF-scoped, "
+        f"no listener in default scope); got rc={rc}, out={out!r}"
+    )
   '';
 }
