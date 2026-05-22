@@ -15,6 +15,7 @@ in
     ./registry.nix
     ./peers.nix
     ./sshd.nix
+    ./caddy.nix
   ];
 
   options.custom.mesh-network.address = lib.mkOption {
