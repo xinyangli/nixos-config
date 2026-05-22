@@ -1,12 +1,13 @@
 { pkgs, lib, ... }:
 
-# Validates `custom.mesh-network.sshd.enable`: a second sshd unit cloned
-# from services.openssh's `sshd.service`, with BindNetworkInterface=gravity
-# layered on top. Both daemons share the same sshd_config, host keys, and
-# PAM stack, so they both listen on the host port (22) — but in different
-# routing scopes. To verify the VRF binding actually scopes the listener,
-# we stop the host sshd mid-test and observe that the mesh port is still
-# reachable from the VRF but not from the default scope.
+# Validates `custom.mesh-network.sshd.enable`: a `mesh-sshd.socket`
+# (BindToDevice=gravity, Accept=yes) hands each accepted FD to a
+# transient `mesh-sshd@<id>.service` instance running sshd in inetd
+# mode. The host sshd's default-scope listener is unaffected; same
+# port (22) is served in two routing scopes by two independent
+# listeners. To prove the VRF binding is real, we stop sshd.service
+# mid-test and observe that the mesh path keeps working while the
+# default scope goes dark.
 
 let
   testKey = pkgs.runCommand "mesh-sshd-test-key" { nativeBuildInputs = [ pkgs.openssh ]; } ''
@@ -43,10 +44,6 @@ let
       };
     };
 
-    # custom.mesh-network.sshd.enable defaults true alongside ipsec; just
-    # rely on the default here. The module inherits the host sshd unit
-    # wholesale, so anything we configure on services.openssh applies to
-    # both instances.
     services.openssh = {
       enable = true;
       settings.PermitRootLogin = "yes";
@@ -72,11 +69,8 @@ in
         m.wait_for_unit("gravity-ipsec.service")
         m.wait_for_unit("bird.service")
         m.wait_for_unit("sshd.service")
-        m.wait_for_unit("mesh-sshd.service")
+        m.wait_for_unit("mesh-sshd.socket")
 
-    # Bird must have installed a babel route to the peer's mesh address
-    # before we attempt any ssh, otherwise the VRF lookup fails before
-    # auth even runs.
     for src, dst in [(alpha, "fd00:42::2"), (beta, "fd00:42::1")]:
         src.wait_until_succeeds(
             f"ip -6 route show vrf gravity {dst}/128 | grep -q .",
@@ -95,19 +89,22 @@ in
         "-i /root/.ssh/id_ed25519"
     )
 
-    # ---------- Phase 1: BindNetworkInterface= is wired ----------
+    # ---------- Phase 1: socket is bound to gravity ----------
     for m in (alpha, beta):
         bound = m.succeed(
-            "systemctl show mesh-sshd.service -p BindNetworkInterface --value"
+            "systemctl show mesh-sshd.socket -p BindToDevice --value"
         ).strip()
         assert bound == "gravity", (
-            f"{m.name}: expected BindNetworkInterface=gravity, got: {bound!r}"
+            f"{m.name}: expected mesh-sshd.socket BindToDevice=gravity, got: {bound!r}"
+        )
+        # The accept-socket listener should show the %gravity SO_BINDTODEVICE
+        # marker in ss, confirming systemd actually set it.
+        listeners = m.succeed("ss -lntpH")
+        assert "%gravity:22" in listeners, (
+            f"{m.name}: no %gravity-scoped listener on :22; got:\n{listeners}"
         )
 
-    # ---------- Phase 2: both daemons run, both ssh paths work ----------
-    # Underlay → host sshd (default scope). Mesh → mesh-sshd. Same port,
-    # different scopes. We can't tell from a successful ssh which sshd
-    # answered, but both succeeding proves both listeners are live.
+    # ---------- Phase 2: both ssh paths work concurrently ----------
     out = alpha.succeed(
         f"ssh {ssh_opts} -p 22 root@192.168.1.2 hostname"
     ).strip()
@@ -118,25 +115,23 @@ in
     ).strip()
     assert out == "beta", f"mesh ssh: got {out!r}"
 
-    # ---------- Phase 3: stopping host sshd proves the scopes are separate ----------
-    # With sshd.service stopped on beta, only mesh-sshd remains. If the
-    # VRF binding works, mesh ssh keeps working and underlay ssh starts
-    # failing — that's the entire point of the module.
+    # ---------- Phase 3: stop host sshd, VRF still answers, underlay goes dark ----------
     beta.succeed("systemctl stop sshd.service")
 
     out = alpha.succeed(
         f"ip vrf exec gravity ssh {ssh_opts} -p 22 root@fd00:42::2 hostname"
     ).strip()
     assert out == "beta", (
-        f"mesh ssh after sshd stop: expected mesh-sshd to still answer, got {out!r}"
+        f"mesh ssh after sshd.service stop: expected mesh-sshd.socket to still accept, got {out!r}"
     )
 
     rc, out = alpha.execute(
         f"ssh {ssh_opts} -p 22 root@192.168.1.2 hostname"
     )
     assert rc != 0, (
-        f"underlay ssh after sshd stop should fail (mesh-sshd is VRF-scoped, "
-        f"no listener in default scope); got rc={rc}, out={out!r}"
+        f"underlay ssh after sshd.service stop should fail "
+        f"(mesh-sshd.socket is VRF-scoped, no listener in default scope); "
+        f"got rc={rc}, out={out!r}"
     )
   '';
 }
