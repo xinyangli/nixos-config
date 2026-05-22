@@ -67,6 +67,16 @@
           }
         ];
       };
+      agate = {
+        commonName = "agate";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = "agate_home.xiny.li";
+          }
+        ];
+      };
     };
   };
 }
