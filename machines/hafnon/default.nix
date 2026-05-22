@@ -86,7 +86,6 @@
     };
     bird.enable = true;
     address = [ "fda1:6cbb:db78::6/128" ];
-    dns.server.enable = true;
   };
 
   systemd.network = {
