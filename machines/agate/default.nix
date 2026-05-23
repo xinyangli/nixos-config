@@ -47,6 +47,16 @@
     network.localdns.enable = true;
     serverComponents.enable = true;
   };
+
+  services.comin.executor = {
+    type = "hydra";
+    hydra = {
+      base_url = "http://agate.coho-tet.ts.net:3000";
+      project = "xin";
+      jobset = "nixos-config-deploy";
+    };
+  };
+
   system.stateVersion = "25.05";
   time.timeZone = "Asia/Shanghai";
 
