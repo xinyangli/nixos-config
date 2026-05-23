@@ -30,8 +30,12 @@ in
     mode = "0400";
   };
 
-  nix.distributedBuilds = true;
-  nix.buildersUseSubstitutes = true;
+  # Hydra reads this file (and only this file) for build dispatch.
+  # Format: <store-url> <systems> <key> <maxJobs> <speedFactor> <supported> <mandatory> <hostKey>
+  environment.etc."nix/hydra-machines".text =
+    "ssh://${accountName}@${builderAlias} x86_64-linux ${sshKey} 4 2 kvm,nixos-test,big-parallel,benchmark - -\n";
+
+  services.hydra.buildMachinesFiles = [ "/etc/nix/hydra-machines" ];
   nix.buildMachines = [
     {
       hostName = "localhost";
@@ -52,7 +56,6 @@ in
       protocol = "ssh";
       maxJobs = 3;
       supportedFeatures = [
-        "nixos-test"
         "big-parallel"
         "benchmark"
       ];
