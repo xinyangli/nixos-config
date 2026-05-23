@@ -47,6 +47,15 @@
     };
     serverComponents.enable = true;
   };
+
+  # Root-equivalent privilege scoped to a single named kanidm identity so
+  # adding members to `nix-builders` later doesn't widen the trust scope.
+  # Required because Hydra dispatches over legacy ssh:// (nix-store --serve
+  # --write), which the remote nix-daemon refuses unless the SSH user is in
+  # trusted-users. Track NixOS/hydra#688 — when Hydra grows ssh-ng (or any
+  # path that doesn't need the remote user trusted), drop this line.
+  nix.settings.trusted-users = [ "nix_access_hydra" ];
+
   system.stateVersion = "26.05";
   time.timeZone = "Asia/Shanghai";
 
