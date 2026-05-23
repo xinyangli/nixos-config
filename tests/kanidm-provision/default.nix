@@ -147,7 +147,7 @@ in
         assert_contains(out, "class: service_account")
         assert_contains(out, "class: posixaccount")
         assert_contains(out, "entry_managed_by:")
-        assert_contains(out, "xin")
+        assert_contains(out, "nix_access_hydra_admins")
         assert_contains(out, "loginshell: /run/current-system/sw/bin/bash")
 
         # POSIX attrs from the locally-authored ServiceAccount patch.

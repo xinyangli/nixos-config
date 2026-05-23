@@ -16,6 +16,10 @@ let
   hafnonPort = 27200;
 in
 {
+  # Token authenticates as `nix_provisioner` (a kanidm service account in
+  # the `nix_access_hydra_admins` group), NOT as nix_access_hydra itself —
+  # SAs cannot self-write ssh_publickey. Generate with
+  #   kanidm service-account api-token generate nix_provisioner agate --rw
   sops.secrets."nix/builder_account_idm_token" = { };
 
   nix.distributedBuilds = true;

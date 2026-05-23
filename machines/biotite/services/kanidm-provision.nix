@@ -23,9 +23,19 @@ let
         members = [ "nix_access_hydra" ];
         enableUnix = true;
       };
+      # entry_managed_by delegation: nix_provisioner manages nix_access_hydra
+      # via group membership. The agate keygen one-shot uses a `--rw` token
+      # for nix_provisioner (NOT for nix_access_hydra) so the manager-ACP
+      # path grants ssh_publickey writes. A token tied to nix_access_hydra
+      # itself can't self-write its SSH keys.
+      groups.nix_access_hydra_admins.members = [ "nix_provisioner" ];
+      serviceAccounts.nix_provisioner = {
+        displayName = "Provisioner for nix_access_hydra (agate pubkey rotation)";
+        entryManagedBy = "xin";
+      };
       serviceAccounts.nix_access_hydra = {
         displayName = "Nix remote-build access (Hydra)";
-        entryManagedBy = "xin";
+        entryManagedBy = "nix_access_hydra_admins";
         enableUnix = true;
         # bash (not nologin) so sshd will run `nix-daemon --stdio` over the
         # SSH session for ssh-ng remote builds. nologin would have sshd
