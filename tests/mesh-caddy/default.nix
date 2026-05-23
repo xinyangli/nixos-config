@@ -70,14 +70,11 @@ let
         respond "${defaultPayload}"
       '';
       # Same caddy, different scope: this vhost binds the systemd-passed
-      # FD instead of opening its own listener, so it only sees traffic
-      # the gravity-scoped socket accepted.
-      # Caddy's `bind fd/<N>` only accepts numeric file descriptors —
-      # it can't look up LISTEN_FDNAMES. systemd assigns FDs starting at
-      # 3 in the order listed in Sockets=, so with one mesh port the
-      # mesh socket is fd 3. (See module's `fdRefs` for multi-port use.)
+      # FDs instead of opening its own listener, so it only sees traffic
+      # the gravity-scoped socket accepted. fdRefs resolves to the
+      # `fd/N fdgram/N+1` pair for the configured port.
       virtualHosts."http://:${toString meshPort}".extraConfig = ''
-        bind fd/3
+        bind ${config.custom.mesh-network.caddy.fdRefs.${toString meshPort}}
         respond "${meshPayload}"
       '';
     };

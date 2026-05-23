@@ -65,8 +65,9 @@ in
       description = ''
         Resolved `bind` reference per mesh port. Caddy's `bind fd/<N>`
         only accepts numeric file descriptors (no LISTEN_FDNAMES
-        lookup); this attribute computes the right index from the
-        order of `ports`, so vhost blocks can stay declarative:
+        lookup); this attribute computes the right indices from the
+        order of `ports` and bundles the TCP + UDP FDs together, so
+        vhost blocks can stay declarative:
 
         ```
         services.caddy.virtualHosts."mesh.example.org".extraConfig = '''
@@ -101,6 +102,11 @@ in
           # multi-user.target so this doesn't change start ordering, only
           # the FD-passing contract.
           socketConfig = {
+            # TCP-only. Pairing a ListenDatagram for HTTP/3 doesn't
+            # compose with Caddy v2's `bind` semantics — Caddy tries to
+            # use every bound address for h1/h2 and a UDP fdgram errors
+            # out. The protocols block in globalConfig below disables
+            # h3 explicitly so caddy doesn't try to spin one up.
             ListenStream = port;
             BindToDevice = "gravity";
             FileDescriptorName = fdName port;
@@ -119,6 +125,15 @@ in
       after = socketUnits;
       serviceConfig.Sockets = socketUnits;
     };
+
+    # HTTP/3 needs UDP; the inherited fd is TCP-only. Tell caddy to skip
+    # the QUIC listener on the mesh server so it doesn't fail at startup
+    # with "network 'fd' cannot handle HTTP/3 connections".
+    services.caddy.globalConfig = ''
+      servers ${lib.concatStringsSep " " (lib.attrValues cfg.fdRefs)} {
+        protocols h1 h2
+      }
+    '';
 
     networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall cfg.ports;
   };

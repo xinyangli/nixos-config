@@ -38,6 +38,9 @@ in
       # module tree don't try to resolve a sops file they have no
       # recipient for.
       sops.secrets.ipsec.sopsFile = ./secrets.yaml;
+      sops.secrets.caddy-desec = {
+        sopsFile = ./secrets.yaml;
+      };
 
       # The VRF is declared via networkd, which is a hard prerequisite —
       # surface that mismatch at eval time instead of at boot.
