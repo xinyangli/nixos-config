@@ -441,6 +441,11 @@
             "raspite"
             "baryte"
             "osmium"
+            "hafnon"
+            "thorite"
+            "biotite"
+            "la-00"
+            "fra-00"
           ];
         in
         builtins.listToAttrs (
