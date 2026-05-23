@@ -34,6 +34,7 @@
       enable = true;
     };
     comin.enable = true;
+    comin.executor = "nix";
     network = {
       localdns = {
         enable = true;
@@ -54,7 +55,10 @@
   # --write), which the remote nix-daemon refuses unless the SSH user is in
   # trusted-users. Track NixOS/hydra#688 — when Hydra grows ssh-ng (or any
   # path that doesn't need the remote user trusted), drop this line.
-  nix.settings.trusted-users = [ "nix_access_hydra" ];
+  #
+  # SPN form (not bare `nix_access_hydra`) because kanidm-unixd's getpwuid()
+  # returns the SPN, and nix-daemon string-compares against that.
+  nix.settings.trusted-users = [ "nix_access_hydra@${config.my-lib.settings.idpUrl}" ];
 
   system.stateVersion = "26.05";
   time.timeZone = "Asia/Shanghai";

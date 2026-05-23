@@ -12,6 +12,7 @@
     nix.enable = true;
     auth.enable = true;
     comin.enable = true;
+    comin.executor = "hydra";
     network.enableProxy = false;
     serverComponents.enable = true;
   };
@@ -23,15 +24,6 @@
     })
   ];
   nixpkgs.config.allowUnfree = true;
-
-  services.comin.executor = {
-    type = "hydra";
-    hydra = {
-      base_url = "http://agate.coho-tet.ts.net:3000";
-      project = "xin";
-      jobset = "nixos-config-deploy";
-    };
-  };
 
   networking.firewall.allowedTCPPorts = [ 8443 ];
   # mDNS unicast replies for matter-server commissioning. conntrack does not
@@ -47,6 +39,7 @@
 
   system.stateVersion = "24.05";
 
+  networking.useNetworkd = true;
   networking = {
     hostName = "raspite";
     useDHCP = false;
@@ -74,4 +67,21 @@
     };
   };
   time.timeZone = "Asia/Shanghai";
+
+  custom.mesh-network = {
+    ipsec = {
+      enable = true;
+      commonName = "raspite";
+      endpoints = [
+        {
+          serialNumber = "0";
+          addressFamily = "ip4";
+          address = null;
+        }
+      ];
+      interfaces = [ "eth0" ];
+    };
+    bird.enable = true;
+    address = [ "fda1:6cbb:db78::8/128" ];
+  };
 }

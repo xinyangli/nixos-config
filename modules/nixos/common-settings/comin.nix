@@ -6,9 +6,10 @@
 }:
 let
   inherit (lib)
-    mkDefault
     mkEnableOption
     mkIf
+    mkOption
+    types
     makeBinPath
     ;
 
@@ -95,6 +96,23 @@ in
 {
   options.commonSettings.comin = {
     enable = mkEnableOption "auto updater with comin";
+    executor = mkOption {
+      type = types.enum [
+        "nix"
+        "garnix"
+        "hydra"
+      ];
+      default = "garnix";
+      description = ''
+        Which backend comin uses to evaluate + build.
+        `nix` builds locally (used by agate, which runs the Hydra, and by
+        hafnon, the build worker — both avoid depending on something they
+        themselves provide).
+        `garnix` pulls from garnix.io; suitable for low-power hosts.
+        `hydra` pulls from the local Hydra on agate (jobset
+        `nixos-config-deploy`); only valid for hosts in `hydraJobs`.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -108,7 +126,12 @@ in
         }
       ];
       hostname = config.networking.hostName;
-      executor.type = mkDefault "garnix";
+      executor.type = cfg.executor;
+      executor.hydra = lib.mkIf (cfg.executor == "hydra") {
+        base_url = "http://agate.coho-tet.ts.net:3000";
+        project = "xin";
+        jobset = "nixos-config-deploy";
+      };
       postDeploymentCommand = publisher;
     };
 

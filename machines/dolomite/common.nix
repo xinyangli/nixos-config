@@ -30,6 +30,7 @@
     commonSettings = {
       auth.enable = true;
       comin.enable = true;
+      comin.executor = "hydra";
       serverComponents.enable = true;
       proxyServer = {
         enable = true;
