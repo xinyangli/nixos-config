@@ -36,6 +36,31 @@ in
     "ssh://${accountName}@${builderAlias} x86_64-linux ${sshKey} 4 2 kvm,nixos-test,big-parallel,benchmark - -\n";
 
   services.hydra.buildMachinesFiles = [ "/etc/nix/hydra-machines" ];
+  nix.buildMachines = [
+    {
+      hostName = "localhost";
+      protocol = null;
+      system = "aarch64-linux";
+      supportedFeatures = [
+        "kvm"
+        "nixos-test"
+        "big-parallel"
+        "benchmark"
+      ];
+      maxJobs = 16;
+    }
+    {
+      inherit sshKey;
+      hostName = "${accountName}@${builderAlias}";
+      system = "x86_64-linux";
+      protocol = "ssh";
+      maxJobs = 3;
+      supportedFeatures = [
+        "big-parallel"
+        "benchmark"
+      ];
+    }
+  ];
 
   # nix.buildMachines.hostName is fed directly to ssh, which has no
   # `host:port` syntax. Use ssh_config to hide the non-default port.
