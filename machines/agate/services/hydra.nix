@@ -10,7 +10,6 @@
     enable = true;
     hydraURL = "https://hydra.u.xiny.li/";
     notificationSender = "hydra@localhost";
-    buildMachinesFiles = [ ];
     useSubstitutes = true;
     minimumDiskFreeEvaluator = 20;
     minimumDiskFree = 20;

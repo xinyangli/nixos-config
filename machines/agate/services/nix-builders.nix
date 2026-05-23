@@ -1,13 +1,17 @@
 { config, pkgs, ... }:
 
+# Hydra-only remote builder wiring. Deliberately does NOT touch
+# `nix.buildMachines`, so plain nix-daemon remote builds (e.g. interactive
+# `nix build` against /etc/nix/machines) won't try to use hafnon. Only
+# Hydra's queue runner reads /etc/nix/hydra-machines.
+
 let
   inherit (config.my-lib.settings) idpUrl;
 
   accountName = "nix_access_hydra";
-  spn = "${accountName}@${idpUrl}";
-  homeDir = "/home/${spn}";
-  sshDir = "${homeDir}/.ssh";
-  sshKey = "${sshDir}/id_ed25519";
+  # hydra-queue-runner's home (created by the Hydra NixOS module).
+  keyDir = "/var/lib/hydra/queue-runner/.ssh";
+  sshKey = "${keyDir}/id_ed25519";
   sshKeyPub = "${sshKey}.pub";
   sshKeyVerified = "${sshKey}.verified";
 
@@ -19,27 +23,19 @@ in
   # Token authenticates as `nix_provisioner` (a kanidm service account in
   # the `nix_access_hydra_admins` group), NOT as nix_access_hydra itself —
   # SAs cannot self-write ssh_publickey. Generate with
-  #   kanidm service-account api-token generate nix_provisioner agate --rw
-  sops.secrets."nix/builder_account_idm_token" = { };
+  #   kanidm service-account api-token generate \
+  #     --name xin nix_provisioner agate --readwrite
+  sops.secrets."nix/builder_account_idm_token" = {
+    owner = "hydra-queue-runner";
+    mode = "0400";
+  };
 
-  nix.distributedBuilds = true;
-  nix.buildMachines = [
-    {
-      hostName = builderAlias;
-      sshUser = accountName;
-      inherit sshKey;
-      protocol = "ssh-ng";
-      systems = [ "x86_64-linux" ];
-      maxJobs = 4;
-      speedFactor = 2;
-      supportedFeatures = [
-        "kvm"
-        "nixos-test"
-        "big-parallel"
-        "benchmark"
-      ];
-    }
-  ];
+  # Hydra reads this file (and only this file) for build dispatch.
+  # Format: <store-url> <systems> <key> <maxJobs> <speedFactor> <supported> <mandatory> <hostKey>
+  environment.etc."nix/hydra-machines".text =
+    "ssh://${accountName}@${builderAlias} x86_64-linux ${sshKey} 4 2 kvm,nixos-test,big-parallel,benchmark - -\n";
+
+  services.hydra.buildMachinesFiles = [ "/etc/nix/hydra-machines" ];
 
   # nix.buildMachines.hostName is fed directly to ssh, which has no
   # `host:port` syntax. Use ssh_config to hide the non-default port.
@@ -56,27 +52,21 @@ in
   };
 
   systemd.services.nix-access-hydra-keygen = {
-    description = "Bootstrap and register SSH keypair for ${accountName}";
+    description = "Bootstrap and register SSH keypair for hydra remote builds";
     wantedBy = [ "multi-user.target" ];
-    before = [ "nix-daemon.service" ];
-    after = [
-      "network-online.target"
-      "kanidm-unixd.service"
-    ];
-    wants = [
-      "network-online.target"
-      "kanidm-unixd.service"
-    ];
+    before = [ "hydra-queue-runner.service" ];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     path = with pkgs; [
       coreutils
       curl
       jq
       openssh
-      util-linux
     ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      User = "hydra-queue-runner";
     };
     script = ''
       set -eu
@@ -91,25 +81,14 @@ in
       KANIDM_BASE='https://${idpUrl}/v1/service_account/${accountName}/_ssh_pubkeys'
       KEY_TAG='${config.networking.hostName}'
 
-      for _ in $(seq 1 60); do
-        if id ${accountName} >/dev/null 2>&1; then
-          break
-        fi
-        sleep 1
-      done
-      if ! id ${accountName} >/dev/null 2>&1; then
-        echo "${accountName} is not visible via NSS after 60s — kanidm-unixd may not be reachable." >&2
-        exit 1
-      fi
-
       if [ ! -e '${sshKey}' ]; then
-        install -d -o ${accountName} -g nix-builders -m 0700 '${homeDir}' '${sshDir}'
-        runuser -u ${accountName} -- \
-          ssh-keygen -t ed25519 -N "" -C "${accountName}@$KEY_TAG" -f '${sshKey}'
+        mkdir -p '${keyDir}'
+        chmod 0700 '${keyDir}'
+        ssh-keygen -t ed25519 -N "" -C "${accountName}@$KEY_TAG" -f '${sshKey}'
       fi
 
       if [ ! -r "$TOKEN_FILE" ]; then
-        echo "Service-account token not readable at $TOKEN_FILE; populate via 'sops edit machines/$KEY_TAG/secrets.yaml'." >&2
+        echo "Service-account token not readable at $TOKEN_FILE." >&2
         exit 1
       fi
 
