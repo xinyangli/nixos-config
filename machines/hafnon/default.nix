@@ -29,6 +29,7 @@
 
   commonSettings = {
     auth.enable = true;
+    auth.enableBuilder = true;
     nix = {
       enable = true;
     };

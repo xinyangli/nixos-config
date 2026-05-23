@@ -456,7 +456,10 @@
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          overlays = [ ranet-ipsec.overlays.default ];
+          overlays = [
+            ranet-ipsec.overlays.default
+            (import ./overlays/add-pkgs.nix)
+          ];
         };
 
         mkHomeConfiguration = user: host: {
@@ -477,6 +480,7 @@
           ipsec-mesh-test = pkgs.testers.nixosTest (import ./tests/ipsec-mesh);
           mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
           mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
+          kanidm-provision-test = pkgs.testers.nixosTest (import ./tests/kanidm-provision);
         };
 
         devShells = {
