@@ -29,16 +29,18 @@
 
   commonSettings = {
     auth.enable = true;
+    auth.enableBuilder = true;
     nix = {
       enable = true;
     };
     comin.enable = true;
+    comin.executor = "nix";
     network = {
       localdns = {
         enable = true;
         fallbackDNS = ''
           policy.add(policy.all(policy.FORWARD({
-            "100.100.100.100", "100.100.101.101",
+            "100.112.247.225"
           })))
         '';
       };
@@ -46,6 +48,18 @@
     };
     serverComponents.enable = true;
   };
+
+  # Root-equivalent privilege scoped to a single named kanidm identity so
+  # adding members to `nix-builders` later doesn't widen the trust scope.
+  # Required because Hydra dispatches over legacy ssh:// (nix-store --serve
+  # --write), which the remote nix-daemon refuses unless the SSH user is in
+  # trusted-users. Track NixOS/hydra#688 — when Hydra grows ssh-ng (or any
+  # path that doesn't need the remote user trusted), drop this line.
+  #
+  # SPN form (not bare `nix_access_hydra`) because kanidm-unixd's getpwuid()
+  # returns the SPN, and nix-daemon string-compares against that.
+  nix.settings.trusted-users = [ "nix_access_hydra@${config.my-lib.settings.idpUrl}" ];
+
   system.stateVersion = "26.05";
   time.timeZone = "Asia/Shanghai";
 
@@ -70,20 +84,39 @@
     hostName = "hafnon";
   };
 
+  custom.mesh-network = {
+    ipsec = {
+      enable = true;
+      commonName = "hafnon";
+      port = 27201;
+      endpoints = [
+        {
+          serialNumber = "0";
+          addressFamily = "ip4";
+          address = "homo.j8.network";
+        }
+      ];
+      interfaces = [ "ens19" ];
+    };
+    bird.enable = true;
+    address = [ "fda1:6cbb:db78::6/128" ];
+  };
+
   systemd.network = {
     enable = true;
     wait-online.anyInterface = false;
     networks = {
-      "10-wan" = {
+      "10-lan" = {
         matchConfig = {
-          MACAddress = "bc:24:11:97:b8:ce";
+          MACAddress = "bc:24:11:e5:4f:f7";
         };
-        address = [ "10.10.10.2/16" ];
-        gateway = [ "10.10.0.1" ];
+        address = [ "100.112.247.229/27" ];
+        gateway = [ "100.112.247.225" ];
+        dns = [ "100.112.247.225" ];
 
-        # Optional: Add DNS servers if you haven't defined them globally
         networkConfig = {
-          IPv6AcceptRA = false;
+          DHCP = "ipv6";
+          IPv6AcceptRA = true;
         };
       };
     };

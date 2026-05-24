@@ -42,15 +42,24 @@ in
             timeout=60,
         )
 
-    # ---------- Phase 3: 2 xfrm ifaces per node, both in vrf gravity ----------
+    # ---------- Phase 3: at least one xfrm per peer, all in vrf gravity ----------
+    # Exact count varies: simultaneous IKE_SA_INIT from both sides of a
+    # peer pair (likely on cold boot) can establish two SAs with default
+    # charon.unique=no, yielding two xfrm devices per peer. babel handles
+    # the extra paths fine, so we only require >=2 ifaces and that every
+    # xfrm device is enslaved to the gravity VRF (otherwise bird wouldn't
+    # see them and later phases would fail confusingly).
     for m in (alpha, beta, gamma):
         n_xfrm = int(m.succeed("ip -j link show type xfrm | jq 'length'").strip())
-        assert n_xfrm == 2, f"{m.name}: expected 2 xfrm ifaces, got {n_xfrm}"
+        assert n_xfrm >= 2, f"{m.name}: expected >=2 xfrm ifaces, got {n_xfrm}"
         n_in_vrf = int(m.succeed(
             "ip -d -j link show vrf gravity "
             "| jq '[.[] | select(.linkinfo.info_kind==\"xfrm\")] | length'"
         ).strip())
-        assert n_in_vrf == 2, f"{m.name}: expected 2 xfrm in vrf gravity, got {n_in_vrf}"
+        assert n_in_vrf == n_xfrm, (
+            f"{m.name}: {n_xfrm - n_in_vrf} xfrm iface(s) outside vrf gravity "
+            f"({n_in_vrf}/{n_xfrm} enslaved)"
+        )
 
     # ---------- Phase 4: babel sees 2 neighbors per node ----------
     for m in (alpha, beta, gamma):
@@ -118,7 +127,28 @@ in
             )
             src.succeed(f"ip vrf exec gravity ping -6 -c 3 -W 2 {d}")
 
-    baseline_route = alpha.succeed("birdc show route fd00:42::3/128 all")
+    # SADR: routes live in `sadr6`, and bird's `<dst>/N` prefix arg is
+    # rejected against an SADR table ("Incompatible type of prefix/ip
+    # for table sadr6") — it would need source-aware syntax. Easier to
+    # dump the whole table and slice in Python.
+    sadr_head_re = re.compile(r"^([0-9a-fA-F:]+/\d+) from ", re.MULTILINE)
+
+    def sadr_block(out, prefix):
+        # Find the route block headed by `<prefix> from ...` and return
+        # the lines belonging to it (up to the next top-level header).
+        for mo in sadr_head_re.finditer(out):
+            if mo.group(1) != prefix:
+                continue
+            start = mo.start()
+            nxt = sadr_head_re.search(out, mo.end())
+            return out[start:nxt.start() if nxt else len(out)]
+        return None
+
+    baseline_route = sadr_block(
+        alpha.succeed("birdc show route table sadr6 all"),
+        "fd00:42::3/128",
+    )
+    assert baseline_route, "alpha: no sadr6 route block for fd00:42::3/128"
     print("BASELINE alpha->gamma route:\n" + baseline_route)
 
     alpha_ifaces = peer_iface_map(alpha, {"192.168.1.2", "192.168.1.3"})
@@ -148,12 +178,15 @@ in
     nexthop_iface_re = re.compile(r"\bon\s+(\S+)")
 
     def selected_nexthop_iface(m, prefix):
-        # `show route` (without `all`) returns only the selected route,
-        # so the `on <iface>` line is unambiguous. The `*`+`on` split
-        # across lines in `... all` output makes single-regex parsing
-        # fragile, hence this narrower call.
-        out = m.succeed(f"birdc show route {prefix}")
-        mo = nexthop_iface_re.search(out)
+        # Dump the whole sadr6 table (avoiding the SADR prefix-syntax
+        # issue) and slice out the block for `prefix`. `show route`
+        # without `all` returns only the selected route per dst, so the
+        # `on <iface>` line in our block is unambiguous.
+        out = m.succeed("birdc show route table sadr6")
+        block = sadr_block(out, prefix)
+        if block is None:
+            return None
+        mo = nexthop_iface_re.search(block)
         return mo.group(1) if mo else None
 
     def wait_for_route_via(m, prefix, peer_addr, timeout):
@@ -174,7 +207,10 @@ in
 
     wait_for_route_via(alpha, "fd00:42::3/128", "192.168.1.2", timeout=120)
 
-    new_route = alpha.succeed("birdc show route fd00:42::3/128 all")
+    new_route = sadr_block(
+        alpha.succeed("birdc show route table sadr6 all"),
+        "fd00:42::3/128",
+    )
     print("POST-NETEM alpha->gamma route:\n" + new_route)
 
     # ---------- Phase 8: end-to-end traffic over the new path ----------

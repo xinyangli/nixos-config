@@ -40,6 +40,7 @@
   commonSettings = {
     auth.enable = true;
     comin.enable = true;
+    comin.executor = "hydra";
     serverComponents.enable = true;
   };
 
@@ -56,10 +57,8 @@
       ];
       interfaces = [ "ens3" ];
     };
-    bird = {
-      enable = true;
-      routes = [ "fda1:6cbb:db78::4/128" ];
-    };
+    bird.enable = true;
+    address = [ "fda1:6cbb:db78::4/128" ];
   };
 
   sops = {

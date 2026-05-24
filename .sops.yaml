@@ -35,6 +35,9 @@ creation_rules:
       - *host-la-00
       - *host-thorite
       - *host-biotite
+      - *host-cinnabar
+      - *host-hafnon
+      - *host-agate
   - path_regex: machines/agate/secrets.yaml
     key_groups:
     - age:

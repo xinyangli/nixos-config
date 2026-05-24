@@ -8,9 +8,8 @@
   '';
   services.hydra = {
     enable = true;
-    hydraURL = "http://agate.coho-tet.ts.net:3000/";
+    hydraURL = "https://hydra.u.xiny.li/";
     notificationSender = "hydra@localhost";
-    buildMachinesFiles = [ ];
     useSubstitutes = true;
     minimumDiskFreeEvaluator = 20;
     minimumDiskFree = 20;
@@ -18,6 +17,20 @@
       allow_import_from_derivation = true
     '';
   };
+
+  # hydra.u.xiny.li resolves (via public DNS) to agate's mesh ULA,
+  # so this vhost is reachable only from inside the gravity VRF.
+  # TLS via deSEC DNS-01 (token in env), per-vhost binding to the
+  # systemd-passed mesh socket created by custom.mesh-network.caddy.
+  services.caddy.virtualHosts."hydra.u.xiny.li".extraConfig = ''
+    bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+    tls {
+      dns desec {
+        token {env.DESEC_TOKEN}
+      }
+    }
+    reverse_proxy 127.0.0.1:3000
+  '';
 
   systemd.services.attic-watch-store = {
     wantedBy = [ "multi-user.target" ];
@@ -37,6 +50,8 @@
         ${pkgs.attic-client}/bin/attic login attic "https://pek-0.cache.xiny.li:8443/" "''$HYDRA_ATTIC_TOKEN"
       '';
       ExecStart = "${pkgs.attic-client}/bin/attic watch-store general";
+      Restart = "on-failure";
+      RestartSec = "10s";
     };
   };
 }

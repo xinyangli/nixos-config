@@ -4,11 +4,6 @@
     nixpkgs.url = "github:xinyangli/nixpkgs/deploy";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
 
-    internet-traffic-assignments = {
-      url = "git+https://git.xiny.li/xin/InternetTraffic";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     simple-nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/main";
 
     home-manager = {
@@ -117,7 +112,6 @@
     {
       self,
       nixpkgs,
-      internet-traffic-assignments,
       home-manager,
       nixos-hardware,
       sops-nix,
@@ -188,7 +182,6 @@
         agate = [
           disko.nixosModules.disko
           ./machines/agate
-          internet-traffic-assignments.nixosModules.assignment2
         ];
         hafnon = [
           disko.nixosModules.disko
@@ -205,7 +198,6 @@
           disko.nixosModules.disko
           ./machines/dolomite/bandwagon.nix
           ./machines/dolomite/common.nix
-          internet-traffic-assignments.nixosModules.assignment2
         ];
         fra-00 = [
           disko.nixosModules.disko
@@ -449,6 +441,11 @@
             "raspite"
             "baryte"
             "osmium"
+            "hafnon"
+            "thorite"
+            "biotite"
+            "la-00"
+            "fra-00"
           ];
         in
         builtins.listToAttrs (
@@ -464,7 +461,10 @@
         pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          overlays = [ ranet-ipsec.overlays.default ];
+          overlays = [
+            ranet-ipsec.overlays.default
+            (import ./overlays/add-pkgs.nix)
+          ];
         };
 
         mkHomeConfiguration = user: host: {
@@ -483,6 +483,9 @@
         checks = {
           backup-test = pkgs.testers.nixosTest (import ./tests/backup.nix);
           ipsec-mesh-test = pkgs.testers.nixosTest (import ./tests/ipsec-mesh);
+          mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
+          mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
+          kanidm-provision-test = pkgs.testers.nixosTest (import ./tests/kanidm-provision);
         };
 
         devShells = {

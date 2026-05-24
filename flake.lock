@@ -842,26 +842,6 @@
         "type": "github"
       }
     },
-    "internet-traffic-assignments": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1770037459,
-        "narHash": "sha256-GDPtQKJQ6UwFhYUGg00i/0IZW3qUOio/RZUUot3LCLQ=",
-        "ref": "refs/heads/master",
-        "rev": "63dba3600272e01069624c66c2da7057ae2cd7e9",
-        "revCount": 4,
-        "type": "git",
-        "url": "https://git.xiny.li/xin/InternetTraffic"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://git.xiny.li/xin/InternetTraffic"
-      }
-    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane",
@@ -1711,7 +1691,6 @@
         "disko": "disko",
         "flake-utils": "flake-utils_2",
         "home-manager": "home-manager",
-        "internet-traffic-assignments": "internet-traffic-assignments",
         "lanzaboote": "lanzaboote",
         "mcps-nix": "mcps-nix",
         "my-nixvim": "my-nixvim",

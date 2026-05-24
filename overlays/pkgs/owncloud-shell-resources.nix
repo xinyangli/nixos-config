@@ -3,7 +3,7 @@
   lib,
   fetchFromGitHub,
   cmake,
-  extra-cmake-modules,
+  kdePackages,
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "owncloud-shell-resources";
@@ -18,7 +18,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     cmake
-    extra-cmake-modules
+    kdePackages.extra-cmake-modules
   ];
 
   meta = with lib; {

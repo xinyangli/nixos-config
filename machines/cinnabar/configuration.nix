@@ -29,6 +29,24 @@ in
           })
         ];
       };
+      # Chipsailing CS9711 USB fingerprint sensor support — fork rebased onto libfprint 1.94.10.
+      # The fork's sigfm helper unconditionally pulls in opencv4 + doctest. Drop the doctest-based
+      # sigfm-tests executable since nixpkgs ships doctest as header-only (its .pc still advertises
+      # `-ldoctest`, so linking fails).
+      libfprint = super.libfprint.overrideAttrs (old: {
+        src = pkgs.fetchFromGitHub {
+          owner = "archeYR";
+          repo = "libfprint-CS9711";
+          rev = "02b285c9703c38d308fbe47a3c566ef1e7f883ca";
+          hash = "sha256-QGrBNqbRNqLZIURI66xkenlQamNW+DQU4WS+CLN4zM8=";
+        };
+        buildInputs = (old.buildInputs or [ ]) ++ [
+          super.opencv4
+        ];
+        postPatch = (old.postPatch or "") + ''
+          sed -i '/sigfm-tests/d; /^doctest = /d' libfprint/sigfm/meson.build
+        '';
+      });
     })
   ];
 
@@ -115,6 +133,7 @@ in
 
   services.fwupd.enable = true;
 
+  services.fprintd.enable = true;
   services.logind = {
     settings.Login = {
       HandlePowerKey = "suspend-then-hibernate";
@@ -224,6 +243,8 @@ in
   systemd.user.services.xdg-desktop-portal-gnome.after = [ "graphical-session.target" ];
   systemd.user.services.xdg-desktop-portal-gnome.wantedBy = [ "graphical-session.target" ];
 
+  # TODO: Remove after https://github.com/NixOS/nixpkgs/pull/519416 reach unstable
+  services.accounts-daemon.enable = true;
   programs.regreet = {
     enable = true;
     settings = {

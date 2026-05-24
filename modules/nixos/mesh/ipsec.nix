@@ -36,7 +36,7 @@ in
       };
       port = mkOption {
         type = types.port;
-        default = 13000;
+        default = 63001;
       };
       interfaces = mkOption {
         type = types.listOf types.str;
@@ -52,11 +52,6 @@ in
     bird = {
       enable = mkEnableOption "bird integration";
       exit.enable = mkEnableOption "exit node";
-      routes = mkOption {
-        type = types.listOf types.str;
-        default = [ ];
-        description = "routes to be announced for local node";
-      };
     };
   };
 
@@ -78,14 +73,8 @@ in
             LINK=gn$(printf '%08x\n' "$PLUTO_IF_ID_OUT")
             case "$PLUTO_VERB" in
               up-client)
-                # Only create the xfrm device here. Networkd's
-                # `42-gn.network` (in modules/nixos/mesh/default.nix)
-                # matches `gn*` and is responsible for enslaving the
-                # interface to the gravity VRF, setting MTU/multicast,
-                # and bringing it up. Splitting create-vs-configure
-                # this way avoids racing networkd's state machine
-                # over the freshly-appearing link.
                 $IP link add "$LINK" type xfrm if_id "$PLUTO_IF_ID_OUT"
+                $IP link set "$LINK" master gravity multicast on mtu 1400 up
                 ;;
               down-client)
                 $IP link del "$LINK" || true
@@ -133,11 +122,6 @@ in
           "sys-subsystem-net-devices-gravity.device"
         ];
         wantedBy = [ "multi-user.target" ];
-        # Both files matter: config.json changes when this host's local
-        # endpoint changes; registry.json changes when the fleet
-        # membership in peers.nix changes. Without the second trigger,
-        # adding a new peer to peers.nix never reaches ranet and the
-        # mesh is silently incomplete after deploy.
         reloadTriggers = [
           config.environment.etc."ranet/config.json".source
           config.environment.etc."gravity/registry.json".source
@@ -149,37 +133,41 @@ in
 
     services.strongswan-swanctl = {
       enable = true;
-      strongswan.extraConfig = ''
-        charon {
-          ikesa_table_size = 32
-          ikesa_table_segments = 4
-          reuse_ikesa = yes
-          interfaces_use = ${lib.strings.concatStringsSep "," cfg.ipsec.interfaces}
-          port = 0
-          port_nat_t = ${toString cfg.ipsec.port}
-          retransmit_timeout = 30
-          retransmit_base = 1
-          plugins {
-            socket-default {
-              set_source = yes
-              set_sourceif = yes
-            }
-            dhcp {
-              load = no
+      strongswan.extraConfig =
+        let
+          interfaces = lib.strings.concatStringsSep "," cfg.ipsec.interfaces;
+        in
+        ''
+          charon {
+            ikesa_table_size = 32
+            ikesa_table_segments = 4
+            reuse_ikesa = yes
+            ${lib.optionalString (builtins.length cfg.ipsec.interfaces == 0) "interfaces_use = ${interfaces}"}
+            port = 0
+            port_nat_t = ${toString cfg.ipsec.port}
+            retransmit_timeout = 30
+            retransmit_base = 1
+            plugins {
+              socket-default {
+                set_source = yes
+                set_sourceif = yes
+              }
+              dhcp {
+                load = no
+              }
             }
           }
-        }
-        charon-systemd {
-          journal {
-            # 1 = control flow + IKE state transitions. -1 silences charon
-            # entirely, which makes auth failures impossible to diagnose;
-            # bump to 1 for at least the rollout window.
-            default = 1
-            ike = 2
-            cfg = 2
+          charon-systemd {
+            journal {
+              # 1 = control flow + IKE state transitions. -1 silences charon
+              # entirely, which makes auth failures impossible to diagnose;
+              # bump to 1 for at least the rollout window.
+              default = 1
+              ike = 2
+              cfg = 2
+            }
           }
-        }
-      '';
+        '';
     };
   };
 }

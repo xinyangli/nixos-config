@@ -15,7 +15,7 @@ let
 
   cfg = config.commonSettings.auth;
 
-  kanidm_pkg = pkgs.kanidm_1_9;
+  kanidm_pkg = pkgs.kanidm_1_10;
 in
 {
   options.commonSettings.auth = {
@@ -24,10 +24,27 @@ in
       default = true;
     };
     enableHowdy = mkEnableOption "howdy for logging into the machine";
+    enableBuilder = mkEnableOption ''
+      accepting nix remote builds via the `nix-builders` kanidm group. Extends
+      `pam_allowed_login_groups` so the SSH key auth path can complete account
+      checks. Deliberately does NOT touch `nix.settings.trusted-users` — that
+      is root-equivalent and must be granted per-named-account elsewhere if at
+      all'';
   };
 
   config = lib.mkMerge [
     (mkIf cfg.enable {
+      assertions = [
+        {
+          assertion = cfg.enableBuilder -> cfg.sshAccess;
+          message = ''
+            commonSettings.auth.enableBuilder requires commonSettings.auth.sshAccess —
+            the builder is reached over the same sshd whose authorized-keys
+            command comes from kanidm.
+          '';
+        }
+      ];
+
       services.userborn.enable = true;
       users.users.root.hashedPassword = "$y$j9T$oJ8a7zKc3EV9HOf8qYKC6/$ZEq0Kl8rapeN/WKyJ8eXnTGoTpLb2W/LWLcS8QlNPPB";
       services.kanidm = {
@@ -80,6 +97,10 @@ in
 
       services.fail2ban.enable = true;
     })
+    (mkIf (cfg.enable && cfg.enableBuilder) {
+      services.kanidm.unix.settings.kanidm.pam_allowed_login_groups = [ "nix-builders" ];
+    })
+
     (mkIf (cfg.enable && cfg.enableHowdy) {
       security.pam.howdy.enable = true;
       services.howdy = {
@@ -95,6 +116,15 @@ in
         };
       };
       services.linux-enable-ir-emitter.enable = true;
+
+      systemd.services."polkit-agent-helper@" = {
+        serviceConfig = {
+          PrivateDevices = false;
+          DeviceAllow = [
+            "char-video4linux rw" # /dev/video* for the IR camera
+          ];
+        };
+      };
     })
   ];
 }

@@ -8,6 +8,7 @@
     ./immich.nix
     ./derper.nix
     ./webdav.nix
+    ./nix-builders.nix
     ./ocis.nix
     ./transmission.nix
     ./jellyfin.nix

@@ -45,13 +45,6 @@
     systemd.network.networks."10-wan" = {
       matchConfig.MACAddress = "ens18";
       networkConfig.DHCP = "ipv4";
-      dhcpV4Config = {
-        UseDNS = false;
-      };
-    };
-    systemd.network.networks."20-lan" = {
-      matchConfig.MACAddress = "ens19";
-      networkConfig.DHCP = "ipv4";
     };
     services.resolved.enable = true;
 
@@ -70,10 +63,8 @@
         ];
         interfaces = [ "ens18" ];
       };
-      bird = {
-        enable = true;
-        routes = [ "fda1:6cbb:db78::2/128" ];
-      };
+      bird.enable = true;
+      address = [ "fda1:6cbb:db78::2/128" ];
     };
   };
 }

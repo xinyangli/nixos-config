@@ -98,6 +98,8 @@ in
     inherit ALSA_CONFIG_UCM ALSA_CONFIG_UCM2;
   };
 
+  hardware.cpu.intel.npu.enable = true;
+
   hardware.firmware = [
     sensorhub-firmware
     pkgs.sof-firmware

@@ -44,9 +44,11 @@
       signing.enable = true;
     };
     comin.enable = true;
+    comin.executor = "nix";
     network.localdns.enable = true;
     serverComponents.enable = true;
   };
+
   system.stateVersion = "25.05";
   time.timeZone = "Asia/Shanghai";
 
@@ -83,5 +85,22 @@
         };
       };
     };
+  };
+
+  custom.mesh-network = {
+    ipsec = {
+      enable = true;
+      commonName = "agate";
+      endpoints = [
+        {
+          serialNumber = "0";
+          addressFamily = "ip4";
+          address = "agate_home.xiny.li";
+        }
+      ];
+      interfaces = [ "enahisic2i2" ];
+    };
+    bird.enable = true;
+    address = [ "fda1:6cbb:db78::7/128" ];
   };
 }

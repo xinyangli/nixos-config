@@ -46,6 +46,37 @@
           }
         ];
       };
+      cinnabar = {
+        commonName = "cinnabar";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = null;
+          }
+        ];
+      };
+      hafnon = {
+        commonName = "hafnon";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = "homo.j8.network";
+            port = 27201;
+          }
+        ];
+      };
+      agate = {
+        commonName = "agate";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = "agate_home.xiny.li";
+          }
+        ];
+      };
     };
   };
 }
