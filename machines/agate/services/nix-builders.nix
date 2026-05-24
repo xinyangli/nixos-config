@@ -35,7 +35,8 @@ in
   environment.etc."nix/hydra-machines".text =
     "ssh://${accountName}@${builderAlias} x86_64-linux ${sshKey} 4 2 kvm,nixos-test,big-parallel,benchmark - -\n";
 
-  services.hydra.buildMachinesFiles = [ "/etc/nix/hydra-machines" ];
+  services.hydra.buildMachinesFiles = [ "/etc/nix/machines" ];
+  nix.settings.builders-use-substitutes = true;
   nix.buildMachines = [
     {
       hostName = "localhost";
@@ -56,6 +57,7 @@ in
       protocol = "ssh";
       maxJobs = 3;
       supportedFeatures = [
+        "nixos-test"
         "big-parallel"
         "benchmark"
       ];
