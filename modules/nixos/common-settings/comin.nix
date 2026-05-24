@@ -22,7 +22,13 @@ let
 
   publisher = pkgs.writeShellScript "comin-post-deploy" ''
     set -euo pipefail
-    export PATH=${makeBinPath [ pkgs.coreutils pkgs.curl pkgs.openssl ]}
+    export PATH=${
+      makeBinPath [
+        pkgs.coreutils
+        pkgs.curl
+        pkgs.openssl
+      ]
+    }
 
     [ "''${COMIN_STATUS:-}" = "done" ] || exit 0
 
@@ -65,7 +71,14 @@ let
 
   subscriber = pkgs.writeShellScript "comin-reboot-subscriber" ''
     set -uo pipefail
-    export PATH=${makeBinPath [ pkgs.coreutils pkgs.ntfy-sh pkgs.jq pkgs.systemd ]}
+    export PATH=${
+      makeBinPath [
+        pkgs.coreutils
+        pkgs.ntfy-sh
+        pkgs.jq
+        pkgs.systemd
+      ]
+    }
 
     : "''${NTFY_URL:?}" "''${NTFY_TOPIC:?}" "''${NTFY_USER:?}" "''${NTFY_PASSWORD:?}"
 
@@ -122,6 +135,11 @@ in
         {
           name = "origin";
           url = "https://github.com/xinyangli/nixos-config.git";
+          branches.main.name = "deploy";
+        }
+        {
+          name = "forgejo";
+          url = "https://git.xiny.li/xin/nixos-config.git";
           branches.main.name = "deploy";
         }
       ];
