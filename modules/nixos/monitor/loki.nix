@@ -133,6 +133,16 @@ in
               reject_old_samples = true;
               reject_old_samples_max_age = "168h";
               allow_structured_metadata = false;
+              retention_period = "30d";
+            };
+
+            compactor = {
+              working_directory = "/var/lib/loki/compactor";
+              compaction_interval = "10m";
+              retention_enabled = true;
+              retention_delete_delay = "2h";
+              retention_delete_worker_count = 150;
+              delete_request_store = "filesystem";
             };
 
             ruler = {
@@ -151,6 +161,7 @@ in
           "d /var/lib/loki/rules-temp 0700 loki loki - -"
           "d /var/lib/loki/rules 0700 loki loki - -"
           "d /var/lib/loki/rules/fake 0700 loki loki - -"
+          "d /var/lib/loki/compactor 0700 loki loki - -"
           "L /var/lib/loki/rules/fake/ruler.yml - - - - ${rulerFile}"
         ];
         systemd.services.loki.restartTriggers = [ rulerFile ];
