@@ -116,6 +116,40 @@
     enable = true;
   };
 
+  # Bosch-Siemens Home Connect bridge.
+  # `devices.json` is the output of `hc-login <user> <pass>` (run off-host) and
+  # is loaded from sops via systemd's LoadCredential so the DynamicUser can
+  # read it without exposing the on-disk secret path.
+  sops.secrets."hcpy/devices.json" = {
+    restartUnits = [ "hcpy.service" ];
+  };
+
+  systemd.services.hcpy = {
+    description = "Home Connect to MQTT bridge";
+    after = [
+      "network-online.target"
+      "mosquitto.service"
+    ];
+    wants = [ "network-online.target" ];
+    requires = [ "mosquitto.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      ExecStart = lib.concatStringsSep " " [
+        (lib.getExe pkgs.hcpy)
+        "--devices_file \${CREDENTIALS_DIRECTORY}/devices.json"
+        "--mqtt_host 127.0.0.1"
+        "--mqtt_prefix homeconnect/"
+        "--ha-discovery"
+      ];
+      LoadCredential = [
+        "devices.json:${config.sops.secrets."hcpy/devices.json".path}"
+      ];
+      DynamicUser = true;
+      Restart = "on-failure";
+      RestartSec = 10;
+    };
+  };
+
   services.zigbee2mqtt = {
     enable = true;
     package = pkgs.zigbee2mqtt_2;

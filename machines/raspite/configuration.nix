@@ -8,6 +8,8 @@
 {
   imports = [ ./services/hass.nix ];
 
+  sops.defaultSopsFile = ./secrets.yaml;
+
   commonSettings = {
     nix.enable = true;
     auth.enable = true;
