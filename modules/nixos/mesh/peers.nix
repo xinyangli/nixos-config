@@ -77,6 +77,16 @@
           }
         ];
       };
+      raspite = {
+        commonName = "raspite";
+        endpoints = [
+          {
+            serialNumber = "0";
+            addressFamily = "ip4";
+            address = null;
+          }
+        ];
+      };
     };
   };
 }

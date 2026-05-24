@@ -38,6 +38,7 @@ creation_rules:
       - *host-cinnabar
       - *host-hafnon
       - *host-agate
+      - *host-raspite
   - path_regex: machines/agate/secrets.yaml
     key_groups:
     - age:

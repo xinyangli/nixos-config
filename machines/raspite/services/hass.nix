@@ -12,6 +12,9 @@
       "automation ui" = "!include automations.yaml";
       "scene ui" = "!include scenes.yaml";
       "script ui" = "!include scripts.yaml";
+      lovelace = {
+        mode = lib.mkForce "storage";
+      };
       logger = {
         logs = {
           homeassistant.helpers.llm = "debug";
@@ -62,6 +65,9 @@
     customComponents = with pkgs.home-assistant-custom-components; [
       xiaomi_home
     ];
+    customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
+      plotly-chart-card
+    ];
   };
 
   systemd.services.matter-server = {
@@ -86,7 +92,7 @@
         # specific interface on multi-homed hosts. Without this matterjs-server
         # may bind to tailscale (coho-tet.ts.net) and miss LAN advertisements.
         "--primary-interface"
-        "eth0"
+        "end0"
       ];
       DynamicUser = true;
       StateDirectory = "matterjs-server";
@@ -137,6 +143,9 @@
         homeassistant_legacy_triggers = false;
         legacy_api = false;
         legacy_availability_payload = false;
+        cache_state = true;
+        cache_state_persistent = true;
+        cache_state_send_on_startup = true;
       };
       device_options = {
         legacy = false;
@@ -310,6 +319,13 @@
   };
 
   services.caddy = {
+    enable = true;
+    package = pkgs.caddy.withPlugins {
+      plugins = [
+        "github.com/caddy-dns/desec@v1.1.0"
+      ];
+      hash = "sha256-rEqJhHOVctdLYkoWweC6pfI8CCabKEUakmtDESYNuuI=";
+    };
     virtualHosts = {
       "raspite.coho-tet.ts.net".extraConfig = ''
         reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}
@@ -317,6 +333,25 @@
       "https://raspite.coho-tet.ts.net:8080".extraConfig = ''
         reverse_proxy ${config.services.zigbee2mqtt.settings.frontend.host}:${toString config.services.zigbee2mqtt.settings.frontend.port}
       '';
+      "ha.u.xiny.li".extraConfig = ''
+        bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+        tls {
+          dns desec {
+            token {env.DESEC_TOKEN}
+          }
+        }
+        reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}
+      '';
     };
+  };
+
+  sops.templates."caddy.env".content = ''
+    DESEC_TOKEN=${config.sops.placeholder."caddy-desec"}
+  '';
+  systemd.services.caddy.serviceConfig.EnvironmentFile = config.sops.templates."caddy.env".path;
+
+  custom.mesh-network.caddy = {
+    enable = true;
+    ports = [ 443 ];
   };
 }

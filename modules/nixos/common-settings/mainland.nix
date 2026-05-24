@@ -58,6 +58,7 @@ let
     	    cndns: 'quic://dns.alidns.com:853'
     	    tsdns: 'udp://100.100.100.100'
     	    localdns: 'udp://127.0.0.1:53' 
+          canvadns: 'udp://127.0.2.2'
       }
       routing {
         request {
@@ -76,6 +77,7 @@ let
         }
       }
     }
+
     group {
       default_group {
         filter: name(regex: '^(hk)[0-9]+') [add_latency: -30ms]
@@ -96,6 +98,7 @@ let
       pname(systemd-resolve) -> must_direct
       pname(caddy) -> must_direct
       pname(sing-box) -> must_direct
+      domain(regex: '_acme_challenge\..*') -> must_direct
       # Disable h3 because it usually consumes too much cpu/mem resources.
       l4proto(udp) && dport(443) -> block
 
