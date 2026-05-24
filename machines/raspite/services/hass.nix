@@ -319,13 +319,6 @@
   };
 
   services.caddy = {
-    enable = true;
-    package = pkgs.caddy.withPlugins {
-      plugins = [
-        "github.com/caddy-dns/desec@v1.1.0"
-      ];
-      hash = "sha256-rEqJhHOVctdLYkoWweC6pfI8CCabKEUakmtDESYNuuI=";
-    };
     virtualHosts = {
       "raspite.coho-tet.ts.net".extraConfig = ''
         reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}

@@ -84,4 +84,14 @@
     bird.enable = true;
     address = [ "fda1:6cbb:db78::8/128" ];
   };
+
+  services.caddy = {
+    enable = true;
+    package = pkgs.caddy.withPlugins {
+      plugins = [
+        "github.com/caddy-dns/desec@v1.1.0"
+      ];
+      hash = "sha256-xHmhjCrAaqbnYLAxXCsZ8ah6umgwHWQIXWqeDbghCOo=";
+    };
+  };
 }
