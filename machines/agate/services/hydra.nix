@@ -50,6 +50,8 @@
         ${pkgs.attic-client}/bin/attic login attic "https://pek-0.cache.xiny.li:8443/" "''$HYDRA_ATTIC_TOKEN"
       '';
       ExecStart = "${pkgs.attic-client}/bin/attic watch-store general";
+      Restart = "on-failure";
+      RestartSec = "10s";
     };
   };
 }
