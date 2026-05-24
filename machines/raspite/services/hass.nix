@@ -23,9 +23,9 @@
         };
       };
       http = {
-        server_host = "127.0.0.1";
-        use_x_forwarded_for = true;
-        trusted_proxies = [ "127.0.0.1" ];
+        server_host = "0.0.0.0";
+        # use_x_forwarded_for = true;
+        # trusted_proxies = [ ];
       };
       assist_pipeline = { };
       backup = { };
