@@ -7,7 +7,7 @@
 {
   services.home-assistant = {
     enable = true;
-    openFirewall = false;
+    openFirewall = true;
     config = {
       "automation ui" = "!include automations.yaml";
       "scene ui" = "!include scenes.yaml";
@@ -150,6 +150,7 @@
     };
   };
 
+  networking.firewall.allowedTCPPorts = [ 15313 ];
   services.zigbee2mqtt = {
     enable = true;
     package = pkgs.zigbee2mqtt_2;
@@ -354,18 +355,6 @@
 
   services.caddy = {
     virtualHosts = {
-      "raspite.coho-tet.ts.net".extraConfig = ''
-        tls {
-          get_certificate tailscale
-        }
-        reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}
-      '';
-      "https://raspite.coho-tet.ts.net:8080".extraConfig = ''
-        tls {
-          get_certificate tailscale
-        }
-        reverse_proxy ${config.services.zigbee2mqtt.settings.frontend.host}:${toString config.services.zigbee2mqtt.settings.frontend.port}
-      '';
       "ha.u.xiny.li".extraConfig = ''
         bind ${config.custom.mesh-network.caddy.fdRefs."443"}
         tls {
