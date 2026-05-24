@@ -46,6 +46,7 @@ in
       # together if the naming scheme moves.
       config = ''
         log syslog all;
+        router id ${hostnameToRouterID config.networking.hostName};
         ipv6 sadr table sadr6;
         protocol device {
           scan time 5;
