@@ -318,6 +318,8 @@ in
           ];
           RestrictNamespaces = "yes";
           PrivateDevices = "yes";
+          Restart = "on-failure";
+          RestartSec = "10s";
         };
       };
   };
