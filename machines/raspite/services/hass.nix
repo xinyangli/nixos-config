@@ -355,9 +355,15 @@
   services.caddy = {
     virtualHosts = {
       "raspite.coho-tet.ts.net".extraConfig = ''
+        tls {
+          get_certificate tailscale
+        }
         reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}
       '';
       "https://raspite.coho-tet.ts.net:8080".extraConfig = ''
+        tls {
+          get_certificate tailscale
+        }
         reverse_proxy ${config.services.zigbee2mqtt.settings.frontend.host}:${toString config.services.zigbee2mqtt.settings.frontend.port}
       '';
       "ha.u.xiny.li".extraConfig = ''
