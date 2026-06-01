@@ -23,6 +23,8 @@ let
         members = [ "nix_access_hydra" ];
         enableUnix = true;
       };
+      groups.unix_admin.enableUnix = true;
+      groups.linux_users.enableUnix = true;
       # entry_managed_by delegation: nix_provisioner manages nix_access_hydra
       # via group membership. The agate keygen one-shot uses a `--rw` token
       # for nix_provisioner (NOT for nix_access_hydra) so the manager-ACP
@@ -56,6 +58,8 @@ let
           key = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNDfLOyV08kYrxqVYFIu9qmxWNkVHXEBF0PpBumjgM4hkKOTCWCQ3wC4rsv+UYGlmxZYh29kH57TFcUGdPYGIXs=";
         }
       ];
+      persons.xin.enableUnix = true;
+      persons.xin.loginShell = "/bin/sh";
     }
   );
 in

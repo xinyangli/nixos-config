@@ -13,6 +13,7 @@
     ./services/restic.nix
     ./services/mailserver.nix
     ./services/miniflux.nix
+    ./services/miniflux-tts.nix
     ./services/hedgedoc.nix
     ./services/forgejo.nix
     ./services/vaultwarden.nix

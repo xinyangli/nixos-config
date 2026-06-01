@@ -29,7 +29,9 @@ in
   ];
 
   services.caddy.virtualHosts.${minifluxUrl}.extraConfig = ''
-    reverse_proxy ${config.services.miniflux.config.LISTEN_ADDR}
+    handle {
+      reverse_proxy ${config.services.miniflux.config.LISTEN_ADDR}
+    }
   '';
 
 }
