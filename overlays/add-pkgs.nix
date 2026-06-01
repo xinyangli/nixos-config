@@ -32,55 +32,19 @@
     matterjs-server = callPackage ./pkgs/matterjs-server.nix { };
     hcpy = callPackage ./pkgs/hcpy.nix { };
 
-    miniflux = prev.miniflux.overrideAttrs (finalAttrs: _previousAttrs: {
-      version = "2.3.0-xinyangli-2026-06-01";
-      src = minifluxV2Src;
-      vendorHash = "sha256-aTRc1SspNET3nki7dji0EKIBwSbplsNkKZWud8XJTNA=";
+    miniflux = prev.miniflux.overrideAttrs (
+      finalAttrs: _previousAttrs: {
+        version = "2.3.0-xinyangli-2026-06-01";
+        src = minifluxV2Src;
+        vendorHash = "sha256-aTRc1SspNET3nki7dji0EKIBwSbplsNkKZWud8XJTNA=";
 
-      ldflags = [
-        "-s"
-        "-w"
-        "-X miniflux.app/v2/internal/version.Version=${finalAttrs.version}"
-      ];
-    });
-
-    miniflux-tts = prev.buildGo126Module {
-      pname = "miniflux-tts";
-      version = "0.1.0-unstable-2026-06-01";
-
-      src = prev.fetchFromGitHub {
-        owner = "xinyangli";
-        repo = "miniflux-tts";
-        rev = "cb8f9941ad8bff7893ee700028468264846488ff";
-        hash = "sha256-5ec16bvE13uA8sUviGrSDdqf0lfCH1UIDtKhE2g8bAY=";
-      };
-
-      vendorHash = "sha256-SuDeXJAmd3HX4s2qAEhFn4Ya/EaziNKgnI0qqTQbHXo=";
-      subPackages = [ "cmd/miniflux-tts" ];
-
-      postPatch = ''
-        rm -rf v2
-        cp -R ${minifluxV2Src} v2
-        chmod -R +w v2
-        substituteInPlace custom-js/miniflux-tts.js \
-          --replace-fail 'const TTS_BASE_URL = "http://localhost:8090";' \
-                         'const TTS_BASE_URL = "";'
-      '';
-
-      env.CGO_ENABLED = "0";
-
-      postInstall = ''
-        install -Dm444 custom-js/miniflux-tts.js \
-          $out/share/miniflux-tts/miniflux-tts.js
-      '';
-
-      meta = {
-        description = "TTS integration service for Miniflux";
-        homepage = "https://github.com/xinyangli/miniflux-tts";
-        license = prev.lib.licenses.asl20;
-        mainProgram = "miniflux-tts";
-      };
-    };
+        ldflags = [
+          "-s"
+          "-w"
+          "-X miniflux.app/v2/internal/version.Version=${finalAttrs.version}"
+        ];
+      }
+    );
 
     kanidm-provision = prev.rustPlatform.buildRustPackage (finalAttrs: {
       pname = "kanidm-provision";

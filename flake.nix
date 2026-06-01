@@ -106,6 +106,11 @@
     nix-claude-code = {
       url = "github:ryoppippi/nix-claude-code";
     };
+
+    miniflux-tts = {
+      url = "git+https://github.com/xinyangli/miniflux-tts";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -133,6 +138,7 @@
       chinese-fonts-overlay,
       ranet-ipsec,
       nix-claude-code,
+      miniflux-tts,
       ...
     }:
     let
@@ -155,6 +161,7 @@
             chinese-fonts-overlay.overlays.default
             ranet-ipsec.overlays.default
             (import ./overlays/add-pkgs.nix)
+            (_: prev: { miniflux-tts = miniflux-tts.packages.${prev.stdenv.hostPlatform.system.default}; })
           ];
         };
       };

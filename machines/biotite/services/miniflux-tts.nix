@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   inherit (config.my-lib.settings) minifluxUrl;
   listenAddr = "127.0.0.1:58174";
@@ -35,6 +40,9 @@ in
       STORAGE_DIR = "/var/lib/miniflux-tts/audio";
       MINIFLUX_TTS_PROVIDER = "openai";
       MINIFLUX_TTS_OPENAI_BASE_URL = "https://api.xiaomimimo.com/v1";
+      MINIFLUX_TTS_OPENAI_MODEL = "mimo-v2.5-tts";
+      MINIFLUX_TTS_OPENAI_VOICE = "冰糖";
+      MINIFLUX_TTS_OPENAI_FORMAT = "wav";
     };
 
     serviceConfig = {
@@ -61,10 +69,6 @@ in
     }
     handle /audio/* {
       reverse_proxy ${listenAddr}
-    }
-    handle /miniflux-tts.js {
-      root * ${pkgs.miniflux-tts}/share/miniflux-tts
-      file_server
     }
   '';
 }
