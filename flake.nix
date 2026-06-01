@@ -161,7 +161,7 @@
             chinese-fonts-overlay.overlays.default
             ranet-ipsec.overlays.default
             (import ./overlays/add-pkgs.nix)
-            (_: prev: { miniflux-tts = miniflux-tts.packages.${prev.stdenv.hostPlatform.system.default}; })
+            (_: prev: { miniflux-tts = miniflux-tts.packages.${prev.stdenv.hostPlatform.system}.default; })
           ];
         };
       };
