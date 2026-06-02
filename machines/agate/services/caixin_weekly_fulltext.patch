@@ -4,9 +4,9 @@ Date: Tue, 6 Jan 2026 18:46:10 +0200
 Subject: [PATCH] local patch in my nixos-config
 
 ---
- lib/routes/caixin/utils-fulltext.ts |  48 +++++++++---
- lib/routes/caixin/weekly.ts         | 113 +++++++++++++++++++++-------
- 2 files changed, 124 insertions(+), 37 deletions(-)
+ lib/routes/caixin/utils-fulltext.ts |  31 +++++++---
+ lib/routes/caixin/weekly.ts         | 107 ++++++++++++++++++++++++++---------
+ 2 files changed, 101 insertions(+), 37 deletions(-)
 
 diff --git a/lib/routes/caixin/utils-fulltext.ts b/lib/routes/caixin/utils-fulltext.ts
 index 3d1b01da0..e7112792d 100644
@@ -30,7 +30,7 @@ index 3d1b01da0..e7112792d 100644
      const articleID = url.match(/(\d+)\.html/)[1];
  
      const nonce = crypto.randomUUID().replaceAll('-', '').toUpperCase();
-@@ -33,21 +34,50 @@ export async function getFulltext(url: string) {
+@@ -33,21 +34,33 @@ export async function getFulltext(url: string) {
      sig.updateString(rawString);
      const sigValueHex = hextob64(sig.sign());
  
@@ -70,23 +70,6 @@ index 3d1b01da0..e7112792d 100644
      const { content = '', pictureList } = JSON.parse(res.data.match(/resetContentInfo\((.*)\)/)[1]);
      return content + (pictureList ? pictureList.map((e) => `<img src="${e.url}" id="picture_${e.id}" alt="${e.desc}"><dl><dt>${e.desc}</dt></dl>`).join('') : '');
  }
-+
-+export async function getAudio(url: string) {
-+    const authData = getAuthHeaders(url);
-+    if (!authData) {
-+        return;
-+    }
-+
-+    const res = await ofetch(`https://gateway.caixin.com/api/newauth/checkAuthByAudioIdJsonp`, {
-+        params: {
-+            id: authData.articleID,
-+            type: 1,
-+            authType: 4
-+        },
-+        headers: authData.headers,
-+    });
-+    return res.data.audioUrlModel.manAudioUrl
-+}
 diff --git a/lib/routes/caixin/weekly.ts b/lib/routes/caixin/weekly.ts
 index c67ef5b04..28a59b68e 100644
 --- a/lib/routes/caixin/weekly.ts
@@ -95,7 +78,7 @@ index c67ef5b04..28a59b68e 100644
  import cache from '@/utils/cache';
  import got from '@/utils/got';
  import { parseDate } from '@/utils/parse-date';
-+import { getFulltext, getAudio } from './utils-fulltext';
++import { getFulltext } from './utils-fulltext';
  
  export const route: Route = {
      path: '/weekly',
@@ -108,7 +91,7 @@ index c67ef5b04..28a59b68e 100644
 +        requirePuppeteer: false,
 +        antiCrawler: false,
 +        supportBT: false,
-+        supportPodcast: true,
++        supportPodcast: false,
 +        supportScihub: false,
 +    },
      name: '财新周刊',
@@ -129,7 +112,7 @@ index c67ef5b04..28a59b68e 100644
          ...$('.mi')
              .toArray()
              .map((item) => ({
-@@ -37,42 +48,88 @@ async function handler(ctx) {
+@@ -37,42 +48,82 @@ async function handler(ctx) {
              .map((item) => ({
                  link: $(item).attr('href'),
              })),
@@ -209,14 +192,8 @@ index c67ef5b04..28a59b68e 100644
 +
 +                    // Try to get fulltext
 +                    const fulltext = await getFulltext(article.link);
-+                    const audioUrl = await getAudio(article.link);
-+
 +                    article.description = fulltext || summary || '';
-+                    article.audio = audioUrl;
-+
 +                    article.itunes_item_image = $('meta[property="og:image"]').first().attr('content');
-+                    article.enclosure_url = audioUrl;
-+                    article.enclosure_type = 'audio/mpeg';
 +
 +                    return article;
 +                });
@@ -247,4 +224,3 @@ index c67ef5b04..28a59b68e 100644
  }
 -- 
 2.52.0
-
