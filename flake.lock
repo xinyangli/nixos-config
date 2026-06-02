@@ -950,11 +950,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780356660,
-        "narHash": "sha256-52XJUHnuMuM5MLlZ5n+hvG+lEO0t8ufV4Eap3Bw8IxA=",
+        "lastModified": 1780372037,
+        "narHash": "sha256-Qzrkd9SKIO0tso1Qi2hpLR0Rt1KsKX5dMVi56L0bZzc=",
         "ref": "refs/heads/master",
-        "rev": "e3a16bdbe96a80b70b18a9ef156404bda81d486f",
-        "revCount": 7,
+        "rev": "1f0953ba4b5f6aef743149d387d474225070683a",
+        "revCount": 8,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/xinyangli/miniflux-tts"
