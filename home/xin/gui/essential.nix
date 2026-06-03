@@ -1,6 +1,12 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   home.packages = with pkgs; [
+    iwgtk
     thunderbird
     telegram-desktop
     element-desktop
@@ -32,17 +38,39 @@
   xdg.mimeApps =
     let
       imageMimes = [
-        "image/avif" "image/bmp" "image/gif" "image/heif" "image/jpeg"
-        "image/jpg" "image/jxl" "image/pbm" "image/pjpeg" "image/png"
-        "image/svg+xml" "image/tiff" "image/webp"
+        "image/avif"
+        "image/bmp"
+        "image/gif"
+        "image/heif"
+        "image/jpeg"
+        "image/jpg"
+        "image/jxl"
+        "image/pbm"
+        "image/pjpeg"
+        "image/png"
+        "image/svg+xml"
+        "image/tiff"
+        "image/webp"
       ];
       imageAssociations = lib.genAttrs imageMimes (_: "swayimg.desktop");
       textMimes = [
-        "text/english" "text/plain" "text/x-makefile" "text/x-c++hdr"
-        "text/x-c++src" "text/x-chdr" "text/x-csrc" "text/x-java"
-        "text/x-moc" "text/x-pascal" "text/x-tcl" "text/x-tex"
-        "text/x-python" "inode/x-empty" "application/x-shellscript"
-        "text/x-c" "text/x-c++"
+        "text/english"
+        "text/plain"
+        "text/x-makefile"
+        "text/x-c++hdr"
+        "text/x-c++src"
+        "text/x-chdr"
+        "text/x-csrc"
+        "text/x-java"
+        "text/x-moc"
+        "text/x-pascal"
+        "text/x-tcl"
+        "text/x-tex"
+        "text/x-python"
+        "inode/x-empty"
+        "application/x-shellscript"
+        "text/x-c"
+        "text/x-c++"
       ];
       textAssociations = lib.genAttrs textMimes (_: "neovide.desktop");
     in
@@ -118,7 +146,8 @@
       settings = {
         globalOptions = {
           Behavior = {
-            ActiveByDefault = true;
+            ActiveByDefault = false;
+            ShareInputState = "All";
           };
         };
         inputMethod = {
@@ -128,8 +157,7 @@
             "Default Layout" = "us";
             DefaultIM = "rime";
           };
-          "Groups/0/Items/0".Name = "keyboard-us";
-          "Groups/0/Items/1".Name = "rime";
+          "Groups/0/Items/0".Name = "rime";
         };
       };
     };

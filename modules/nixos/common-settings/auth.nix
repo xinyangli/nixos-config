@@ -126,5 +126,23 @@ in
         };
       };
     })
+
+    (mkIf (config.networking.wireless.iwd.enable) {
+      services.dbus.packages = [
+        (pkgs.writeTextFile {
+          name = "iwd-custom-dbus-policy";
+          destination = "/share/dbus-1/system.d/iwd-custom.conf";
+          text = ''
+            <!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
+             "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
+            <busconfig>
+              <policy group="unix_admin@${idpUrl}">
+                <allow send_destination="net.connman.iwd"/>
+              </policy>
+            </busconfig>
+          '';
+        })
+      ];
+    })
   ];
 }

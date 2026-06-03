@@ -275,6 +275,7 @@
           tooltip-format-disconnected = "󰌙 Disconnected";
           tooltip-format-ethernet = "{ifname} 󰌘";
           tooltip-format-wifi = "{essid} {icon} {signalStrength}%";
+          on-click = "${pkgs.iwgtk}/bin/iwgtk";
         };
 
         cpu = {

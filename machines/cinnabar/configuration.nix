@@ -139,13 +139,13 @@ in
       HandlePowerKey = "suspend-then-hibernate";
       HandlePowerKeyLongPress = "poweroff";
       HandleLidSwitch = "suspend-then-hibernate";
-      HandlelidSwitchDocked = "ignore";
+      HandleLidSwitchDocked = "ignore";
     };
   };
 
   systemd.sleep.settings.Sleep = {
     SuspendEstimationSec = "5m";
-    HibernateDelaySec = "4h";
+    HibernateDelaySec = "10m";
     HibernateOnACPower = false;
   };
 

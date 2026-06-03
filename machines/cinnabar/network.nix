@@ -6,18 +6,33 @@
 {
   imports = [ ];
 
-  networking = {
-    networkmanager = {
-      enable = true;
-      dns = lib.mkForce "default";
-      settings = {
-        main = {
-          rc-manager = "resolvconf";
-        };
+  networking.wireless.iwd = {
+    enable = true;
+    settings = {
+      General = {
+        RoamThreshold = -62;
+        RoamThreshold5G = -65;
+        RoamRetryInterval = 15;
+        CriticalRoamThreshold = -70;
+        CriticalRoamThreshold5G = -70;
       };
-      plugins = [
-        pkgs.networkmanager-openconnect
-      ];
+      Scan = {
+        DisablePeriodicScan = false;
+      };
+      Network = {
+        EnableIPv6 = true;
+        NameResolvingService = "resolveconf";
+      };
+      Settings = {
+        AutoConnect = true;
+      };
+    };
+  };
+  systemd.network.networks."10-wireless" = {
+    matchConfig.Name = "wlan0";
+    networkConfig = {
+      DHCP = "yes";
+      IgnoreCarrierLoss = "3s";
     };
   };
 
@@ -54,10 +69,5 @@
     };
     bird.enable = true;
     address = [ "fda1:6cbb:db78::5/128" ];
-  };
-
-  services.cloudflare-warp = {
-    enable = true;
-    openFirewall = true;
   };
 }
