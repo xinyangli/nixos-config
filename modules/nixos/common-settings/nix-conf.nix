@@ -31,6 +31,15 @@ in
   };
 
   config = mkIf cfg.enable {
+    sops = {
+      secrets."nix/github_public_token" = {
+        mode = "0444";
+      };
+      templates."nix.secret.conf".content = ''
+        extra-access-tokens = github.com=${config.sops.secrets."nix/github_public_token".path}
+      '';
+    };
+
     nix.package = pkgs.nixVersions.latest;
 
     nix.gc = {
@@ -42,6 +51,10 @@ in
     nix.optimise.automatic = true;
 
     nix.channel.enable = false;
+
+    nix.extraOptions = ''
+      !include ${config.sops.templates."nix.secret.conf".path}
+    '';
 
     nix.settings = {
       experimental-features = [
