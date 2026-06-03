@@ -80,6 +80,7 @@
         "OWNCLOUD_OAUTH_CLIENT_ID=owncloud"
         "OWNCLOUD_OAUTH_PORT=15241"
       ];
+      UnsetEnvironment = [ "QT_STYLE_OVERRIDE" ];
       Restart = "on-failure";
       RestartSec = 5;
     };
