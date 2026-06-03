@@ -39,6 +39,7 @@ in
       templates."nix.secret.conf".content = ''
         extra-access-tokens = github.com=${config.sops.secrets."nix/github_public_token".path}
       '';
+      templates."nix.secret.conf".mode = "0444";
     };
 
     nix.package = pkgs.nixVersions.latest;
