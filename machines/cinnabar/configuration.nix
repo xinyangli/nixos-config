@@ -58,7 +58,10 @@ in
     nix = {
       signing.enable = true;
     };
-    comin.enable = true;
+    comin = {
+      enable = true;
+      executor = "hydra";
+    };
     network = {
       localdns.enable = true;
       enableProxy = true;
