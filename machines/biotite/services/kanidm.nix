@@ -23,7 +23,7 @@ in
   };
 
   services.kanidm = {
-    package = lib.mkForce pkgs.kanidmWithSecretProvisioning_1_9;
+    package = lib.mkForce pkgs.kanidmWithSecretProvisioning_1_10;
     server = {
       enable = true;
       settings = {
