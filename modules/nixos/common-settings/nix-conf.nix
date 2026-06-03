@@ -37,7 +37,7 @@ in
         sopsFile = ../../../machines/secrets.yaml;
       };
       templates."nix.secret.conf".content = ''
-        extra-access-tokens = github.com=${config.sops.secrets."nix/github_public_token"}
+        extra-access-tokens = github.com=${config.sops.placeholder."nix/github_public_token"}
       '';
       templates."nix.secret.conf".mode = "0444";
     };
