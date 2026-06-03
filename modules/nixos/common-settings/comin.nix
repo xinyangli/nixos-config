@@ -136,19 +136,20 @@ in
           name = "origin";
           url = "https://github.com/xinyangli/nixos-config.git";
           branches.main.name = "deploy";
+          branches.testing.name = "deploy-test";
         }
         {
           name = "forgejo";
           url = "https://git.xiny.li/xin/nixos-config.git";
           branches.main.name = "deploy";
+          branches.testing.name = "deploy-test";
         }
       ];
       hostname = config.networking.hostName;
       executor.type = cfg.executor;
       executor.hydra = lib.mkIf (cfg.executor == "hydra") {
         base_url = "http://agate.coho-tet.ts.net:3000";
-        project = "xin";
-        jobset = "nixos-config-deploy";
+        project = "nixos-config";
       };
       postDeploymentCommand = publisher;
     };
