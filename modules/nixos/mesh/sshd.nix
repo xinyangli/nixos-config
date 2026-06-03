@@ -44,7 +44,8 @@ in
 
     systemd.sockets.mesh-sshd = {
       description = "SSH Socket (gravity VRF)";
-      wantedBy = [ "sockets.target" ];
+      wantedBy = [ "multi-user.target" ];
+      after = [ "systemd-networkd.service" ];
       socketConfig = {
         ListenStream = map toString ssh.ports;
         BindToDevice = "gravity";

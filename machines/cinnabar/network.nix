@@ -10,6 +10,7 @@
     enable = true;
     settings = {
       General = {
+        EnableNetworkConfiguration = true;
         RoamThreshold = -62;
         RoamThreshold5G = -65;
         RoamRetryInterval = 15;
@@ -21,20 +22,20 @@
       };
       Network = {
         EnableIPv6 = true;
-        NameResolvingService = "resolveconf";
+        NameResolvingService = "resolvconf";
       };
       Settings = {
         AutoConnect = true;
       };
     };
   };
-  systemd.network.networks."10-wireless" = {
-    matchConfig.Name = "wlan0";
-    networkConfig = {
-      DHCP = "yes";
-      IgnoreCarrierLoss = "3s";
-    };
-  };
+  # systemd.network.networks."10-wireless" = {
+  #   matchConfig.Name = "wlan0";
+  #   networkConfig = {
+  #     DHCP = "yes";
+  #     IgnoreCarrierLoss = "3s";
+  #   };
+  # };
 
   # Open ports in the firewall.
   networking.firewall.enable = true;

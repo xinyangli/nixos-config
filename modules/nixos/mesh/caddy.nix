@@ -96,7 +96,8 @@ in
         name = socketName port;
         value = {
           description = "Caddy mesh socket on port ${toString port} (gravity VRF)";
-          wantedBy = [ "sockets.target" ];
+          wantedBy = [ "multi-user.target" ];
+          after = [ "systemd-networkd.service" ];
           # Triggering caddy.service via the socket is the systemd-blessed
           # path for passing LISTEN_FDS; caddy is already wantedBy
           # multi-user.target so this doesn't change start ordering, only

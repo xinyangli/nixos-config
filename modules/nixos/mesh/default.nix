@@ -79,12 +79,7 @@ in
           Protocol = "kernel";
           Metric = 1;
         }) cfg.address;
-        # "degraded" = online once an address is assigned. "no" would
-        # exclude it from networkd-wait-online entirely, which on hosts
-        # where gravity/gn* are the only networkd interfaces (wlo1 is
-        # NM-owned on cinnabar) leaves wait-online with nothing to wait
-        # on. "carrier" hangs because a VRF master has no real carrier.
-        linkConfig.RequiredForOnline = "degraded";
+        linkConfig.RequiredForOnline = "carrier";
         routingPolicyRules = [
           {
             Priority = 500;
