@@ -82,11 +82,6 @@
       inputs.rust-overlay.follows = "rust-overlay";
     };
 
-    mcps-nix = {
-      url = "github:roman/mcps.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     vicinae = {
       url = "github:vicinaehq/vicinae";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -103,8 +98,8 @@
       inputs.flake-utils.follows = "flake-utils";
     };
 
-    nix-claude-code = {
-      url = "github:ryoppippi/nix-claude-code";
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
     };
 
     miniflux-tts = {
@@ -133,11 +128,10 @@
       comin,
       nixos-sbc,
       lanzaboote,
-      mcps-nix,
       vicinae,
       chinese-fonts-overlay,
       ranet-ipsec,
-      nix-claude-code,
+      llm-agents,
       miniflux-tts,
       ...
     }:
@@ -492,6 +486,7 @@
           ipsec-mesh-test = pkgs.testers.nixosTest (import ./tests/ipsec-mesh);
           mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
           mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
+          mesh-gost-test = pkgs.testers.nixosTest (import ./tests/mesh-gost);
           kanidm-provision-test = pkgs.testers.nixosTest (import ./tests/kanidm-provision);
         };
 
@@ -508,10 +503,7 @@
               nh
               (python3.withPackages (ps: with ps; [ requests ]))
               sbctl
-              nix-claude-code.packages.${system}.default
-              # mcp-nixos
-              mcps-nix.packages.${system}.mcp-language-server
-              # mcps-nix.packages.${system}.mcp-servers
+              llm-agents.packages.${system}.claude-code
               nixd
             ];
           };
