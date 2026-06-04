@@ -169,6 +169,10 @@ in
   };
 
   programs.ssh.agentPKCS11Whitelist = "${config.security.tpm2.pkcs11.package}/lib/libtpm_pkcs11.so";
+  programs.ssh.extraConfig = ''
+    Match Host *.u.xiny.li
+      ProxyCommand ${pkgs.netcat-openbsd}/bin/nc -x 127.0.0.1:1080 -X 5 %h %p
+  '';
   programs.gnupg.agent.pinentryPackage = pkgs.pinentry-gtk2;
 
   networking.hostName = "cinnabar";
