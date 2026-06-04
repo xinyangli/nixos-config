@@ -15,7 +15,7 @@ let
     ;
   inherit (config.my-lib.settings)
     alertmanagerPort
-    internalDomain
+    gravityInternalDomain
     ;
   cfg = config.custom.monitoring;
   lokiPort = 3100;
@@ -95,17 +95,19 @@ in
         rulerFile = pkgs.writeText "ruler.yml" (builtins.toJSON rulerConfig);
       in
       mkIf cfg.loki.enable {
-        systemd.services.loki.serviceConfig.After = "tailscaled.service";
         services.loki = {
           enable = true;
           configuration = {
             auth_enabled = false;
-            server.http_listen_address = "${config.networking.hostName}.${internalDomain}";
+            server.http_listen_network = "unix";
+            # loki appends :port to the socket path even for unix sockets
+            # https://github.com/grafana/loki/issues/13898
+            server.http_listen_address = "/run/loki/loki.sock";
             server.http_listen_port = lokiPort;
 
             common = {
               ring = {
-                instance_addr = "${config.networking.hostName}.${internalDomain}";
+                instance_addr = "127.0.0.1";
                 kvstore.store = "inmemory";
               };
               replication_factor = 1;
@@ -156,6 +158,21 @@ in
             };
           };
         };
+        systemd.services.loki.serviceConfig.ExecStartPost =
+          let
+            script = pkgs.writeShellScript "loki-socket-perms" ''
+              socket=/run/loki/loki.sock:${toString lokiPort}
+              for i in $(seq 50); do
+                [ -S "$socket" ] && chmod 0660 "$socket" && exit 0
+                sleep 0.1
+              done
+              echo "loki socket not found after 5s" >&2
+              exit 1
+            '';
+          in
+          "+${script}";
+        users.users.caddy.extraGroups = [ "loki" ];
+
         systemd.tmpfiles.rules = [
           "d /var/lib/loki 0700 loki loki - -"
           "d /var/lib/loki/rules-temp 0700 loki loki - -"
@@ -167,6 +184,19 @@ in
         systemd.services.loki.restartTriggers = [ rulerFile ];
       }
     )
+    (mkIf cfg.loki.enable {
+      services.caddy.virtualHosts."http://127.0.0.1:3100".extraConfig = ''
+        reverse_proxy unix//run/loki/loki.sock:${toString lokiPort}
+      '';
+    })
+    (mkIf (cfg.loki.enable && config.custom.mesh-network.caddy.enable) {
+      custom.mesh-network.caddy.ports = [ 3100 ];
+      services.caddy.virtualHosts."http://${config.networking.hostName}.loki.${gravityInternalDomain}:3100".extraConfig =
+        ''
+          bind ${config.custom.mesh-network.caddy.fdRefs."3100"}
+          reverse_proxy unix//run/loki/loki.sock:${toString lokiPort}
+        '';
+    })
     (mkIf cfg.fluent-bit.enable {
       services.fluent-bit = {
         enable = true;
@@ -239,7 +269,7 @@ in
               {
                 name = "loki";
                 match = "*";
-                host = "thorite.${internalDomain}";
+                host = "thorite.loki.${gravityInternalDomain}";
                 port = lokiPort;
                 labels = "job=systemd-journal";
                 label_keys = "$host,$unit,$coredump_unit";
@@ -255,6 +285,9 @@ in
         format json
         level INFO
       '';
+    })
+    (mkIf (cfg.fluent-bit.enable && config.custom.mesh-network.ipsec.enable) {
+      systemd.services.fluent-bit.serviceConfig.BindNetworkInterface = "gravity";
     })
   ];
 }

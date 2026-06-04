@@ -130,11 +130,11 @@ in
     # HTTP/3 needs UDP; the inherited fd is TCP-only. Tell caddy to skip
     # the QUIC listener on the mesh server so it doesn't fail at startup
     # with "network 'fd' cannot handle HTTP/3 connections".
-    services.caddy.globalConfig = ''
-      servers ${lib.concatStringsSep " " (lib.attrValues cfg.fdRefs)} {
+    services.caddy.globalConfig = lib.concatMapStrings (ref: ''
+      servers ${ref} {
         protocols h1 h2
       }
-    '';
+    '') (lib.attrValues cfg.fdRefs);
 
     networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall cfg.ports;
   };

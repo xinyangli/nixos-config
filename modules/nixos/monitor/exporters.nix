@@ -6,14 +6,11 @@
 }:
 let
   inherit (lib) mkIf getExe;
-  inherit (config.my-lib.settings) prometheusCollectors;
+  inherit (config.my-lib.settings) prometheusCollectors gravityInternalDomain;
   cfg = config.custom.prometheus.exporters;
 in
 {
   config = {
-    commonSettings.network.tailscale.before =
-      (lib.optional cfg.node.enable "prometheus-node-exporter.service")
-      ++ (lib.optional cfg.blackbox.enable "prometheus-blackbox-exporter.service");
     services.prometheus.exporters.node = mkIf cfg.node.enable {
       enable = true;
       enabledCollectors = [
@@ -116,7 +113,7 @@ in
 
     services.ntfy-sh.settings.enable-metrics = true;
 
-    services.caddy.virtualHosts."https://${config.networking.hostName}.coho-tet.ts.net:2019".extraConfig =
+    services.caddy.virtualHosts."http://${config.networking.hostName}.10118244.xyz:2019".extraConfig =
       ''
         handle /metrics {
           reverse_proxy unix//var/run/caddy/admin.sock

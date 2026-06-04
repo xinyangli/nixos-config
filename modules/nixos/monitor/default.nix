@@ -11,7 +11,7 @@ let
     mkMerge
     types
     ;
-  inherit (config.my-lib.settings) ntfyUrl;
+  inherit (config.my-lib.settings) ntfyUrl gravityInternalDomain;
   cfg = config.custom.prometheus;
 
   mkRulesOption = mkOption {
@@ -47,21 +47,21 @@ in
           enable = mkEnableOption "node exporter";
           listenAddress = mkOption {
             type = types.str;
-            default = "${config.networking.hostName}.coho-tet.ts.net";
+            default = "";
           };
         };
         blackbox = {
           enable = mkEnableOption "blackbox exporter";
           listenAddress = mkOption {
             type = types.str;
-            default = "${config.networking.hostName}.coho-tet.ts.net";
+            default = "";
           };
         };
         v2ray = {
           enable = mkEnableOption "blackbox exporter";
           listenAddress = mkOption {
             type = types.str;
-            default = "${config.networking.hostName}.coho-tet.ts.net";
+            default = "";
           };
         };
       };
@@ -88,10 +88,18 @@ in
         "prometheus"
       ];
     }
-    (mkIf cfg.enable {
-      services.caddy.virtualHosts."${config.networking.hostName}.coho-tet.ts.net".extraConfig = ''
+    (mkIf (cfg.enable && config.custom.mesh-network.caddy.enable) {
+      services.caddy.virtualHosts."${config.networking.hostName}.prometheus.${gravityInternalDomain}".extraConfig = ''
+        bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+        tls {
+          dns desec {
+            token {env.DESEC_TOKEN}
+          }
+        }
         reverse_proxy 127.0.0.1:${toString config.services.prometheus.port}
       '';
+    })
+    (mkIf cfg.enable {
       services.prometheus = mkIf cfg.enable {
         enable = true;
         port = 9091;

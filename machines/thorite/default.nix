@@ -2,6 +2,7 @@
 {
   imports = [
     ./hardware-configurations.nix
+    ./caddy.nix
     ./monitoring.nix
     ./restic.nix
     ./ntfy.nix

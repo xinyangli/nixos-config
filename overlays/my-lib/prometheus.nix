@@ -3,8 +3,8 @@ let
   mkPort = port: if isNull port then "" else ":${toString port}";
   mkElipsis = label: ''{{ ${label} | reReplaceAll "^(.{10}).+" "<$1>" }}'';
 
-  # get text before "." in the url
-  subdomain = url: builtins.elemAt (builtins.elemAt (builtins.split "([a-zA-Z0-9]+)\..*" url) 1) 0;
+  # get text before first "." in the url
+  subdomain = url: builtins.head (builtins.match "([^.]+)\..*" url);
 in
 {
   inherit mkElipsis;

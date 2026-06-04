@@ -13,6 +13,7 @@ let
     grafanaUrl
     ntfyUrl
     internalDomain
+    gravityInternalDomain
     ;
   removeHttps = s: lib.removePrefix "https://" s;
 in
@@ -112,13 +113,15 @@ in
           scheme = "http";
           static_configs = [
             {
-              targets = map (host: "${host}.${internalDomain}:4243") [
-                "weilite"
-                "thorite"
+              targets = [
+                "127.0.0.1:4243"
+              ] ++ map (host: "${host}.10118244.xyz:4243") [
                 "biotite"
                 "la-00"
                 "fra-00"
                 "agate"
+              ] ++ map (host: "${host}.${gravityInternalDomain}:4243") [
+                "weilite"
                 "raspite"
               ];
             }
@@ -129,7 +132,7 @@ in
         {
           name = "immich";
           scheme = "http";
-          address = "agate.coho-tet.ts.net";
+          address = "agate.10118244.xyz";
           port = 8082;
         }
         # {
@@ -162,67 +165,58 @@ in
         {
           name = "loki";
           scheme = "http";
-          address = "thorite.${internalDomain}";
+          address = "127.0.0.1";
           port = 3100;
         }
         {
           name = "sonarr";
           scheme = "http";
-          address = "agate.${internalDomain}";
+          address = "agate.10118244.xyz";
           port = 21560;
         }
         {
           name = "radarr";
           scheme = "http";
-          address = "agate.${internalDomain}";
+          address = "agate.10118244.xyz";
           port = 21561;
         }
       ])
       ++ (mkCaddyScrapes [
-        { address = "thorite.coho-tet.ts.net"; }
-        { address = "biotite.coho-tet.ts.net"; }
-        { address = "agate.coho-tet.ts.net"; }
-        { address = "weilite.coho-tet.ts.net"; }
+        { address = "thorite.10118244.xyz"; }
+        { address = "biotite.10118244.xyz"; }
+        { address = "agate.10118244.xyz"; }
       ])
       ++ (mkNodeScrapes [
-        { address = "thorite.coho-tet.ts.net"; }
-        { address = "agate.coho-tet.ts.net"; }
-        { address = "weilite.coho-tet.ts.net"; }
-        { address = "biotite.coho-tet.ts.net"; }
-        { address = "la-00.coho-tet.ts.net"; }
-        { address = "fra-00.coho-tet.ts.net"; }
+        { address = "localhost"; }
+        { address = "agate.10118244.xyz"; }
+        { address = "biotite.10118244.xyz"; }
+        { address = "la-00.10118244.xyz"; }
+        { address = "fra-00.10118244.xyz"; }
       ])
       ++ (mkBlackboxScrapes [
         {
-          hostAddress = "thorite.coho-tet.ts.net";
+          hostAddress = "thorite.10118244.xyz";
           targetAddresses = probeList;
         }
         {
-          hostAddress = "agate.coho-tet.ts.net";
+          hostAddress = "agate.10118244.xyz";
           targetAddresses = [
             "la-00.video.10118244.xyz:8080"
             "fra-00.video.10118244.xyz:8080"
           ];
         }
         {
-          hostAddress = "weilite.coho-tet.ts.net";
-          targetAddresses = [
-            "la-00.video.10118244.xyz:8080"
-            "fra-00.video.10118244.xyz:8080"
-          ];
-        }
-        {
-          hostAddress = "la-00.coho-tet.ts.net";
+          hostAddress = "la-00.10118244.xyz";
           targetAddresses = chinaTargets;
         }
         {
-          hostAddress = "fra-00.coho-tet.ts.net";
+          hostAddress = "fra-00.10118244.xyz";
           targetAddresses = chinaTargets;
         }
       ])
       ++ (mkV2rayScrapes [
-        { address = "la-00.coho-tet.ts.net"; }
-        { address = "fra-00.coho-tet.ts.net"; }
+        { address = "la-00.10118244.xyz"; }
+        { address = "fra-00.10118244.xyz"; }
       ]);
 
     systemd.timers.comin-deployment-exporter = {
@@ -237,7 +231,7 @@ in
       let
         check_comin_deployment = pkgs.writeShellScript "comin-deployment-export" ''
           set -euo pipefail
-          PROMETHEUS_URL="https://thorite.coho-tet.ts.net"
+          PROMETHEUS_URL="http://localhost:9091"
           REPO="xinyangli/nixos-config"
           JOB_NAME="deployment_check"
           CURL=${lib.getExe pkgs.curl}
@@ -270,7 +264,7 @@ in
           echo "$DEPLOYMENTS_JSON" | $JQ -c '.data.result[]' | while read -r row; do
             instance=$(echo "$row" | $JQ -r '.metric.instance')
             commit_id=$(echo "$row" | $JQ -r '.metric.commit_id')
-            # Derive short hostname, e.g. fra-00.coho-tet.ts.net -> fra-00
+            # Derive short hostname, e.g. fra-00.u.xiny.li:4243 -> fra-00
             hostname=$(echo "$instance" | cut -d'.' -f1)
             # Get commits for both possible branches
             commit_deploy=$(get_latest_commit "deploy")
