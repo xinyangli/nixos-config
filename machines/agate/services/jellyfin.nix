@@ -28,6 +28,16 @@ in
     reverse_proxy 127.0.0.1:8096
   '';
 
+  services.caddy.virtualHosts."jellyfin.u.xiny.li".extraConfig = ''
+    bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+    tls {
+      dns desec {
+        token {env.DESEC_TOKEN}
+      }
+    }
+    reverse_proxy 127.0.0.1:8096
+  '';
+
   users.users.jellyfin.extraGroups = [ "render" ];
   users.groups.media.members = [ cfg.user ];
 }

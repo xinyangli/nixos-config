@@ -44,4 +44,14 @@
   services.caddy.virtualHosts."https://agate.coho-tet.ts.net:6065".extraConfig = ''
     reverse_proxy ${config.services.webdav.settings.address}:${config.services.webdav.settings.port}
   '';
+
+  services.caddy.virtualHosts."webdav.u.xiny.li".extraConfig = ''
+    bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+    tls {
+      dns desec {
+        token {env.DESEC_TOKEN}
+      }
+    }
+    reverse_proxy ${config.services.webdav.settings.address}:${config.services.webdav.settings.port}
+  '';
 }

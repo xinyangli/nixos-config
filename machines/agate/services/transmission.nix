@@ -82,6 +82,16 @@ in
     reverse_proxy 127.0.0.1:${toString cfg.settings.rpc-port}
   '';
 
+  services.caddy.virtualHosts."transmission.u.xiny.li".extraConfig = ''
+    bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+    tls {
+      dns desec {
+        token {env.DESEC_TOKEN}
+      }
+    }
+    reverse_proxy 127.0.0.1:${toString cfg.settings.rpc-port}
+  '';
+
   systemd.tmpfiles.settings."10-media-storage" = {
     "/storage/media" = {
       d = {
