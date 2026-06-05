@@ -3,6 +3,7 @@
   imports = [
     ./cli/essential.nix
     ./cli/extra.nix
+    ./agents
 
     ./gui/theme.nix
     ./gui/wm/niri.nix

@@ -3,6 +3,7 @@ let
   inherit (config.my-lib.settings) ntfyUrl;
 
   cominBcrypt = "$2a$10$elJoaRScjUm9r1UIXlqllur/8H/PDfTKbgs6d/ygFmBgRTp.H/Ewe";
+  agentsBcrypt = "$2a$10$EeYzKuPMq1yrtHToXabWdeBw5Iiz1dSau6tZbyn0Cq2vFPtOyFMsO";
 in
 {
 
@@ -18,10 +19,15 @@ in
       auth-default-access = "read-write";
       auth-users = [
         "comin:${cominBcrypt}:user"
+        "agents:${agentsBcrypt}:user"
       ];
       auth-access = [
         "comin:comin-reboot:rw"
+        "agents:agent-notify:rw"
+        "agents:agent-notify-reply:rw"
         "everyone:comin-reboot:deny"
+        "everyone:agent-notify:deny"
+        "everyone:agent-notify-reply:deny"
       ];
     };
   };
