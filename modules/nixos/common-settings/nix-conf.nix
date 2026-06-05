@@ -44,6 +44,49 @@ in
 
     nix.package = pkgs.nixVersions.latest;
 
+    services.angrr = {
+      enable = true;
+      settings = {
+        temporary-root-policies = {
+          direnv = {
+            path-regex = "/home/.*/\\.cache/direnv/layouts/.*";
+            period = "30d";
+          };
+          result = {
+            path-regex = "/result[^/]*$";
+            period = "3d";
+          };
+        };
+        profile-policies = {
+          system = {
+            profile-paths = [
+              "/nix/var/nix/profiles/system"
+              "/nix/var/nix/profiles/system-profiles/comin"
+            ];
+            keep-since = "7d";
+            keep-latest-n = 3;
+            keep-booted-system = true;
+            keep-current-system = true;
+            keep-n-per-bucket = [
+              {
+                bucket-window = "1 week";
+                bucket-amount = 2;
+              }
+            ];
+          };
+          user = {
+            enable = true;
+            profile-paths = [
+              "~/.local/state/nix/profiles/profile"
+              "~/.local/state/nix/profiles/home-manager"
+              "/nix/var/nix/profiles/per-user/root/profile"
+            ];
+            keep-since = "1d";
+            keep-latest-n = 1;
+          };
+        };
+      };
+    };
     nix.gc = {
       automatic = true;
       dates = lib.mkDefault "weekly";
