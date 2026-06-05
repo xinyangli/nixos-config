@@ -152,6 +152,7 @@
         config = {
           nixpkgs.overlays = [
             editorOverlay
+            llm-agents.overlays.shared-nixpkgs
             chinese-fonts-overlay.overlays.default
             ranet-ipsec.overlays.default
             (import ./overlays/add-pkgs.nix)
@@ -448,13 +449,28 @@
             "la-00"
             "fra-00"
           ];
+
+          nixosConfigurationJobs = builtins.listToAttrs (
+            map (h: {
+              name = h;
+              value = self.nixosConfigurations.${h}.config.system.build.toplevel;
+            }) includeHosts
+          );
+
+          includeHomes = [
+            "xin-x86_64-linux"
+            "xin-x86_64-minimal-cli"
+            "xin-x86_64-full-cli"
+          ];
+
+          homeConfigurationJobs = builtins.listToAttrs (
+            map (h: {
+              name = "home-${h}";
+              value = self.homeConfigurations.${h}.activationPackage;
+            }) includeHomes
+          );
         in
-        builtins.listToAttrs (
-          map (h: {
-            name = h;
-            value = self.nixosConfigurations.${h}.config.system.build.toplevel;
-          }) includeHosts
-        );
+        nixosConfigurationJobs // homeConfigurationJobs;
     }
     // flake-utils.lib.eachDefaultSystem (
       system:
@@ -503,7 +519,6 @@
               nh
               (python3.withPackages (ps: with ps; [ requests ]))
               sbctl
-              llm-agents.packages.${system}.claude-code
               nixd
             ];
           };
