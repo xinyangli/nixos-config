@@ -6,6 +6,7 @@ in
   imports = [
     ./cli/essential.nix
     ./cli/extra.nix
+    ./agents
   ];
 
   home = lib.mkIf (envUsername != "") {

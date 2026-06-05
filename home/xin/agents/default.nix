@@ -31,6 +31,7 @@ let
 in
 {
   config = {
+    nixpkgs.config.allowUnfree = true;
     home.packages = [
       claude-code-xdg
       codex-xdg
