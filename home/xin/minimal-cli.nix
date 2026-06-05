@@ -10,8 +10,4 @@
   xdg.enable = true;
 
   programs.man.generateCaches = false;
-  services.home-manager.autoUpgrade = {
-    enable = true;
-    useFlake = true;
-  };
 }

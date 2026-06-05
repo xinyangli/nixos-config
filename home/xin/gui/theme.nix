@@ -15,6 +15,7 @@ in
     accent = "peach";
     flavor = "mocha";
     gtk.icon.enable = true;
+    firefox.enable = false;
     fcitx5 = {
       # See https://github.com/nix-community/home-manager/issues/5982#issuecomment-2822054196
       # catppuccin/nix directly bind to conf/classiui.conf, which cause the problem if
