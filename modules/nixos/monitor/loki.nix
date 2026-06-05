@@ -158,6 +158,14 @@ in
             };
           };
         };
+        systemd.services.loki.serviceConfig.ExecStartPre =
+          let
+            script = pkgs.writeShellScript "loki-socket-remove-before-start" ''
+              rm -rf /run/loki/loki.sock:${toString lokiPort}
+              exit 0
+            '';
+          in
+          "+${script}";
         systemd.services.loki.serviceConfig.ExecStartPost =
           let
             script = pkgs.writeShellScript "loki-socket-perms" ''
