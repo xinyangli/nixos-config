@@ -52,6 +52,8 @@
     serverComponents.enable = true;
   };
 
+  networking.firewall.allowedTCPPorts = [ 18080 ];
+
   system.stateVersion = "25.05";
   time.timeZone = "Asia/Shanghai";
 
