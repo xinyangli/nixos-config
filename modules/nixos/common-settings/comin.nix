@@ -185,7 +185,8 @@ in
     services.caddy.virtualHosts."http://${config.networking.hostName}.10118244.xyz:${toString cfg.metricsPort}".extraConfig =
       ''
         handle_path /prometheus/comin/metrics {
-          reverse_proxy http://127.0.0.1:4243/metrics
+          rewrite * /metrics
+          reverse_proxy http://127.0.0.1:4243
         }
       '';
     networking.firewall.allowedTCPPorts = [ cfg.metricsPort ];

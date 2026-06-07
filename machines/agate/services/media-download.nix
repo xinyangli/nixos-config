@@ -41,10 +41,12 @@
 
   services.caddy.virtualHosts."http://agate.10118244.xyz:18080".extraConfig = ''
     handle_path /prometheus/sonarr/metrics {
-      reverse_proxy http://127.0.0.1:21560/metrics
+      rewrite * /metrics
+      reverse_proxy http://127.0.0.1:21560
     }
     handle_path /prometheus/radarr/metrics {
-      reverse_proxy http://127.0.0.1:21561/metrics
+      rewrite * /metrics
+      reverse_proxy http://127.0.0.1:21561
     }
   '';
 

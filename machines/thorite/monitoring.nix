@@ -57,13 +57,14 @@ let
     {
       hostAddress,
       hostPort ? 9115,
+      metricsPath ? "/probe",
       targetAddresses,
       ...
     }:
     {
       job_name = "blackbox(${subdomain hostAddress})";
       scrape_interval = "1m";
-      metrics_path = "/probe";
+      metrics_path = metricsPath;
       params = {
         module = [ "tcp4_connect" ];
       };
@@ -208,6 +209,23 @@ in
               };
               annotations = {
                 summary = "Upstream {{ $labels.unstream }} not healthy";
+              };
+            }
+          ];
+        }
+        {
+          name = "hydra_alerts_thorite";
+          rules = [
+            {
+              alert = "HydraBuildFailed";
+              expr = "hydra_job_failed != 0";
+              for = "5m";
+              labels = {
+                severity = "critical";
+              };
+              annotations = {
+                summary = "Hydra build {{ $labels.hydra_project }}/{{ $labels.hydra_jobset }}/{{ $labels.hydra_job }} failed";
+                description = "The latest Hydra build for {{ $labels.hydra_job }} in {{ $labels.hydra_project }}/{{ $labels.hydra_jobset }} is failing.";
               };
             }
           ];
@@ -544,11 +562,13 @@ in
         })
         {
           job_name = "caddy";
-          scheme = "https";
+          scheme = "http";
           static_configs = map mkCaddyScrape [
             { address = "thorite.10118244.xyz"; }
             { address = "biotite.10118244.xyz"; }
             { address = "agate.10118244.xyz"; }
+            { address = "la-00.10118244.xyz"; }
+            { address = "fra-00.10118244.xyz"; }
           ];
         }
       ]
@@ -566,6 +586,8 @@ in
         }
         {
           hostAddress = "agate.10118244.xyz";
+          hostPort = 18080;
+          metricsPath = "/prometheus/blackbox";
           targetAddresses = [
             "la-00.video.10118244.xyz:8080"
             "fra-00.video.10118244.xyz:8080"

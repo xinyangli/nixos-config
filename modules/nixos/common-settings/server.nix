@@ -23,16 +23,6 @@ in
       enable = true;
     };
 
-    services.caddy.globalConfig = ''
-      servers {
-        metrics
-      }
-
-      admin unix//var/run/caddy/admin.sock {
-        origins 127.0.0.1 ${config.networking.hostName}.coho-tet.ts.net:2019
-      }
-    '';
-
     systemd.services.caddy.serviceConfig = {
       RuntimeDirectory = "caddy";
       RuntimeDirectoryMode = "0700";

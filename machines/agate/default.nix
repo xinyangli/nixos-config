@@ -66,11 +66,19 @@
     enable = true;
     blackbox = {
       enable = true;
+      listenAddress = "127.0.0.1";
     };
     node = {
       enable = true;
     };
   };
+
+  services.caddy.virtualHosts."http://agate.10118244.xyz:18080".extraConfig = ''
+    handle_path /prometheus/blackbox {
+      rewrite * /probe
+      reverse_proxy http://127.0.0.1:9115
+    }
+  '';
 
   custom.monitoring = {
     fluent-bit.enable = true;
