@@ -52,6 +52,8 @@
     serverComponents.enable = true;
   };
 
+  networking.firewall.allowedTCPPorts = [ 27280 ];
+
   # Root-equivalent privilege scoped to a single named kanidm identity so
   # adding members to `nix-builders` later doesn't widen the trust scope.
   # Required because Hydra dispatches over legacy ssh:// (nix-store --serve
