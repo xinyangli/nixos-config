@@ -115,6 +115,22 @@ let
         ];
       }
     ];
+  mkHttpPathScrape =
+    {
+      name,
+      target,
+      metricsPath,
+    }:
+    {
+      job_name = name;
+      scheme = "http";
+      metrics_path = metricsPath;
+      static_configs = [
+        {
+          targets = [ target ];
+        }
+      ];
+    };
   proxyMetricsStaticConfig =
     {
       address,
@@ -405,30 +421,43 @@ in
             {
               targets = [
                 "127.0.0.1:4243"
-                "biotite.10118244.xyz/prometheus/comin"
-                "la-00.10118244.xyz/prometheus/comin"
-                "fra-00.10118244.xyz/prometheus/comin"
-                "agate.10118244.xyz:18080/prometheus/comin"
-                "hafnon.10118244.xyz:27280/prometheus/comin"
               ]
               ++ map (host: "${host}.${gravityInternalDomain}:4243") [
                 "weilite"
                 "raspite"
               ];
             }
-          ];
-        }
-        {
-          job_name = "immich";
-          scheme = "http";
-          static_configs = [
             {
               targets = [
-                "agate.10118244.xyz:18080/prometheus/immich"
+                "biotite.10118244.xyz"
+                "la-00.10118244.xyz"
+                "fra-00.10118244.xyz"
+                "agate.10118244.xyz:18080"
+                "hafnon.10118244.xyz:27280"
               ];
+              labels = {
+                metrics_path = "/prometheus/comin/metrics";
+              };
+            }
+          ];
+          relabel_configs = [
+            {
+              source_labels = [ "metrics_path" ];
+              regex = "(.+)";
+              target_label = "__metrics_path__";
+              replacement = "$1";
+            }
+            {
+              regex = "metrics_path";
+              action = "labeldrop";
             }
           ];
         }
+        (mkHttpPathScrape {
+          name = "immich";
+          target = "agate.10118244.xyz:18080";
+          metricsPath = "/prometheus/immich/metrics";
+        })
         {
           job_name = "gotosocial(${removeHttps gotosocialUrl})";
           scheme = "https";
@@ -503,28 +532,16 @@ in
             }
           ];
         }
-        {
-          job_name = "sonarr";
-          scheme = "http";
-          static_configs = [
-            {
-              targets = [
-                "agate.10118244.xyz:18080/prometheus/sonarr"
-              ];
-            }
-          ];
-        }
-        {
-          job_name = "radarr";
-          scheme = "http";
-          static_configs = [
-            {
-              targets = [
-                "agate.10118244.xyz:18080/prometheus/radarr"
-              ];
-            }
-          ];
-        }
+        (mkHttpPathScrape {
+          name = "sonarr";
+          target = "agate.10118244.xyz:18080";
+          metricsPath = "/prometheus/sonarr/metrics";
+        })
+        (mkHttpPathScrape {
+          name = "radarr";
+          target = "agate.10118244.xyz:18080";
+          metricsPath = "/prometheus/radarr/metrics";
+        })
         {
           job_name = "caddy";
           scheme = "https";
