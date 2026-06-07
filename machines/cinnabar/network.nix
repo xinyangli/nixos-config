@@ -29,13 +29,7 @@
       };
     };
   };
-  # systemd.network.networks."10-wireless" = {
-  #   matchConfig.Name = "wlan0";
-  #   networkConfig = {
-  #     DHCP = "yes";
-  #     IgnoreCarrierLoss = "3s";
-  #   };
-  # };
+  systemd.network.networks."99-wireless-client-dhcp".enable = false;
 
   # Open ports in the firewall.
   networking.firewall.enable = true;
