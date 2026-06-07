@@ -109,6 +109,10 @@ in
 {
   options.commonSettings.comin = {
     enable = mkEnableOption "auto updater with comin";
+    metricsPort = mkOption {
+      type = types.port;
+      default = 80;
+    };
     executor = mkOption {
       type = types.enum [
         "nix"
@@ -177,5 +181,11 @@ in
         RestartSec = 10;
       };
     };
+
+    services.caddy.virtualHosts."http://${config.networking.hostName}.10118244.xyz:${cfg.metricsPort}/prometheus/comin/metrics".extraConfig =
+      ''
+        reverse_proxy http://127.0.0.1:4243/metrics
+      '';
+    networking.firewall.allowedTCPPorts = [ cfg.metricsPort ];
   };
 }

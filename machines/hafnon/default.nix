@@ -33,8 +33,11 @@
     nix = {
       enable = true;
     };
-    comin.enable = true;
-    comin.executor = "nix";
+    comin = {
+      enable = true;
+      executor = "nix";
+      metricsPort = 27280;
+    };
     network = {
       localdns = {
         enable = true;

@@ -115,12 +115,15 @@ in
             {
               targets = [
                 "127.0.0.1:4243"
-              ] ++ map (host: "${host}.10118244.xyz:4243") [
-                "biotite"
-                "la-00"
-                "fra-00"
-                "agate"
-              ] ++ map (host: "${host}.${gravityInternalDomain}:4243") [
+                "biotite.10118244.xyz/prometheus/comin"
+                "la-00.10118244.xyz/prometheus/comin"
+                "fra-00.10118244.xyz/prometheus/comin"
+                "agate.10118244.xyz:18080/prometheus/comin"
+                "hafnon.10118244.xyz:27280/prometheus/comin"
+              ]
+              ++ map (host: "${host}") [
+              ]
+              ++ map (host: "${host}.${gravityInternalDomain}:4243") [
                 "weilite"
                 "raspite"
               ];

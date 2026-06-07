@@ -115,13 +115,11 @@ in
     };
 
     services.ntfy-sh.settings.enable-metrics = true;
-
-    services.caddy.virtualHosts."http://${config.networking.hostName}.10118244.xyz:2019".extraConfig =
-      ''
-        handle /metrics {
-          reverse_proxy unix//var/run/caddy/admin.sock
-        }
-        respond 403
-      '';
+    services.caddy.globalConfig = ''
+      metrics {
+        per_host
+      }
+    '';
+    networking.firewall.allowedTCPPorts = [ 2019 ];
   };
 }
