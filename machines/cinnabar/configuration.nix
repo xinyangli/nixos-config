@@ -60,7 +60,7 @@ in
     };
     comin = {
       enable = true;
-      executor = "hydra";
+      executor = "nix";
     };
     network = {
       localdns.enable = true;
