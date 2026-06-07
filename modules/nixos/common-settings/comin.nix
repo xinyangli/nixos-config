@@ -188,6 +188,10 @@ in
           rewrite * /metrics
           reverse_proxy http://127.0.0.1:4243
         }
+        handle_path /prometheus/caddy/metrics {
+          rewrite * /metrics
+          reverse_proxy http://127.0.0.1:2019
+        }
       '';
     networking.firewall.allowedTCPPorts = [ cfg.metricsPort ];
   };

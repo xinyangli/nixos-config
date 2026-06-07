@@ -120,6 +120,5 @@ in
         per_host
       }
     '';
-    networking.firewall.allowedTCPPorts = [ 2019 ];
   };
 }

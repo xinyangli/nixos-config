@@ -34,7 +34,7 @@ let
   mkCaddyScrape =
     {
       address,
-      port ? 2019,
+      port ? 80,
     }:
     {
       targets = [ "${address}${mkPort port}" ];
@@ -563,10 +563,14 @@ in
         {
           job_name = "caddy";
           scheme = "http";
+          metrics_path = "/prometheus/caddy/metrics";
           static_configs = map mkCaddyScrape [
             { address = "thorite.10118244.xyz"; }
             { address = "biotite.10118244.xyz"; }
-            { address = "agate.10118244.xyz"; }
+            {
+              address = "agate.10118244.xyz";
+              port = 18080;
+            }
             { address = "la-00.10118244.xyz"; }
             { address = "fra-00.10118244.xyz"; }
           ];
@@ -587,7 +591,7 @@ in
         {
           hostAddress = "agate.10118244.xyz";
           hostPort = 18080;
-          metricsPath = "/prometheus/blackbox";
+          metricsPath = "/prometheus/blackbox/probe";
           targetAddresses = [
             "la-00.video.10118244.xyz:8080"
             "fra-00.video.10118244.xyz:8080"
