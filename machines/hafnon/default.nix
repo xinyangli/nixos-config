@@ -36,7 +36,6 @@
     comin = {
       enable = true;
       executor = "nix";
-      metricsPort = 27280;
     };
     network = {
       localdns = {
@@ -51,6 +50,7 @@
     };
     serverComponents.enable = true;
   };
+  custom.prometheus.exporters.metricsPort = 27280;
 
   # Root-equivalent privilege scoped to a single named kanidm identity so
   # adding members to `nix-builders` later doesn't widen the trust scope.

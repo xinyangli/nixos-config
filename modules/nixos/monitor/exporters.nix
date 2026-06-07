@@ -5,11 +5,17 @@
   ...
 }:
 let
-  inherit (lib) mkIf getExe;
+  inherit (lib) mkIf mkOption;
   inherit (config.my-lib.settings) prometheusCollectors gravityInternalDomain;
   cfg = config.custom.prometheus.exporters;
 in
 {
+  options = {
+    custom.prometheus.exporters.metricsPort = mkOption {
+      type = lib.types.port;
+      default = 18080;
+    };
+  };
   config = {
     services.prometheus.exporters.node = mkIf cfg.node.enable {
       enable = true;
@@ -120,5 +126,16 @@ in
         per_host
       }
     '';
+    services.caddy.virtualHosts."http://${config.networking.hostName}.10118244.xyz:${toString cfg.metricsPort}".extraConfig =
+      ''
+        handle_path /prometheus/caddy/metrics {
+          metrics
+        }
+        handle_path /prometheus/comin/metrics {
+          rewrite * /metrics
+          reverse_proxy http://127.0.0.1:4243
+        }
+      '';
+    networking.firewall.allowedTCPPorts = [ cfg.metricsPort ];
   };
 }
