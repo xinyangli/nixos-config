@@ -162,6 +162,8 @@ in
           let
             script = pkgs.writeShellScript "loki-socket-remove-before-start" ''
               rm -rf /run/loki/loki.sock:${toString lokiPort}
+              mkdir -p /run/loki
+              chown loki:loki /run/loki
               exit 0
             '';
           in
