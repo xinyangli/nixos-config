@@ -11,7 +11,6 @@ let
     hedgedocDomain
     grafanaUrl
     ntfyUrl
-    gravityInternalDomain
     ;
   mkPort = port: if isNull port then "" else ":${toString port}";
   mkEllipsis = label: ''{{ ${label} | reReplaceAll "^(.{10}).+" "<$1>" }}'';
@@ -34,7 +33,7 @@ let
   mkCaddyScrape =
     {
       address,
-      port ? 80,
+      port ? 18080,
     }:
     {
       targets = [ "${address}${mkPort port}" ];
@@ -419,6 +418,14 @@ in
           "home-xin-x86_64-minimal-cli"
           "home-xin-x86_64-full-cli"
         ];
+        metricsTarget =
+          host:
+          "${host}.10118244.xyz:" + (
+            if host == "hafnon" then
+              "27280"
+            else
+              "18080"
+          );
       in
       [
         {
@@ -437,21 +444,15 @@ in
           scheme = "http";
           static_configs = [
             {
-              targets = [
-                "127.0.0.1:4243"
-              ]
-              ++ map (host: "${host}.${gravityInternalDomain}:4243") [
+              targets = map metricsTarget [
+                "thorite"
                 "weilite"
                 "raspite"
-              ];
-            }
-            {
-              targets = [
-                "biotite.10118244.xyz"
-                "la-00.10118244.xyz"
-                "fra-00.10118244.xyz"
-                "agate.10118244.xyz:18080"
-                "hafnon.10118244.xyz:27280"
+                "biotite"
+                "la-00"
+                "fra-00"
+                "agate"
+                "hafnon"
               ];
               labels = {
                 metrics_path = "/prometheus/comin/metrics";
@@ -567,12 +568,13 @@ in
           static_configs = map mkCaddyScrape [
             { address = "thorite.10118244.xyz"; }
             { address = "biotite.10118244.xyz"; }
-            {
-              address = "agate.10118244.xyz";
-              port = 18080;
-            }
+            { address = "agate.10118244.xyz"; }
             { address = "la-00.10118244.xyz"; }
             { address = "fra-00.10118244.xyz"; }
+            {
+              address = "hafnon.10118244.xyz";
+              port = 27280;
+            }
           ];
         }
       ]
@@ -669,7 +671,7 @@ in
           echo "$DEPLOYMENTS_JSON" | $JQ -c '.data.result[]' | while read -r row; do
             instance=$(echo "$row" | $JQ -r '.metric.instance')
             commit_id=$(echo "$row" | $JQ -r '.metric.commit_id')
-            # Derive short hostname, e.g. fra-00.u.xiny.li:4243 -> fra-00
+            # Derive short hostname, e.g. fra-00.10118244.xyz:18080 -> fra-00
             hostname=$(echo "$instance" | cut -d'.' -f1)
             # Get commits for both possible branches
             commit_deploy=$(get_latest_commit "deploy")

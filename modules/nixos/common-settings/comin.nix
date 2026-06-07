@@ -111,7 +111,7 @@ in
     enable = mkEnableOption "auto updater with comin";
     metricsPort = mkOption {
       type = types.port;
-      default = 80;
+      default = 18080;
     };
     executor = mkOption {
       type = types.enum [

@@ -46,7 +46,6 @@
     comin = {
       enable = true;
       executor = "nix";
-      metricsPort = 18080;
     };
     network.localdns.enable = true;
     serverComponents.enable = true;
