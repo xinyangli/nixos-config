@@ -4,7 +4,6 @@
   pkgs,
   ...
 }:
-with config.my-lib;
 let
   inherit (config.my-lib.settings)
     minifluxUrl
@@ -12,10 +11,81 @@ let
     hedgedocDomain
     grafanaUrl
     ntfyUrl
-    internalDomain
     gravityInternalDomain
     ;
+  mkPort = port: if isNull port then "" else ":${toString port}";
+  mkEllipsis = label: ''{{ ${label} | reReplaceAll "^(.{10}).+" "<$1>" }}'';
   removeHttps = s: lib.removePrefix "https://" s;
+  subdomain = url: builtins.head (builtins.match "([^.]+)\..*" url);
+  blackboxRelabelConfigs = hostAddress: hostPort: [
+    {
+      source_labels = [ "__address__" ];
+      target_label = "__param_target";
+    }
+    {
+      source_labels = [ "__param_target" ];
+      target_label = "instance";
+    }
+    {
+      target_label = "__address__";
+      replacement = "${hostAddress}${mkPort hostPort}";
+    }
+  ];
+  mkCaddyScrape =
+    {
+      address,
+      port ? 2019,
+    }:
+    {
+      targets = [ "${address}${mkPort port}" ];
+    };
+  mkNodeScrape =
+    {
+      address,
+      port ? 9100,
+    }:
+    {
+      targets = [ "${address}${mkPort port}" ];
+    };
+  mkNodeScrapes = targets: [
+    {
+      job_name = "node_exporter";
+      static_configs = map mkNodeScrape targets;
+    }
+  ];
+  mkBlackboxScrapes = map (
+    {
+      hostAddress,
+      hostPort ? 9115,
+      targetAddresses,
+      ...
+    }:
+    {
+      job_name = "blackbox(${subdomain hostAddress})";
+      scrape_interval = "1m";
+      metrics_path = "/probe";
+      params = {
+        module = [ "tcp4_connect" ];
+      };
+      static_configs = [
+        {
+          targets = targetAddresses;
+          labels = {
+            from = hostAddress;
+          };
+        }
+      ];
+      relabel_configs = blackboxRelabelConfigs hostAddress hostPort;
+    }
+  );
+  proxyMetricsStaticConfig =
+    {
+      address,
+      port ? 9516,
+    }:
+    {
+      targets = [ "${address}${mkPort port}" ];
+    };
 in
 {
   config = {
@@ -73,10 +143,170 @@ in
             }
           ];
         }
-      ]
-      ++ (mkCaddyRules [ { host = "thorite"; } ])
-      ++ (mkNodeRules [ { host = "thorite"; } ])
-      ++ (mkBlackboxRules [ { host = "thorite"; } ]);
+        {
+          name = "caddy_alerts_thorite";
+          rules = [
+            {
+              alert = "UpstreamHealthy";
+              expr = "caddy_reverse_proxy_upstreams_healthy != 1";
+              for = "5m";
+              labels = {
+                severity = "critical";
+              };
+              annotations = {
+                summary = "Upstream {{ $labels.unstream }} not healthy";
+              };
+            }
+          ];
+        }
+        {
+          name = "system_alerts_thorite";
+          rules = [
+            {
+              alert = "SystemdFailedUnits";
+              expr = "node_systemd_unit_state{state=\"failed\"} > 0";
+              for = "5m";
+              labels = {
+                severity = "critical";
+              };
+              annotations = {
+                summary = "{{ $labels.name }} failed on ${mkEllipsis "$labels.instance"}.";
+              };
+            }
+            {
+              alert = "HighLoadAverage";
+              expr = "node_load1 > 0.8 * count without (cpu) (node_cpu_seconds_total{mode=\"idle\"})";
+              for = "1m";
+              labels = {
+                severity = "warning";
+              };
+              annotations = {
+                summary = "High load average on ${mkEllipsis "$labels.instance"}.";
+                description = "The 1-minute load average ({{ $value }}) exceeds 80% the number of CPUs.";
+              };
+            }
+            {
+              alert = "NetworkTrafficExceedLimit";
+              expr = ''sum by(instance) (increase(node_network_transmit_bytes_total{device!="lo", device!~"tailscale.*", device!~"wg.*", device!~"br.*"}[30d])) > 322122547200'';
+              for = "1m";
+              labels = {
+                severity = "critical";
+              };
+              annotations = {
+                summary = "Outbound network traffic exceed 300GB for last 30 day";
+              };
+            }
+            {
+              alert = "HighDiskUsage";
+              expr = ''
+                (
+                  1 - (avg by(instance, device, fstype) (node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs"}))
+                  /
+                  (avg by(instance, device, fstype) (node_filesystem_size_bytes{fstype!~"tmpfs|ramfs"}))
+                  > 0.85
+                )
+                and
+                (
+                  avg by(instance, device, fstype) (node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs"}) < 20 * 1024 * 1024 * 1024
+                )
+              '';
+              for = "5m";
+              labels = {
+                severity = "warning";
+              };
+              annotations = {
+                summary = "${mkEllipsis "$labels.instance"}: Disk usage 85%+ {{ $labels.device }} ({{ $labels.fstype }})";
+              };
+            }
+            {
+              alert = "DiskWillFull";
+              expr = ''1 - predict_linear((avg by(instance, device, fstype) (node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs"}))[2h:5m], 12 * 3600) / (avg by(instance, device, fstype) (node_filesystem_size_bytes{fstype!~"tmpfs|ramfs"})) > 0.95'';
+              for = "10m";
+              labels = {
+                severity = "critical";
+              };
+              annotations = {
+                summary = "${mkEllipsis "$labels.instance"} {{ $labels.device }} ({{ $labels.fstype }}): Disk will get 95%+ usage in 12 hours";
+              };
+            }
+            {
+              alert = "HighSwapUsage";
+              expr = ''(1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80'';
+              for = "5m";
+              labels = {
+                severity = "warning";
+              };
+              annotations = {
+                summary = "Swap usage above 80% on ${mkEllipsis "$labels.instance"}";
+              };
+            }
+            {
+              alert = "OOMKillDetected";
+              expr = ''increase(node_vmstat_oom_kill[5m]) > 0'';
+              for = "1m";
+              labels = {
+                severity = "critical";
+              };
+              annotations = {
+                summary = "OOM kill detected on {{ $labels.instance }}";
+                description = "Out of memory killer was triggered in the last 5 minutes";
+              };
+            }
+            {
+              alert = "HighMemoryUsage";
+              expr = ''(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90'';
+              for = "5m";
+              labels = {
+                severity = "warning";
+              };
+              annotations = {
+                summary = "High memory usage on {{ $labels.instance }}";
+                description = "Memory usage is above 90% for 5 minutes\n Current value: {{ $value }}%";
+              };
+            }
+          ];
+        }
+        {
+          name = "probe_alerts_thorite";
+          rules = [
+            {
+              alert = "ProbeToError";
+              expr = "sum by(instance) (probe_success != 1) > 0";
+              for = "3m";
+              labels = {
+                severity = "critical";
+              };
+              annotations = {
+                summary = "Probing {{ $labels.instance }} failed";
+              };
+            }
+            {
+              alert = "HighProbeLatency";
+              expr = "probe_duration_seconds > 0.5";
+              for = "3m";
+              labels = {
+                severity = "warning";
+              };
+              annotations = {
+                summary = "High request latency from {{ $labels.from }} to {{ $labels.instance }}";
+                description = "Request latency is above 0.5 seconds for the last 2 minutes.";
+              };
+            }
+            {
+              alert = "VeryHighProbeLatency";
+              expr = "probe_duration_seconds > 2";
+              for = "3m";
+              labels = {
+                severity = "critical";
+              };
+              annotations = {
+                summary = "Very high request latency from {{ $labels.from }} to {{ $labels.instance }}";
+                description = "Request latency is above 2 seconds for the last 2 minutes.";
+              };
+            }
+          ];
+        }
+      ];
     };
 
     services.prometheus.scrapeConfigs =
@@ -95,6 +325,10 @@ in
           "sh-ct-v4.ip.zstaticcdn.com:80"
         ];
         passwordFile = config.sops.secrets."prometheus/metrics_password".path;
+        v2rayTargets = [
+          { address = "la-00.10118244.xyz"; }
+          { address = "fra-00.10118244.xyz"; }
+        ];
       in
       [
         {
@@ -121,8 +355,6 @@ in
                 "agate.10118244.xyz:18080/prometheus/comin"
                 "hafnon.10118244.xyz:27280/prometheus/comin"
               ]
-              ++ map (host: "${host}") [
-              ]
               ++ map (host: "${host}.${gravityInternalDomain}:4243") [
                 "weilite"
                 "raspite"
@@ -130,73 +362,131 @@ in
             }
           ];
         }
+        {
+          job_name = "immich";
+          scheme = "http";
+          static_configs = [
+            {
+              targets = [
+                "agate.10118244.xyz:18080/prometheus/immich"
+              ];
+            }
+          ];
+        }
+        {
+          job_name = "gotosocial(${removeHttps gotosocialUrl})";
+          scheme = "https";
+          static_configs = [
+            {
+              targets = [
+                "${removeHttps gotosocialUrl}:443"
+              ];
+            }
+          ];
+          basic_auth = {
+            username = "prom";
+            password_file = passwordFile;
+          };
+        }
+        {
+          job_name = "miniflux(${removeHttps minifluxUrl})";
+          scheme = "https";
+          static_configs = [
+            {
+              targets = [
+                "${removeHttps minifluxUrl}:443"
+              ];
+            }
+          ];
+          basic_auth = {
+            username = "prom";
+            password_file = passwordFile;
+          };
+        }
+        {
+          job_name = "hedgedoc(${hedgedocDomain})";
+          scheme = "https";
+          static_configs = [
+            {
+              targets = [
+                "${hedgedocDomain}:443"
+              ];
+            }
+          ];
+        }
+        {
+          job_name = "ntfy(${removeHttps ntfyUrl})";
+          scheme = "https";
+          static_configs = [
+            {
+              targets = [
+                "${removeHttps ntfyUrl}:443"
+              ];
+            }
+          ];
+        }
+        {
+          job_name = "grafana-eu(${removeHttps grafanaUrl})";
+          scheme = "https";
+          static_configs = [
+            {
+              targets = [
+                "${removeHttps grafanaUrl}:443"
+              ];
+            }
+          ];
+        }
+        {
+          job_name = "loki(127.0.0.1)";
+          scheme = "http";
+          static_configs = [
+            {
+              targets = [
+                "127.0.0.1:3100"
+              ];
+            }
+          ];
+        }
+        {
+          job_name = "sonarr";
+          scheme = "http";
+          static_configs = [
+            {
+              targets = [
+                "agate.10118244.xyz:18080/prometheus/sonarr"
+              ];
+            }
+          ];
+        }
+        {
+          job_name = "radarr";
+          scheme = "http";
+          static_configs = [
+            {
+              targets = [
+                "agate.10118244.xyz:18080/prometheus/radarr"
+              ];
+            }
+          ];
+        }
+        {
+          job_name = "caddy";
+          scheme = "https";
+          static_configs = map mkCaddyScrape [
+            { address = "thorite.10118244.xyz"; }
+            { address = "biotite.10118244.xyz"; }
+            { address = "agate.10118244.xyz"; }
+          ];
+        }
       ]
-      ++ (mkScrapes [
-        {
-          name = "immich";
-          scheme = "http";
-          address = "agate.10118244.xyz";
-          port = 8082;
-        }
-        # {
-        #   name = "restic_rest_server";
-        #   address = "backup.xinyang.life";
-        #   port = 8443;
-        # }
-        {
-          inherit passwordFile;
-          name = "gotosocial";
-          address = removeHttps gotosocialUrl;
-        }
-        {
-          inherit passwordFile;
-          name = "miniflux";
-          address = removeHttps minifluxUrl;
-        }
-        {
-          name = "hedgedoc";
-          address = hedgedocDomain;
-        }
-        {
-          name = "ntfy";
-          address = removeHttps ntfyUrl;
-        }
-        {
-          name = "grafana-eu";
-          address = removeHttps grafanaUrl;
-        }
-        {
-          name = "loki";
-          scheme = "http";
-          address = "127.0.0.1";
-          port = 3100;
-        }
-        {
-          name = "sonarr";
-          scheme = "http";
-          address = "agate.10118244.xyz";
-          port = 21560;
-        }
-        {
-          name = "radarr";
-          scheme = "http";
-          address = "agate.10118244.xyz";
-          port = 21561;
-        }
-      ])
-      ++ (mkCaddyScrapes [
-        { address = "thorite.10118244.xyz"; }
-        { address = "biotite.10118244.xyz"; }
-        { address = "agate.10118244.xyz"; }
-      ])
-      ++ (mkNodeScrapes [
+      ++ mkNodeScrapes [
         { address = "localhost"; }
         { address = "agate.10118244.xyz"; }
         { address = "biotite.10118244.xyz"; }
         { address = "la-00.10118244.xyz"; }
         { address = "fra-00.10118244.xyz"; }
-      ])
-      ++ (mkBlackboxScrapes [
+      ]
+      ++ mkBlackboxScrapes [
         {
           hostAddress = "thorite.10118244.xyz";
           targetAddresses = probeList;
@@ -216,11 +506,20 @@ in
           hostAddress = "fra-00.10118244.xyz";
           targetAddresses = chinaTargets;
         }
-      ])
-      ++ (mkV2rayScrapes [
-        { address = "la-00.10118244.xyz"; }
-        { address = "fra-00.10118244.xyz"; }
-      ]);
+      ]
+      ++ [
+        {
+          job_name = "v2ray-exporter";
+          scheme = "http";
+          static_configs = map proxyMetricsStaticConfig v2rayTargets;
+        }
+        {
+          job_name = "singbox_stat";
+          scheme = "http";
+          metrics_path = "/scrape";
+          static_configs = map proxyMetricsStaticConfig v2rayTargets;
+        }
+      ];
 
     systemd.timers.comin-deployment-exporter = {
       wantedBy = [ "timers.target" ];

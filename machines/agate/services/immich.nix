@@ -237,5 +237,12 @@ in
       }
       reverse_proxy 127.0.0.1:${toString config.services.immich.port}
     '';
+
+    services.caddy.virtualHosts."http://agate.10118244.xyz:18080".extraConfig =
+      ''
+        handle_path /prometheus/immich/metrics {
+          reverse_proxy http://127.0.0.1:8082/metrics
+        }
+      '';
   };
 }

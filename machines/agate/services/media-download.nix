@@ -1,9 +1,4 @@
 { config, pkgs, ... }:
-let
-  inherit (config.my-lib.settings)
-    internalDomain
-    ;
-in
 {
   sops.secrets = {
     "sonarr/api-key" = { };
@@ -32,7 +27,7 @@ in
     enable = true;
     url = "http://127.0.0.1:8989";
     apiKeyFile = config.sops.secrets."sonarr/api-key".path;
-    listenAddress = "agate.${internalDomain}";
+    listenAddress = "127.0.0.1";
     port = 21560;
   };
 
@@ -40,9 +35,18 @@ in
     enable = true;
     url = "http://127.0.0.1:7878";
     apiKeyFile = config.sops.secrets."radarr/api-key".path;
-    listenAddress = "agate.${internalDomain}";
+    listenAddress = "127.0.0.1";
     port = 21561;
   };
+
+  services.caddy.virtualHosts."http://agate.10118244.xyz:18080".extraConfig = ''
+    handle_path /prometheus/sonarr/metrics {
+      reverse_proxy http://127.0.0.1:21560/metrics
+    }
+    handle_path /prometheus/radarr/metrics {
+      reverse_proxy http://127.0.0.1:21561/metrics
+    }
+  '';
 
   users.groups.media.members = [
     config.services.sonarr.user
