@@ -446,7 +446,6 @@ in
             {
               targets = map metricsTarget [
                 "thorite"
-                "weilite"
                 "raspite"
                 "biotite"
                 "la-00"
