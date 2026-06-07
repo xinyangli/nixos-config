@@ -78,6 +78,43 @@ let
       relabel_configs = blackboxRelabelConfigs hostAddress hostPort;
     }
   );
+  mkHydraScrape =
+    {
+      project ? "nixos-config",
+      host ? "hydra.u.xiny.li",
+      jobsets,
+      jobs,
+      proxyUrl ? "http://127.0.0.1:${toString config.custom.mesh-network.gost.port}",
+    }:
+    [
+      {
+        job_name = "hydra";
+        scheme = "https";
+        proxy_url = proxyUrl;
+        static_configs = lib.concatMap (
+          jobset:
+          map (job: {
+            targets = [ host ];
+            labels = {
+              hydra_project = project;
+              hydra_jobset = jobset;
+              hydra_job = job;
+              metrics_path = "/job/${project}/${jobset}/${job}/prometheus";
+            };
+          }) jobs
+        ) jobsets;
+        relabel_configs = [
+          {
+            source_labels = [ "metrics_path" ];
+            target_label = "__metrics_path__";
+          }
+          {
+            regex = "metrics_path";
+            action = "labeldrop";
+          }
+        ];
+      }
+    ];
   proxyMetricsStaticConfig =
     {
       address,
@@ -329,6 +366,25 @@ in
           { address = "la-00.10118244.xyz"; }
           { address = "fra-00.10118244.xyz"; }
         ];
+        hydraJobsets = [
+          "deploy-test"
+          "deploy-next"
+          "deploy"
+        ];
+        hydraJobs = [
+          "agate"
+          "raspite"
+          "baryte"
+          "osmium"
+          "hafnon"
+          "thorite"
+          "biotite"
+          "la-00"
+          "fra-00"
+          "home-xin-x86_64-linux"
+          "home-xin-x86_64-minimal-cli"
+          "home-xin-x86_64-full-cli"
+        ];
       in
       [
         {
@@ -507,6 +563,10 @@ in
           targetAddresses = chinaTargets;
         }
       ]
+      ++ mkHydraScrape {
+        jobsets = hydraJobsets;
+        jobs = hydraJobs;
+      }
       ++ [
         {
           job_name = "v2ray-exporter";

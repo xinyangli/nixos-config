@@ -48,6 +48,10 @@
         interfaces = [ "ens3" ];
       };
       bird.enable = true;
+      gost = {
+        enable = true;
+        listenAddress = "127.0.0.1";
+      };
       address = [ "fda1:6cbb:db78::3/128" ];
     };
 
