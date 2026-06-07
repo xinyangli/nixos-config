@@ -65,6 +65,7 @@
       };
       dhcpV4Config.RouteMetric = 100;
       ipv6AcceptRAConfig.RouteMetric = 100;
+      dhcpPrefixDelegationConfig.RouteMetric = 100;
       linkConfig.RequiredForOnline = "routable";
     };
   };

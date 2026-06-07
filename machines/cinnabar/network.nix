@@ -30,6 +30,17 @@
     };
   };
   systemd.network.networks."99-wireless-client-dhcp".enable = false;
+  systemd.network.networks."10-en" = {
+    matchConfig = {
+      Name = "en*";
+    };
+    networkConfig = {
+      DHCP = true;
+    };
+    dhcpV4Config.RouteMetric = 100;
+    ipv6AcceptRAConfig.RouteMetric = 100;
+    dhcpPrefixDelegationConfig.RouteMetric = 100;
+  };
 
   # Open ports in the firewall.
   networking.firewall.enable = true;
