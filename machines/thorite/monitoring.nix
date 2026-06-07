@@ -11,6 +11,7 @@ let
     hedgedocDomain
     grafanaUrl
     ntfyUrl
+    gravityInternalDomain
     ;
   mkPort = port: if isNull port then "" else ":${toString port}";
   mkEllipsis = label: ''{{ ${label} | reReplaceAll "^(.{10}).+" "<$1>" }}'';
@@ -115,6 +116,41 @@ let
         ];
       }
     ];
+  cominMetricsPath = "/prometheus/comin/metrics";
+  cominRelabelConfigs = [
+    {
+      source_labels = [ "metrics_path" ];
+      regex = "(.+)";
+      target_label = "__metrics_path__";
+      replacement = "$1";
+    }
+    {
+      regex = "metrics_path";
+      action = "labeldrop";
+    }
+  ];
+  mkCominScrape =
+    {
+      jobName,
+      targets,
+      proxyUrl ? null,
+    }:
+    {
+      job_name = jobName;
+      scheme = "http";
+      static_configs = [
+        {
+          inherit targets;
+          labels = {
+            metrics_path = cominMetricsPath;
+          };
+        }
+      ];
+      relabel_configs = cominRelabelConfigs;
+    }
+    // lib.optionalAttrs (proxyUrl != null) {
+      proxy_url = proxyUrl;
+    };
   mkHttpPathScrape =
     {
       name,
@@ -426,6 +462,7 @@ in
             else
               "18080"
           );
+        meshMetricsTarget = host: "${host}.${gravityInternalDomain}:18080";
       in
       [
         {
@@ -439,38 +476,24 @@ in
             }
           ];
         }
-        {
-          job_name = "comin";
-          scheme = "http";
-          static_configs = [
-            {
-              targets = map metricsTarget [
-                "thorite"
-                "raspite"
-                "biotite"
-                "la-00"
-                "fra-00"
-                "agate"
-                "hafnon"
-              ];
-              labels = {
-                metrics_path = "/prometheus/comin/metrics";
-              };
-            }
+        (mkCominScrape {
+          jobName = "comin";
+          targets = map metricsTarget [
+            "thorite"
+            "biotite"
+            "la-00"
+            "fra-00"
+            "agate"
+            "hafnon"
           ];
-          relabel_configs = [
-            {
-              source_labels = [ "metrics_path" ];
-              regex = "(.+)";
-              target_label = "__metrics_path__";
-              replacement = "$1";
-            }
-            {
-              regex = "metrics_path";
-              action = "labeldrop";
-            }
+        })
+        (mkCominScrape {
+          jobName = "comin-mesh";
+          targets = [
+            (meshMetricsTarget "raspite")
           ];
-        }
+          proxyUrl = "http://127.0.0.1:${toString config.custom.mesh-network.gost.port}";
+        })
         (mkHttpPathScrape {
           name = "immich";
           target = "agate.10118244.xyz:18080";

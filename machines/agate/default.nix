@@ -75,9 +75,11 @@
   services.caddy.virtualHosts."http://agate.10118244.xyz:18080".extraConfig = ''
     handle_path /prometheus/blackbox {
       rewrite * /probe
-      reverse_proxy http://127.0.0.1:9115
+      reverse_proxy http://127.0.0.1:19115
     }
   '';
+
+  services.prometheus.exporters.blackbox.port = 19115;
 
   custom.monitoring = {
     fluent-bit.enable = true;

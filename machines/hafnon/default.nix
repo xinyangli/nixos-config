@@ -38,6 +38,8 @@
       executor = "nix";
     };
     network = {
+      # TODO: tailscale is not allowed, so disable this for now
+      tailscale.enable = false;
       localdns = {
         enable = true;
         fallbackDNS = ''
@@ -66,7 +68,6 @@
   system.stateVersion = "26.05";
   time.timeZone = "Asia/Shanghai";
 
-  # TODO: tailscale is not allowed, so disable this for now
   # custom.prometheus.exporters = {
   #   enable = true;
   #   blackbox = {
@@ -81,7 +82,6 @@
   #   promtail.enable = true;
   # };
 
-  services.tailscale.enable = false;
   networking = {
     useNetworkd = true;
     hostName = "hafnon";

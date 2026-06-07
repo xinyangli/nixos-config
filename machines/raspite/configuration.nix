@@ -96,5 +96,14 @@
       ];
       hash = "sha256-xHmhjCrAaqbnYLAxXCsZ8ah6umgwHWQIXWqeDbghCOo=";
     };
+    virtualHosts."http://raspite.u.xiny.li:18080".extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.fdRefs."18080"}
+      handle_path /prometheus/comin/metrics {
+        rewrite * /metrics
+        reverse_proxy http://127.0.0.1:4243
+      }
+    '';
   };
+
+  custom.mesh-network.caddy.ports = [ 18080 ];
 }
