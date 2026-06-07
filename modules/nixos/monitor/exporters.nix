@@ -19,6 +19,7 @@ in
         "systemd"
       ];
       listenAddress = cfg.node.listenAddress;
+      openFirewall = true;
       port = 9100;
     };
 
@@ -42,6 +43,7 @@ in
     services.prometheus.exporters.blackbox = mkIf cfg.blackbox.enable {
       enable = true;
       listenAddress = cfg.blackbox.listenAddress;
+      openFirewall = true;
       configFile = pkgs.writeText "blackbox.config.yaml" (
         lib.generators.toYAML { } {
           modules = {
@@ -63,6 +65,7 @@ in
       enable = true;
       listenAddress = cfg.v2ray.listenAddress;
       port = 9516;
+      openFirewall = true;
       v2rayEndpoint = config.services.sing-box.settings.experimental.v2ray_api.listen;
     };
 
