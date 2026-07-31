@@ -5,7 +5,6 @@
   ...
 }:
 let
-  gitSigningKey = "~/.ssh/id_ecdsa.tpm.pub";
   configDir = "${config.my-lib.flakePath config}/config";
 in
 {
@@ -127,11 +126,6 @@ in
         oneFixupPerCommit = true;
         maxStack = 20;
       };
-    };
-    signing = {
-      key = gitSigningKey;
-      format = "ssh";
-      signByDefault = true;
     };
   };
   programs.lazygit = {
