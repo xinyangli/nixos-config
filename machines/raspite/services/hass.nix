@@ -4,10 +4,12 @@
   lib,
   ...
 }:
+let
+  homeAssistantPort = 8123;
+in
 {
   services.home-assistant = {
     enable = true;
-    openFirewall = true;
     config = {
       "automation ui" = "!include automations.yaml";
       "scene ui" = "!include scenes.yaml";
@@ -24,6 +26,7 @@
       };
       http = {
         server_host = "0.0.0.0";
+        server_port = homeAssistantPort;
         # use_x_forwarded_for = true;
         # trusted_proxies = [ ];
       };
@@ -150,7 +153,10 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ 15313 ];
+  networking.firewall.allowedTCPPorts = [
+    homeAssistantPort
+    15313
+  ];
   services.zigbee2mqtt = {
     enable = true;
     package = pkgs.zigbee2mqtt_2;
@@ -362,7 +368,7 @@
             token {env.DESEC_TOKEN}
           }
         }
-        reverse_proxy ${config.services.home-assistant.config.http.server_host}:${toString config.services.home-assistant.config.http.server_port}
+        reverse_proxy 127.0.0.1:${toString homeAssistantPort}
       '';
     };
   };

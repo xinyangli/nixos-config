@@ -22,7 +22,7 @@ index 3d1b01da0..e7112792d 100644
 -        return;
 +        return null;
      }
-     if (!/(\d+)\.html/.test(url)) {
+     if (!/\d+\.html/.test(url)) {
 -        return;
 +        return null;
      }
@@ -40,7 +40,7 @@ index 3d1b01da0..e7112792d 100644
 +            'X-Sign': encodeURIComponent(sigValueHex),
 +            'X-Nonce': encodeURIComponent(nonce),
 +            Cookie: config.caixin.cookie,
-+        }
++        },
 +    };
 +}
 +
@@ -116,7 +116,7 @@ index c67ef5b04..28a59b68e 100644
              .map((item) => ({
                  link: $(item).attr('href'),
              })),
--    ].slice(0, ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 10) as DataItem[];
+-    ].slice(0, ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 10) as DataItem[];
 +    ].slice(0, 2) as DataItem[]; // Limit to recent issues to avoid too many requests
  
 -    const items = (await Promise.all(
