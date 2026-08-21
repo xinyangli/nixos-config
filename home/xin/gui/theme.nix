@@ -32,6 +32,7 @@ in
     "catppuccin-${cfg.flavor}-${cfg.accent}";
 
   home.pointerCursor = {
+    enable = true;
     name = "Bibata-Modern-Ice";
     size = 24;
     package = pkgs.bibata-cursors;
@@ -50,6 +51,19 @@ in
             rev = "f25d8cf688d8f224f0ce396689ffcf5767eb647e";
             hash = "sha256-W+NGyPnOEKoicJPwnftq26iP7jya1ZKq38lMjx/k9ss=";
           };
+          postPatch = ''
+            find -name "*.sh" -print0 | while IFS= read -r -d "" file; do
+              patchShebangs "$file"
+            done
+
+            rm -r themes/src/main/gtk-2.0
+            sed -i '/gtk-2/Is/^.*$/:/' themes/install.sh themes/gtkrc.sh
+
+            if [[ -f themes/lib/utils.sh ]]; then
+              substituteInPlace themes/lib/utils.sh \
+                --replace-fail 'LOG_FILE="''${HOME}/.cache/catppuccin-install.log"' 'LOG_FILE=/dev/null'
+            fi
+          '';
         }).override
           { accent = [ "all" ]; };
     };
@@ -57,6 +71,7 @@ in
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = 1;
     };
+    gtk4.theme = config.gtk.theme;
   };
   dconf.settings = {
     "org/gnome/desktop/interface" = {
@@ -83,7 +98,6 @@ in
     nerd-fonts.noto
     # nerd-fonts.liberation
     roboto-mono
-    mplus-outline-fonts.githubRelease
     ubuntu-classic
     google-fonts
     liberation_ttf

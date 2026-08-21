@@ -1,8 +1,15 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   inherit (config.my-lib.settings) idpUrl ocisUrl;
 in
 {
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "ocis_5-bin" ];
+
   sops.secrets = {
     "ocis/s3_access_key" = { };
     "ocis/s3_secret_key" = { };
@@ -13,7 +20,7 @@ in
   '';
   services.ocis = {
     enable = true;
-    package = pkgs.ocis;
+    package = pkgs.ocis_5-bin;
     stateDir = "/var/lib/ocis";
     url = ocisUrl;
     address = "127.0.0.1";

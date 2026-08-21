@@ -14,6 +14,5 @@
     ./backup.nix
     ./mesh
     ./monitor
-    ./matrix-authentication-service.nix
   ];
 }

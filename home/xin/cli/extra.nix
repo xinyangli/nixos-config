@@ -41,6 +41,7 @@ in
 
   programs.yazi = {
     enable = true;
+    shellWrapperName = "yy";
     plugins = with pkgs.yaziPlugins; {
       chmod = chmod;
       git = git;
@@ -140,7 +141,7 @@ in
     enable = true;
     git = {
       enable = true;
-      diffToolMode = true;
+      mode = "difftool";
     };
   };
 

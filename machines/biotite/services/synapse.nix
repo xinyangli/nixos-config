@@ -33,15 +33,9 @@ in
     "synapse/mas_api_secret" = {
       owner = "matrix-synapse";
     };
-    "mas/mas_api_secret" = {
-      owner = "matrix-authentication-service";
-    };
-    "mas/secrets" = {
-      owner = "matrix-authentication-service";
-    };
-    "mas/oidc_client_secret" = {
-      owner = "matrix-authentication-service";
-    };
+    "mas/mas_api_secret" = { };
+    "mas/secrets" = { };
+    "mas/oidc_client_secret" = { };
   };
   # sops.templates."mas/client_secret.conf" = {
   #   owner = "matrix-authentication-service";
@@ -169,10 +163,7 @@ in
               { name = "oauth"; }
               { name = "compat"; }
               { name = "graphql"; }
-              {
-                name = "assets";
-                path = "${config.services.matrix-authentication-service.package}/share/matrix-authentication-service/assets";
-              }
+              { name = "assets"; }
             ];
             binds = [
               {

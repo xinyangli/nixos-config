@@ -104,7 +104,10 @@
         "inode/directory" = "yazi.desktop";
       };
     };
-  xdg.userDirs.enable = true;
+  xdg.userDirs = {
+    enable = true;
+    setSessionVariables = true;
+  };
 
   programs.zathura = {
     enable = true;

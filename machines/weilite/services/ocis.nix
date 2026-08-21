@@ -2,7 +2,7 @@
 {
   services.ocis = {
     enable = true;
-    package = pkgs.ocis;
+    package = pkgs.ocis_5-bin;
     stateDir = "/var/lib/ocis";
     url = "https://drive.xinyang.life:8443";
     address = "127.0.0.1";

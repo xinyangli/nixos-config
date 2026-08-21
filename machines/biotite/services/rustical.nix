@@ -1,6 +1,7 @@
 { config, lib, ... }:
 let
   inherit (config.my-lib.settings) idpUrl rusticalUrl;
+  rusticalListenAddress = "127.0.0.1:4000";
 in
 {
   sops.secrets."rustical/client_secret" = { };
@@ -10,7 +11,7 @@ in
   services.rustical = {
     enable = true;
     settings = {
-      http.host = "127.0.0.1";
+      http.bind = rusticalListenAddress;
       oidc = {
         name = "Kanidm";
         issuer = "https://${idpUrl}/oauth2/openid/rustical";
@@ -29,6 +30,6 @@ in
   };
 
   services.caddy.virtualHosts.${rusticalUrl}.extraConfig = ''
-    reverse_proxy 127.0.0.1:${toString config.services.rustical.settings.http.port}
+    reverse_proxy ${rusticalListenAddress}
   '';
 }

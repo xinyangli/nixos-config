@@ -15,7 +15,8 @@
   libsoup_3,
   vulkan-loader,
   libGL,
-  xorg,
+  libX11,
+  libxcb,
   libxkbcommon,
   alsa-lib,
   sqlite,
@@ -49,8 +50,8 @@ stdenv.mkDerivation rec {
     libsoup_3
     vulkan-loader
     libGL
-    xorg.libX11
-    xorg.libxcb
+    libX11
+    libxcb
     libxkbcommon
     alsa-lib
     sqlite

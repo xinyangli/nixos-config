@@ -34,26 +34,17 @@ in
           command = ''[ $(${pkgs.coreutils}/bin/cat /sys/class/power_supply/AC0/online) -eq 0 ] && ${systemctl} suspend-then-hibernate'';
         }
       ];
-      events = [
-        {
-          event = "before-sleep";
-          command = lib.concatStringsSep ";" [
-            playerPauseCmd
-            lockCmd
-          ];
-        }
-        {
-          event = "after-resume";
-          # Avoid dark lock screen when we enter sleep after a timeout.
-          command = "${brightnessctl} -r";
-        }
-        {
-          event = "lock";
-          command = lib.concatStringsSep ";" [
-            lockCmd
-          ];
-        }
-      ];
+      events = {
+        before-sleep = lib.concatStringsSep ";" [
+          playerPauseCmd
+          lockCmd
+        ];
+        # Avoid dark lock screen when we enter sleep after a timeout.
+        after-resume = "${brightnessctl} -r";
+        lock = lib.concatStringsSep ";" [
+          lockCmd
+        ];
+      };
     };
   };
   systemd.user.services.swayidle.Unit.After = [ "graphical-session.target" ];

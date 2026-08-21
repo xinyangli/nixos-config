@@ -77,7 +77,7 @@
     };
 
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/v0.4.2";
+      url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.rust-overlay.follows = "rust-overlay";
     };
@@ -215,7 +215,7 @@
         ];
         biotite = [
           disko.nixosModules.disko
-          simple-nixos-mailserver.nixosModule
+          simple-nixos-mailserver.nixosModules.default
           ./machines/biotite
         ];
         baryte = [
