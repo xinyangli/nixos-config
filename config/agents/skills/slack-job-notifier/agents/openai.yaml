@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slack Job Notifier"
+  short_description: "Send Slack updates for long-running jobs"
+  default_prompt: "Use $slack-job-notifier to send a concise progress update for this long-running job."

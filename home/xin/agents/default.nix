@@ -115,6 +115,7 @@ in
       Unit = {
         Description = "Agent Notify Codex bridge";
         Documentation = "https://git.xiny.li/xin/agent-notify";
+        ConditionFileNotEmpty = agentNotifyTokenFile;
       };
 
       Service = {

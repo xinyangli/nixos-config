@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sidecar Score Merge"
+  short_description: "Merge DQM and AES scores into sidecars"
+  default_prompt: "Use $sidecar-score-merge to merge DQM and ERNIE-Image-Aes score sidecars into an all-in-one sidecar."
