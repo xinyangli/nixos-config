@@ -16,16 +16,10 @@ This updater consists of several parts:
 
 
 @dataclass
-class GarnixConfig:
-    token: str
-
-
-@dataclass
 class Config:
     check_type: str
     check_url: str
     remote_url: str
-    garnix: GarnixConfig
     hostname: str = socket.gethostname()
 
 
@@ -38,6 +32,7 @@ class Nix:
         pass
 
     def eval(self):
+        pass
 
 
 class Updater:
@@ -49,27 +44,6 @@ class Updater:
         self.next_dev = None
 
     # checkers take an url and returns the outPath of the latest success build
-    def garnix_checker(self) -> str:
-        domain = "garnix.io"
-        build_endpoint = "/api/build/commit"
-
-        # Latest commit from git
-
-        # Check build status of this commit
-        resp = requests.get(
-            f"https://{domain}{build_endpoint}/40b1e9ff23aaa5f555420dd22414c3f137a02cfe"
-        )
-        # Raise error if status code is not valid
-
-        # Fetch outPath from eval endpoint
-        # TODO: In theory, this could be done by parsing raw log from garnix.
-
-        # Try to evaluate locally if eval endpoint is not configured
-
-        resp = resp.json()
-        # TODO
-        return "null"
-
     def hydra_checker(self) -> str:
         # TODO
         return "null"
@@ -77,9 +51,7 @@ class Updater:
     # Check for update
     def poll(self) -> str | None:
         cfg = self.config
-        if cfg.check_type == "garnix":
-            pass
-        elif cfg.check_type == "hydra":
+        if cfg.check_type == "hydra":
             pass
         else:
             pass

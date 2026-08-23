@@ -13,6 +13,9 @@ in
     ffmpeg
     rclone
 
+    # For work
+    coder
+
     # Fancy new tools!
     httpie
     curlie

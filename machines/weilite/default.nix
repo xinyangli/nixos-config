@@ -30,7 +30,10 @@
       nix = {
         enable = true;
       };
-      comin.enable = true;
+      comin = {
+        enable = true;
+        executor = "nix";
+      };
       network.localdns.enable = true;
       serverComponents.enable = true;
     };

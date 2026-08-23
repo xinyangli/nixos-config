@@ -3,10 +3,10 @@
 # Validates `custom.mesh-network.sshd.enable`.
 
 let
-  testKey = pkgs.runCommand "mesh-sshd-test-key" { nativeBuildInputs = [ pkgs.openssh ]; } ''
-    mkdir -p $out
-    ssh-keygen -t ed25519 -N "" -C "mesh-sshd-test" -f $out/id_ed25519
-  '';
+  inherit (import "${pkgs.path}/nixos/tests/ssh-keys.nix" pkgs)
+    snakeOilPrivateKey
+    snakeOilPublicKey
+    ;
 
   nodes = {
     alpha = { underlay = "192.168.1.1"; announced = "fd00:42::1"; };
@@ -43,7 +43,7 @@ let
     };
 
     users.users.root = {
-      openssh.authorizedKeys.keyFiles = [ "${testKey}/id_ed25519.pub" ];
+      openssh.authorizedKeys.keys = [ snakeOilPublicKey ];
     };
 
     environment.systemPackages = with pkgs; [ openssh ];
@@ -73,14 +73,14 @@ in
 
     for m in (alpha, beta):
         m.succeed("install -d -m 700 /root/.ssh")
-        m.succeed("install -m 600 ${testKey}/id_ed25519 /root/.ssh/id_ed25519")
+        m.succeed("install -m 600 ${snakeOilPrivateKey} /root/.ssh/id_ecdsa")
 
     ssh_opts = (
         "-o StrictHostKeyChecking=no "
         "-o UserKnownHostsFile=/dev/null "
         "-o BatchMode=yes "
         "-o ConnectTimeout=5 "
-        "-i /root/.ssh/id_ed25519"
+        "-i /root/.ssh/id_ecdsa"
     )
 
     # ---------- Phase 1: socket bound to gravity ----------

@@ -1,0 +1,20 @@
+diff --git a/source-git-0/smithay-drm-extras-0.1.0/src/drm_scanner/crtc_mapper.rs b/source-git-0/smithay-drm-extras-0.1.0/src/drm_scanner/crtc_mapper.rs
+index 4ae6a3c..f7cc402 100644
+--- a/source-git-0/smithay-drm-extras-0.1.0/src/drm_scanner/crtc_mapper.rs
++++ b/source-git-0/smithay-drm-extras-0.1.0/src/drm_scanner/crtc_mapper.rs
+@@ -1 +1 @@
+-use std::collections::HashMap;
++use std::collections::{HashMap, HashSet};
+@@ -84,6 +84,12 @@ impl super::CrtcMapper for SimpleCrtcMapper {
+         drm: &impl ControlDevice,
+         connectors: impl Iterator<Item = &'a connector::Info> + Clone,
+     ) {
++        // Connectors can disappear entirely on USB-C/MST hotplug; drop their stale CRTC mappings.
++        let connector_handles: HashSet<_> =
++            connectors.clone().map(|connector| connector.handle()).collect();
++        self.crtcs
++            .retain(|connector, _| connector_handles.contains(connector));
++
+         for connector in connectors
+             .clone()
+             .filter(|conn| conn.state() != connector::State::Connected)

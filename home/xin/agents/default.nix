@@ -90,6 +90,7 @@ in
       agentNotifyBridge
       codex-xdg
     ] ++ (with pkgs.llm-agents; [
+      pi
       rtk
       tuicr
     ]);

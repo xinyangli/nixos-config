@@ -59,22 +59,36 @@
           };
           boot.initrd.availableKernelModules = [ "btrfs" ];
           boot.supportedFilesystems = [ "btrfs" ];
-          boot.initrd.postDeviceCommands = ''
-            FSTYPE=$(blkid -o value -s TYPE ${disk} || true)
-            if test -z "$FSTYPE"; then
-              modprobe btrfs
-              ${pkgs.btrfs-progs}/bin/mkfs.btrfs ${disk}
+          boot.initrd.systemd.services.create-btrfs-subvolumes = {
+            description = "Create the Btrfs test filesystem and subvolumes";
+            requires = [ "dev-vda.device" ];
+            after = [ "dev-vda.device" ];
+            requiredBy = [ "sysroot.mount" ];
+            before = [ "sysroot.mount" ];
+            path = [
+              pkgs.btrfs-progs
+              pkgs.coreutils
+              pkgs.kmod
+              pkgs.util-linux
+            ];
+            serviceConfig.Type = "oneshot";
+            script = ''
+              FSTYPE=$(blkid -o value -s TYPE ${disk} || true)
+              if test -z "$FSTYPE"; then
+                modprobe btrfs
+                mkfs.btrfs ${disk}
 
-              mkdir /nixos
-              mount -t btrfs ${disk} /nixos
+                mkdir /nixos
+                mount -t btrfs ${disk} /nixos
 
-              ${pkgs.btrfs-progs}/bin/btrfs subvolume create /nixos/root
-              ${pkgs.btrfs-progs}/bin/btrfs subvolume create /nixos/persistent
-              ${pkgs.btrfs-progs}/bin/btrfs subvolume create /nixos/home
+                btrfs subvolume create /nixos/root
+                btrfs subvolume create /nixos/persistent
+                btrfs subvolume create /nixos/home
 
-              umount /nixos
-            fi
-          '';
+                umount /nixos
+              fi
+            '';
+          };
 
           # Mock sops secrets paths
           sops.secrets."restic/repo_url".path =
@@ -82,7 +96,8 @@
           sops.secrets."restic/repo_password".path = "${pkgs.writeText "password" "password"}";
           sops.placeholder."restic/s3_access_key".path = "";
           sops.placeholder."restic/s3_secret_key".path = "";
-          sops.templates."restic_machine_backup.env".path = "";
+          sops.templates."restic_machine_backup.env".path =
+            "${pkgs.writeText "restic-env" ""}";
 
           # Networking hostname is required by backup.nix (services.restic.backups.${config.networking.hostName})
           networking.hostName = "machine";
@@ -124,6 +139,7 @@
 
   testScript = ''
     machine.start()
+    machine.wait_for_unit("multi-user.target")
 
     # Create dummy data
     machine.succeed("echo 'important data' > /var/lib/data.txt")

@@ -28,6 +28,16 @@ in
             hash = "sha256-LLbzjrUmCXOCqboGKFc19Lw7hyE2tMHJdadWtltfn5U=";
           })
         ];
+        cargoDeps =
+          pkgs.runCommand "niri-${super.niri.version}-vendor-smithay-crtc-mapper-hotplug-fix"
+            {
+              nativeBuildInputs = [ pkgs.patch ];
+            }
+            ''
+              cp -R --no-preserve=mode,ownership ${super.niri.cargoDeps} "$out"
+              chmod -R u+w "$out/source-git-0/smithay-drm-extras-0.1.0"
+              patch -d "$out" -p1 < ${./niri-smithay-drop-stale-crtc-mappings.patch}
+            '';
       };
       # Chipsailing CS9711 USB fingerprint sensor support — fork rebased onto libfprint 1.94.10.
       # The fork's sigfm helper unconditionally pulls in opencv4 + doctest. Drop the doctest-based
@@ -65,16 +75,31 @@ in
     network = {
       localdns.enable = true;
       enableProxy = true;
+      canvaWarpSocksProxy = "socks5://127.0.0.1:10808";
     };
   };
 
-  nix.settings.substituters = [
-    "https://nix-community.cachix.org"
-  ];
-  nix.settings.trusted-public-keys = [
-    # Compare to the key published at https://nix-community.org/cache
-    "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-  ];
+  nix.settings = {
+    substituters = [
+      "https://nix-community.cachix.org"
+    ];
+    extra-substituters = [
+      "https://depot.canva-internal.com/v1/signed-url-mirror/cache.nixos.org/"
+      "https://depot.canva-internal.com/v1/nix-binary-cache/"
+    ];
+    extra-trusted-substituters = [
+      "https://depot.canva-internal.com/v1/signed-url-mirror/cache.nixos.org/"
+      "https://depot.canva-internal.com/v1/nix-binary-cache/"
+    ];
+    trusted-public-keys = [
+      # Compare to the key published at https://nix-community.org/cache
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+    fallback = true;
+    require-sigs = false;
+  };
+
+  programs.nix-ld.enable = true;
 
   system.nixos-init.enable = true;
   system.etc.overlay.enable = true;
@@ -89,7 +114,6 @@ in
   boot.kernelModules = [ "acpi_call" ];
   boot.extraModulePackages = [
     config.boot.kernelPackages.acpi_call
-    (pkgs.callPackage ./camera_led_kernel_module.nix { kernel = config.boot.kernelPackages.kernel; })
   ];
 
   # Bootloader.
@@ -211,9 +235,8 @@ in
   environment.shells = [ pkgs.fish ];
   users.defaultUserShell = pkgs.fish;
 
-  # Setup wireguard
   # Set your time zone.
-  time.timeZone = "Asia/Shanghai";
+  time.timeZone = "Europe/Stockholm";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -252,7 +275,7 @@ in
 
   # TODO: Remove after https://github.com/NixOS/nixpkgs/pull/519416 reach unstable
   services.accounts-daemon.enable = true;
-  programs.regreet = {
+  services.displayManager.regreet = {
     enable = true;
     settings = {
       background.path = "${../../bwmountains.jpg}";
@@ -263,8 +286,8 @@ in
       package = pkgs.magnetic-catppuccin-gtk;
     };
     iconTheme = {
-      name = lib.mkForce "Qogir";
-      package = lib.mkForce pkgs.qogir-icon-theme;
+      name = "Qogir";
+      package = pkgs.qogir-icon-theme;
     };
     cursorTheme = {
       package = pkgs.bibata-cursors;

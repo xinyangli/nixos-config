@@ -11,7 +11,24 @@ let
     mkOption
     types
     mkDefault
+    optionalString
     ;
+
+  canvaWarpSocksProxy = config.commonSettings.network.canvaWarpSocksProxy;
+  canvaWarpSocksNode = optionalString (canvaWarpSocksProxy != null) ''
+    node {
+      canva_warp_socks: '${canvaWarpSocksProxy}'
+    }
+  '';
+  canvaWarpSocksGroup = optionalString (canvaWarpSocksProxy != null) ''
+    canva_warp {
+      filter: name(canva_warp_socks)
+      policy: fixed(0)
+    }
+  '';
+  canvaWarpRoutingRule = optionalString (canvaWarpSocksProxy != null) ''
+    domain(suffix: canva-internal.com, suffix: okta.com, full: canva-internal.cloudflareaccess.com) -> canva_warp
+  '';
 
   from_mainland = ''
     global {
@@ -51,6 +68,7 @@ let
     include {
       ./sub.dae
     }
+    ${canvaWarpSocksNode}
     dns {
       ipversion_prefer: 4
       upstream {
@@ -90,6 +108,8 @@ let
         filter: name(regex: '^(fra)[0-9]+') [add_latency: -150ms]
         policy: fixed(0)
       }
+
+      ${canvaWarpSocksGroup}
     }
 
     # See https://github.com/daeuniverse/dae/blob/main/docs/en/configuration/routing.md for full examples.
@@ -117,6 +137,7 @@ let
       dip(223.6.6.6) -> direct
 
       # === Force Proxy ===
+      ${canvaWarpRoutingRule}
       domain(geosite:linkedin) -> default_group
       domain(full: sourceware.org) -> clean_ip
 
@@ -136,6 +157,7 @@ let
     include {
       ./sub_mainland.dae
     }
+    ${canvaWarpSocksNode}
     global {
       tproxy_port: 12345
       tproxy_port_protect: true
@@ -178,8 +200,11 @@ let
       default_group {
         policy: fixed(0)
       }
+
+      ${canvaWarpSocksGroup}
     }
     routing {
+      ${canvaWarpRoutingRule}
       domain(full: dns.alidns.com) -> default_group
       dip(223.5.5.5) -> default_group
       dip('2400:3200::1') -> default_group
@@ -201,6 +226,12 @@ in
     commonSettings.network.enableProxy = mkOption {
       type = types.bool;
       default = config.inMainland;
+    };
+    commonSettings.network.canvaWarpSocksProxy = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      example = "socks5://127.0.0.1:10808";
+      description = "SOCKS5 proxy used for Canva and Okta access routes.";
     };
   };
 
