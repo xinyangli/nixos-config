@@ -50,10 +50,21 @@ in
       "forgejo-notify@xiny.li" = {
         hashedPassword = "$y$j9T$8myJrmpVLqxQiWDN2zoRJ/$.g8a4TXwp07Jw1irWqq7ggBkTfyAuebfOQ6L8ZzXgD6";
       };
+      "statements@xiny.li" = {
+        hashedPassword = "$y$j9T$8KZ7oP3BDzQDum9BqKHdj.$t8TOjRpHGSxmzn9MaMhNqOu2EolmGb1QD2FpFokkWWB";
+      };
     };
     aliases = {
       "abuse@xiny.li" = "xin@xiny.li";
       "postmaster@xiny.li" = "xin@xiny.li";
     };
   };
+
+  services.rspamd.extraConfig = ''
+    actions {
+      reject = null; # Disable rejects, default is 15
+      add_header = 6; # Add header when reaching this score
+      greylist = 4; # Apply greylisting when reaching this score
+    }
+  '';
 }
