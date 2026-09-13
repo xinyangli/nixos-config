@@ -64,6 +64,7 @@ in
     auth = {
       enable = true;
       enableHowdy = true;
+      u2f.enable = true;
     };
     nix = {
       signing.enable = true;

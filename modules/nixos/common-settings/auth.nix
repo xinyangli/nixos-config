@@ -30,6 +30,9 @@ in
       checks. Deliberately does NOT touch `nix.settings.trusted-users` — that
       is root-equivalent and must be granted per-named-account elsewhere if at
       all'';
+    u2f = {
+      enable = mkEnableOption "Use pam-u2f for authentication";
+    };
   };
 
   config = lib.mkMerge [
@@ -124,6 +127,15 @@ in
             "char-video4linux rw" # /dev/video* for the IR camera
           ];
         };
+      };
+    })
+
+    (mkIf (cfg.enable && cfg.u2f.enable) {
+      security.pam.u2f = {
+        enable = true;
+        authFile = pkgs.writeText "pam-u2f-authfile" ''
+          xin@auth.xiny.li:MToYpwZldcEPfTX6PwtfvjlMS8fTm8MI0Ihsn2YpURMAAQ/He2AhlkitTWaCGm4zPU6ht12+RwDybP1EQM1/w07G////+Q==,EdXBfc/oWWWZEXEOmPm7e7vhwhb2E2f6ASOz3xHCjmMT/eJ4Vr8ZLdlqEsfBRwlpxXgbo2oJbYS1IwYp7LVfaw==,es256,+presence
+        '';
       };
     })
 
