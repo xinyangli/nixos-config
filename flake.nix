@@ -83,7 +83,10 @@
     };
 
     vicinae = {
-      url = "github:vicinaehq/vicinae";
+      # TEMP (2026-10-07): pin to PR #2055 head until merged upstream.
+      # Fixes nix build link failure against numen (GLIBCXX_3.4.36 /
+      # gcc mismatch). Revert to "github:vicinaehq/vicinae" once merged.
+      url = "github:vicinaehq/vicinae/pull/2055/head";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

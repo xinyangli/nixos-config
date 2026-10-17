@@ -109,7 +109,7 @@ in
   boot.kernelPackages = pkgs.linuxPackages_latest;
   services.scx = {
     enable = true;
-    scheduler = "scx_lavd";
+    # scheduler = "scx_lavd";
   };
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
   boot.kernelModules = [ "acpi_call" ];
@@ -277,7 +277,7 @@ in
   # TODO: Remove after https://github.com/NixOS/nixpkgs/pull/519416 reach unstable
   services.accounts-daemon.enable = true;
   services.displayManager.regreet = {
-    enable = true;
+    enable = false;
     settings = {
       background.path = "${../../bwmountains.jpg}";
       application_prefer_dark_theme = true;
@@ -295,31 +295,32 @@ in
       name = "Bibata-Modern-Ice";
     };
   };
-  services.greetd =
-    let
-      niri-login-config = pkgs.writeText "niri-login-config.kdl" ''
-        animations {
-          off
-        }
-        hotkey-overlay {
-          skip-at-startup
-        }
-        environment {
-          GTK_USE_PORTAL "0"
-          GDK_DEBUG "no-portals"
-        }
-        spawn-at-startup "${getExe pkgs.swayidle}" "-w" "timeout" "60" "${getExe pkgs.brightnessctl} -s set 2" "resume" "${getExe pkgs.brightnessctl} -r" "timeout" "300" "${getExe pkgs.niri} msg action power-off-monitors"
-        spawn-at-startup "sh" "-c" "${pkgs.regreet}/bin/regreet; niri msg action quit --skip-confirmation"
-      '';
-    in
-    {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${getExe pkgs.niri} -c ${niri-login-config}";
-        };
-      };
-    };
+  # services.greetd =
+  #   let
+  #     niri-login-config = pkgs.writeText "niri-login-config.kdl" ''
+  #       animations {
+  #         off
+  #       }
+  #       hotkey-overlay {
+  #         skip-at-startup
+  #       }
+  #       environment {
+  #         GTK_USE_PORTAL "0"
+  #         GDK_DEBUG "no-portals"
+  #       }
+  #       spawn-at-startup "${getExe pkgs.swayidle}" "-w" "timeout" "60" "${getExe pkgs.brightnessctl} -s set 2" "resume" "${getExe pkgs.brightnessctl} -r" "timeout" "300" "${getExe pkgs.niri} msg action power-off-monitors"
+  #       spawn-at-startup "sh" "-c" "${pkgs.regreet}/bin/regreet; niri msg action quit --skip-confirmation"
+  #     '';
+  #   in
+  #   {
+  #     enable = true;
+  #     settings = {
+  #       default_session = {
+  #         command = "dbus-run-session -- ${getExe pkgs.niri} -c ${niri-login-config}";
+  #       };
+  #     };
+  #   };
+  services.displayManager.cosmic-greeter.enable = true;
 
   # Keyboard mapping on internal keyboard
   services.keyd = {

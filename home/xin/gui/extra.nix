@@ -11,7 +11,7 @@
 
     gnome-sound-recorder
 
-    eudic
+    # eudic
     calibre
 
     # Multimedia
@@ -59,7 +59,7 @@
   };
 
   services.spotifyd = {
-    enable = true;
+    enable = false;
     settings = {
       global = {
         no_audio_cache = false;

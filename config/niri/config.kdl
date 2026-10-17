@@ -228,12 +228,17 @@ window-rule {
 window-rule {
     match app-id="firefox$" title="^Picture-in-Picture$"
     open-floating true
+    open-focused false
     default-floating-position x=32 y=32 relative-to="bottom-right"
 }
 
 window-rule {
     match app-id="Nemo-preview-start"
     open-floating true
+}
+
+window-rule {
+    match title=r#"^Extension: (Bitwarden Password Manager).*$"#
 }
 
 window-rule {
@@ -272,7 +277,7 @@ window-rule {
     open-floating true
 }
 
-window-rule {
+/- window-rule {
     match app-id="org.telegram.desktop"
     exclude title="Media viewer"
     match app-id="wechat"

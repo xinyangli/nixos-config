@@ -25,6 +25,26 @@ in
     };
   };
 
+  # TEMP (2026-10-07): catppuccin/nix release-25.11 pins foot themes @2025-07-20
+  # which still use the [colors] section that foot 1.28 removed
+  # (deprecated since 1.26, replaced by [colors-dark]/[colors-light]).
+  # Use upstream with light/dark support until catppuccin/nix updates its source.
+  # Upstream: https://github.com/catppuccin/foot/pull/26
+  # NOTE: fetch via api.github.com because github.com archives are blocked here.
+  catppuccin.sources.foot =
+    let
+      src = pkgs.fetchzip {
+        url = "https://api.github.com/repos/catppuccin/foot/tarball/99384a83ee9246cd0a38aeee07d8300367724602";
+        hash = "sha256-lFa5EpoLkrZcC80YDHyVOTnwYOCNybznlD80NkgVLYs=";
+      };
+    in
+    pkgs.runCommand "catppuccin-foot-1.28-compat" { } ''
+      mkdir -p $out
+      # Module expects catppuccin-<flavor>.ini at the root; upstream now keeps
+      # them under themes/ (with both [colors-dark] and [colors-light]).
+      cp ${src}/themes/catppuccin-*.ini $out/
+    '';
+
   i18n.inputMethod.fcitx5.settings.addons.classicui.globalSection.Theme =
     let
       cfg = config.catppuccin.fcitx5;

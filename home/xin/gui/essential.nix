@@ -15,9 +15,11 @@
     swayimg
     vlc
 
-    zotero
+    # TEMP (2026-10-07): disabled until upstream zotero fix (#569006) merges
+    # and Hydra cache is available (FF153 removed AboutTranslations actor).
+    # zotero
 
-    spotify
+    spotifast
     coppwr
     imhex
 
@@ -345,6 +347,13 @@
         /****************************************************************************
          * SECTION: SMOOTHFOX                                                       *
         ****************************************************************************/
+        // TEMP (FF157): sidebar.revamp and browser.nova.enabled both flipped to
+        // true by default (were false in FF156) and break the Sidebery autohide
+        // userChrome below (hover no longer expands the sidebar). Force the old
+        // behavior until the CSS is reworked. Long-term path is the native
+        // sidebar.visibility = "expand-on-hover" instead of this hack.
+        user_pref("sidebar.revamp", false);
+        user_pref("browser.nova.enabled", false);
         user_pref("general.smoothScroll", true); // DEFAULT
         user_pref("general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS", 12);
         user_pref("general.smoothScroll.msdPhysics.enabled", true);

@@ -31,7 +31,7 @@ in
         {
           # Sleep if on battery
           timeout = 400;
-          command = ''[ $(${pkgs.coreutils}/bin/cat /sys/class/power_supply/AC0/online) -eq 0 ] && ${systemctl} suspend-then-hibernate'';
+          command = ''[ $(${pkgs.coreutils}/bin/cat /sys/class/power_supply/AC0/online) -eq 0 ] && ${systemctl} --check-inhibitors=yes suspend-then-hibernate'';
         }
       ];
       events = {

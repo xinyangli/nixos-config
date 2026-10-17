@@ -30,7 +30,7 @@
         font-size: 16px;
       }
       #mpris,
-      #network, #wireplumber, #cpu, #memory, #backlight, #battery {
+      #network, #wireplumber, #cpu, #memory, #backlight, #inhibitor, #battery {
         color: @text;
         background-color: alpha(@base, 0.1);
       }
@@ -40,15 +40,19 @@
         background: @base;
       }
       /* Transparent Hover */
-      #mpris:hover, #clock:hover, #network:hover, #wireplumber:hover, #cpu:hover, #memory:hover, #backlight:hover, #battery:hover {
+      #mpris:hover, #clock:hover, #network:hover, #wireplumber:hover, #cpu:hover, #memory:hover, #backlight:hover, #inhibitor:hover, #battery:hover {
 
         background-color: alpha(@base, 0.2);
+      }
+
+      #inhibitor.activated {
+        color: @${config.catppuccin.accent};
       }
 
       #tray {
         padding: 0 0.8rem;
       }
-      #mpris, #network, #wireplumber, #cpu, #memory, #backlight, #battery {
+      #mpris, #network, #wireplumber, #cpu, #memory, #backlight, #inhibitor, #battery {
         padding: 0 0.5rem;
       }
 
@@ -108,7 +112,7 @@
       #backlight, #battery {
       }
 
-      #wireplumber, #cpu, #memory, #backlight {
+      #wireplumber, #cpu, #memory, #backlight, #inhibitor {
         border-radius: 0;
       }
 
@@ -177,6 +181,7 @@
           "memory"
           "cpu"
           "backlight"
+          "inhibitor"
           "battery"
           "tray"
           "custom/notification"
@@ -231,6 +236,14 @@
           ];
           on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 1%-";
           on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set +1%";
+        };
+        inhibitor = {
+          what = "sleep";
+          format = "{icon}";
+          format-icons = {
+            activated = "󰒳";
+            deactivated = "󰒲";
+          };
         };
         battery = {
           interval = 10;
