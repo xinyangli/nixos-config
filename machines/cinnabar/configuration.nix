@@ -322,6 +322,61 @@ in
   #   };
   services.displayManager.cosmic-greeter.enable = true;
 
+  # Second greetd instance on TTY2 running tuigreet (TUI). The main greetd
+  # service (cosmic-greeter) owns TTY1; switching to TTY2 (Ctrl+Alt+F2)
+  # gives a lightweight greeter for spawning extra sessions.
+  systemd.services.greetd-tty2 =
+    let
+      sessionData = config.services.displayManager.sessionData.desktops;
+      tuigreetSessions = pkgs.runCommand "tuigreet-sessions" { } ''
+        mkdir -p $out
+        shopt -s nullglob
+        for f in ${sessionData}/share/wayland-sessions/*.desktop ${sessionData}/share/xsessions/*.desktop; do
+          ln -s "$f" $out/$(basename "$f")
+        done
+      '';
+      tuigreetConfig = pkgs.writeText "greetd-tty2.toml" ''
+        [terminal]
+        vt = 2
+
+        [default_session]
+        user = "greeter"
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --sessions ${tuigreetSessions} --xsessions ${tuigreetSessions} --session-wrapper ${pkgs.dbus}/bin/dbus-run-session --power-shutdown ${lib.getExe' pkgs.systemd "systemctl"} poweroff --power-reboot ${lib.getExe' pkgs.systemd "systemctl"} reboot"
+      '';
+    in
+    {
+      description = "Greeter daemon (tuigreet) on TTY2";
+      documentation = [ "man:greetd(1)" ];
+      after = [
+        "systemd-user-sessions.service"
+        "getty@tty2.service"
+        "plymouth-quit-wait.service"
+      ];
+      wants = [ "systemd-user-sessions.service" ];
+      conflicts = [ "getty@tty2.service" ];
+      serviceConfig = {
+        ExecStart = "${getExe pkgs.greetd} --config ${tuigreetConfig}";
+        Restart = "always";
+        IgnoreSIGPIPE = false;
+        SendSIGHUP = true;
+        TimeoutStopSec = "30s";
+        KeyringMode = "shared";
+        Type = "idle";
+        TTYPath = "/dev/tty2";
+        TTYReset = true;
+        TTYVHangup = true;
+        TTYVTDisallocate = true;
+        StandardInput = "tty";
+        StandardOutput = "tty";
+        StandardError = "journal";
+      };
+      # Don't kill a user session on nixos-rebuild
+      restartIfChanged = false;
+      wantedBy = [ "graphical.target" ];
+    };
+  # Give the TTY2 instance to greetd instead of getty
+  systemd.services."getty@tty2".enable = false;
+
   # Keyboard mapping on internal keyboard
   services.keyd = {
     enable = true;
