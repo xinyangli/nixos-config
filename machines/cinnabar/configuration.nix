@@ -260,6 +260,7 @@ in
   # parts of the EDID that would signal HDR support.
   environment.variables.KWIN_FORCE_ASSUME_HDR_SUPPORT = 1;
   programs.niri.enable = true;
+  programs.labwc.enable = true;
   # Disable gcr-ssh-agent as it does not support ed25519-sk yet
   services.gnome.gcr-ssh-agent.enable = false;
   environment.sessionVariables.NIXOS_OZONE_WL = "1";

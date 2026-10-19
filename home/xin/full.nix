@@ -7,6 +7,7 @@
 
     ./gui/theme.nix
     ./gui/wm/niri.nix
+    ./gui/wm/labwc.nix
 
     ./gui/essential.nix
     ./gui/extra.nix
