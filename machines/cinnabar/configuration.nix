@@ -506,13 +506,15 @@ in
 
   system.stateVersion = "22.05";
 
+  # NOTE: no owner= here — the local `xin` account is disabled (kanidm UNIX
+  # auth via `xin@auth.xiny.li` instead), and sops-install-secrets resolves
+  # owners against /etc/passwd only (no NSS), so an unresolvable owner
+  # fails the whole manifest and leaves ALL secrets uninstalled.
   sops.secrets = {
     "restic/repo_url" = {
-      owner = "xin";
       sopsFile = ./secrets.yaml;
     };
     "restic/repo_password" = {
-      owner = "xin";
       sopsFile = ./secrets.yaml;
     };
   };
