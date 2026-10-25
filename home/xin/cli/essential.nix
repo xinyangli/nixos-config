@@ -1,4 +1,12 @@
-{ pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+let
+  inherit (config.my-lib.settings) vaultwardenUrl;
+in
 {
   home.packages = with pkgs; [
     dig
@@ -36,6 +44,14 @@
       keymap_mode = "vim-insert";
       style = "compact";
       invert = true;
+    };
+  };
+  programs.rbw = {
+    enable = true;
+    settings = {
+      email = "lixinyang411@gmail.com";
+      base_url = vaultwardenUrl;
+      pinentry = pkgs.pinentry-gnome3;
     };
   };
   programs.nix-your-shell = {
