@@ -87,47 +87,47 @@ in
   config = {
     nixpkgs.config.allowUnfree = true;
     home.packages = [
-      agentNotifyBridge
-      codex-xdg
-    ] ++ (with pkgs.llm-agents; [
-      pi
+      # agentNotifyBridge
+      # codex-xdg
+    ]
+    ++ (with pkgs.llm-agents; [
+      omp
       rtk
       tuicr
     ]);
 
-    home.sessionVariables = {
-      AGENT_NOTIFY_PLUGIN_ROOT = codexPluginRoot;
-      AGENT_NOTIFY_NTFY_BASE_URL = settings.ntfyUrl;
-      AGENT_NOTIFY_NTFY_SEND_TOPIC = "agent-notify";
-      AGENT_NOTIFY_NTFY_POLL_TOPIC = "agent-notify-reply";
-      AGENT_NOTIFY_NTFY_TOKEN_FILE = agentNotifyTokenFile;
-    };
-
-    home.file."plugins/${codexPluginName}".source = agentNotify;
-    home.file.".agents/plugins/marketplace.json".text = builtins.toJSON personalMarketplace;
-
-    home.activation.installAgentNotifyCodexPlugin =
-      lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-        $DRY_RUN_CMD ${codex-xdg}/bin/codex plugin add ${codexPluginName}@personal >/dev/null
-      '';
-
-    systemd.user.services.agent-notify-bridge = {
-      Unit = {
-        Description = "Agent Notify Codex bridge";
-        Documentation = "https://git.xiny.li/xin/agent-notify";
-        ConditionFileNotEmpty = agentNotifyTokenFile;
-      };
-
-      Service = {
-        ExecStart = "${agentNotifyBridge}/bin/agent-notify-bridge serve";
-        Restart = "on-failure";
-        RestartSec = 5;
-      };
-
-      Install.WantedBy = [ "default.target" ];
-    };
-
-    xdg.configFile."codex/skills".source =
-      config.lib.file.mkOutOfStoreSymlink "${configDir}/agents/skills";
+    # home.sessionVariables = {
+    #   AGENT_NOTIFY_PLUGIN_ROOT = codexPluginRoot;
+    #   AGENT_NOTIFY_NTFY_BASE_URL = settings.ntfyUrl;
+    #   AGENT_NOTIFY_NTFY_SEND_TOPIC = "agent-notify";
+    #   AGENT_NOTIFY_NTFY_POLL_TOPIC = "agent-notify-reply";
+    #   AGENT_NOTIFY_NTFY_TOKEN_FILE = agentNotifyTokenFile;
+    # };
+    #
+    # home.file."plugins/${codexPluginName}".source = agentNotify;
+    # home.file.".agents/plugins/marketplace.json".text = builtins.toJSON personalMarketplace;
+    #
+    # home.activation.installAgentNotifyCodexPlugin = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    #   $DRY_RUN_CMD ${codex-xdg}/bin/codex plugin add ${codexPluginName}@personal >/dev/null
+    # '';
+    #
+    # systemd.user.services.agent-notify-bridge = {
+    #   Unit = {
+    #     Description = "Agent Notify Codex bridge";
+    #     Documentation = "https://git.xiny.li/xin/agent-notify";
+    #     ConditionFileNotEmpty = agentNotifyTokenFile;
+    #   };
+    #
+    #   Service = {
+    #     ExecStart = "${agentNotifyBridge}/bin/agent-notify-bridge serve";
+    #     Restart = "on-failure";
+    #     RestartSec = 5;
+    #   };
+    #
+    #   Install.WantedBy = [ "default.target" ];
+    # };
+    #
+    # xdg.configFile."codex/skills".source =
+    #   config.lib.file.mkOutOfStoreSymlink "${configDir}/agents/skills";
   };
 }
