@@ -13,37 +13,13 @@ let
     jellyfinUrl
     ;
 
-  # The kanidm-provision NixOS module has no options for service accounts or
-  # POSIX/SSH attributes (those fields come from our local patches against
-  # the kanidm-provision binary). Inject them through extraJsonFile so the
+  # POSIX/SSH attributes come from our local patches against the
+  # kanidm-provision binary. Inject them through extraJsonFile so the
   # provisioner sees a complete state file.
   extraJson = pkgs.writeText "kanidm-provision-extras.json" (
     builtins.toJSON {
-      groups.nix-builders = {
-        members = [ "nix_access_hydra" ];
-        enableUnix = true;
-      };
       groups.unix_admin.enableUnix = true;
       groups.linux_users.enableUnix = true;
-      # entry_managed_by delegation: nix_provisioner manages nix_access_hydra
-      # via group membership. The agate keygen one-shot uses a `--rw` token
-      # for nix_provisioner (NOT for nix_access_hydra) so the manager-ACP
-      # path grants ssh_publickey writes. A token tied to nix_access_hydra
-      # itself can't self-write its SSH keys.
-      groups.nix_access_hydra_admins.members = [ "nix_provisioner" ];
-      serviceAccounts.nix_provisioner = {
-        displayName = "Provisioner for nix_access_hydra (agate pubkey rotation)";
-        entryManagedBy = "xin";
-      };
-      serviceAccounts.nix_access_hydra = {
-        displayName = "Nix remote-build access (Hydra)";
-        entryManagedBy = "nix_access_hydra_admins";
-        enableUnix = true;
-        # bash (not nologin) so sshd will run `nix-daemon --stdio` over the
-        # SSH session for ssh-ng remote builds. nologin would have sshd
-        # refuse command execution entirely.
-        loginShell = "/run/current-system/sw/bin/bash";
-      };
       persons.xin.sshPublicKeys = [
         {
           tag = "canary";
@@ -79,11 +55,6 @@ in
       unix_admin = {
         members = [ "xin" ];
       };
-
-      # Posix group whose members receive remote-build privileges on the
-      # hafnon builder. POSIX-enabled + member list live in extraJson because
-      # the NixOS module has no options for them.
-      nix-builders = { };
 
       # Non-Unix Groups
       forgejo-access = {

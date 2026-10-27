@@ -1,15 +1,12 @@
 { pkgs, lib, ... }:
 
 # Exercises the `pkgs.kanidm-provision` override defined in
-# overlays/add-pkgs.nix, including:
-#   * oddlama/kanidm-provision#29 — service accounts
-#   * oddlama/kanidm-provision#34 — SSH public keys on persons
-#   * locally-authored patch — POSIX attrs on service accounts
+# overlays/add-pkgs.nix, including oddlama/kanidm-provision#34 for SSH public
+# keys on persons.
 #
 # Imports the real production declarations from machines/biotite so the test
 # mirrors what the deploy actually does: persons + groups + oauth2 clients,
-# plus the production extraJsonFile that declares nix_access_hydra (a POSIX
-# service account in the nix-builders group).
+# plus the production extraJsonFile with POSIX and SSH attributes.
 
 let
   certs = import (pkgs.path + "/nixos/tests/common/acme/server/snakeoil-certs.nix");
@@ -44,7 +41,7 @@ in
         "${pkgs.writeText "fake-ocis-secret" "test-only-not-a-real-secret"}";
 
       services.kanidm = {
-        package = pkgs.kanidmWithSecretProvisioning_1_9;
+        package = pkgs.kanidmWithSecretProvisioning_1_11;
         server = {
           enable = true;
           settings = {
@@ -78,7 +75,7 @@ in
       users.users.kanidm.shell = pkgs.bashInteractive;
 
       environment.systemPackages = [
-        pkgs.kanidmWithSecretProvisioning_1_9
+        pkgs.kanidmWithSecretProvisioning_1_11
         pkgs.jq
       ];
     };
@@ -138,31 +135,6 @@ in
         ]:
             out = provision.succeed(f"kanidm system oauth2 get {name}")
             assert_contains(out, f"name: {name}")
-
-    with subtest("nix_access_hydra service account from PR #29 + local POSIX patch"):
-        # `kanidm service-account get` in 1.9 omits displayname from its
-        # human-readable output; verify the attributes it does print.
-        out = provision.succeed("kanidm service-account get nix_access_hydra")
-        assert_contains(out, "name: nix_access_hydra")
-        assert_contains(out, "class: service_account")
-        assert_contains(out, "class: posixaccount")
-        assert_contains(out, "entry_managed_by:")
-        assert_contains(out, "nix_access_hydra_admins")
-        assert_contains(out, "loginshell: /run/current-system/sw/bin/bash")
-
-        # POSIX attrs from the locally-authored ServiceAccount patch.
-        out = provision.succeed("kanidm service-account posix show nix_access_hydra")
-        assert_contains(out, "nix_access_hydra")
-        assert_contains(out, "/run/current-system/sw/bin/bash")
-
-    with subtest("nix-builders POSIX group with nix_access_hydra"):
-        out = provision.succeed("kanidm group get nix-builders")
-        assert_contains(out, "name: nix-builders")
-        assert_contains(out, "member: nix_access_hydra")
-
-        out = provision.succeed("kanidm group posix show nix-builders")
-        assert_contains(out, "nix-builders")
-        assert_contains(out, "gidnumber:")
 
     provision.succeed("kanidm logout -D idm_admin")
   '';

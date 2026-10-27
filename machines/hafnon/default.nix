@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -6,7 +6,6 @@
   ];
 
   services.qemuGuest.enable = true;
-  boot.initrd.systemd.enable = true;
   boot.loader = {
     systemd-boot = {
       enable = true;
@@ -19,6 +18,10 @@
   sops = {
     defaultSopsFile = ./secrets.yaml;
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    secrets."hydra/builder_token" = {
+      owner = "hydra-builder";
+      mode = "0400";
+    };
   };
 
   # FIXME: https://github.com/Mic92/sops-nix/issues/764
@@ -29,7 +32,6 @@
 
   commonSettings = {
     auth.enable = true;
-    auth.enableBuilder = true;
     nix = {
       enable = true;
     };
@@ -48,22 +50,25 @@
           })))
         '';
       };
-      enableProxy = false;
     };
     serverComponents.enable = true;
   };
   custom.prometheus.exporters.metricsPort = 27280;
 
-  # Root-equivalent privilege scoped to a single named kanidm identity so
-  # adding members to `nix-builders` later doesn't widen the trust scope.
-  # Required because Hydra dispatches over legacy ssh:// (nix-store --serve
-  # --write), which the remote nix-daemon refuses unless the SSH user is in
-  # trusted-users. Track NixOS/hydra#688 — when Hydra grows ssh-ng (or any
-  # path that doesn't need the remote user trusted), drop this line.
-  #
-  # SPN form (not bare `nix_access_hydra`) because kanidm-unixd's getpwuid()
-  # returns the SPN, and nix-daemon string-compares against that.
-  nix.settings.trusted-users = [ "nix_access_hydra@${config.my-lib.settings.idpUrl}" ];
+  services.hydra-builder = {
+    enable = true;
+    queueRunnerAddr = "http://[fda1:6cbb:db78::7]:50051";
+    authorizationFile = config.sops.secrets."hydra/builder_token".path;
+    settings = {
+      maxJobs = 3;
+      systems = [ "x86_64-linux" ];
+      supportedFeatures = [
+        "nixos-test"
+        "big-parallel"
+        "benchmark"
+      ];
+    };
+  };
 
   system.stateVersion = "26.05";
   time.timeZone = "Asia/Shanghai";
