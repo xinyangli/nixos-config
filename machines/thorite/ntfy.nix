@@ -9,7 +9,6 @@ in
 
   services.ntfy-sh = {
     enable = true;
-    group = "caddy";
     settings = {
       listen-unix = "/var/run/ntfy-sh/ntfy.sock";
       listen-unix-mode = 432; # octal 0660
