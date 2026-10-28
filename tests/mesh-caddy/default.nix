@@ -51,9 +51,7 @@ let
       };
     };
 
-    # mesh-sshd default-enables on every mesh node and would fail its
-    # assertion in this test (no services.openssh). Disable explicitly.
-    custom.mesh-network.sshd.enable = false;
+
 
     custom.mesh-network.caddy = {
       enable = true;
@@ -139,20 +137,15 @@ in
         f"(it's BindToDevice=gravity); got rc={rc}, out={out!r}"
     )
 
-    # ---------- Default port reachable only via underlay ----------
+    # ---------- Default port reachable through either routing domain ----------
     out = beta.succeed(
         "curl -sS --max-time 5 http://192.168.1.1:${toString defaultPort}/"
     ).strip()
     assert out == "${defaultPayload}", f"beta over underlay: got {out!r}"
 
-    # tcp_l3mdev_accept=0 (set by the mesh module) means the default
-    # listener won't accept VRF-scoped traffic, so this should fail.
-    rc, out = beta.execute(
+    out = beta.succeed(
         "ip vrf exec gravity curl -sS --max-time 5 http://[fd00:42::1]:${toString defaultPort}/"
-    )
-    assert rc != 0, (
-        f"beta over mesh should NOT reach default port ${toString defaultPort} "
-        f"(default scope listener, tcp_l3mdev_accept=0); got rc={rc}, out={out!r}"
-    )
+    ).strip()
+    assert out == "${defaultPayload}", f"beta over mesh: got {out!r}"
   '';
 }

@@ -111,6 +111,5 @@ in
     };
     bird.enable = true;
     address = [ "fda1:6cbb:db78::5/128" ];
-    gost.enable = true;
   };
 }

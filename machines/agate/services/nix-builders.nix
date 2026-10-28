@@ -11,9 +11,21 @@ in
 
   services.hydra.queueRunner = {
     grpc.address = "[fda1:6cbb:db78::7]";
+    # Ente already listens on the module's default REST port (8080).
+    rest.port = 50052;
     settings = {
       machineFreeFn = "DynamicWithMaxJobLimit";
       tokenPaths = [ builderToken ];
+    };
+  };
+
+  # Accept builder connections only through the mesh VRF. FreeBind covers
+  # socket activation before networkd assigns the mesh address.
+  systemd.sockets.hydra-queue-runner-grpc = {
+    after = [ "systemd-networkd.service" ];
+    socketConfig = {
+      BindToDevice = "gravity";
+      FreeBind = true;
     };
   };
 

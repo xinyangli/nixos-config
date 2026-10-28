@@ -15,9 +15,6 @@ let
         announcedAddr = spec.announced;
       })
     ];
-
-    # This fixture exercises IPsec/Babel only and does not provide a host sshd.
-    custom.mesh-network.sshd.enable = false;
   };
 in
 {

@@ -52,6 +52,7 @@
     };
 
     custom.mesh-network = {
+      prefix = "fd00:42::/48";
       # mkForce: peers.nix declares the prod fleet (organization "xinyangli",
       # real hosts), and the mesh module imports it unconditionally. The
       # test runs an isolated mesh, so we must drop the prod definitions

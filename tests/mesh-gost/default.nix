@@ -3,12 +3,10 @@
 # Validates custom.mesh-network.gost.enable:
 # - gost-mesh listens in the default VRF (no gravity BindToDevice on the listener)
 # - outgoing connections use SO_BINDTODEVICE=gravity (?interface=gravity in -L URI)
-# - a SOCKS5 client on the default VRF can proxy through to a gravity-scoped service
-# - a direct default-VRF connection to the same gravity address fails (strict VRF)
+# - default-VRF clients can use the main-table mesh route directly or through SOCKS5
 #
 # Topology: alpha runs gost-mesh; beta hosts an HTTP service bound to its
-# gravity VRF address. The test exercises both local (alpha→alpha→beta-gravity)
-# and remote (beta-underlay→alpha-gost→beta-gravity) proxy paths.
+# gravity VRF address. The test exercises direct, local-proxy, and remote-proxy paths.
 
 let
   proxyPort = 1080;
@@ -47,7 +45,7 @@ let
       };
     };
 
-    custom.mesh-network.sshd.enable = false;
+
 
     environment.systemPackages = with pkgs; [ curl python3 ];
   };
@@ -95,8 +93,6 @@ in
     )
 
     # ---------- Phase 2: start a gravity-only HTTP service on beta ----------
-    # python3 http.server under ip vrf exec binds to all gravity-VRF addresses,
-    # including fd00:42::2. It is not reachable from the default VRF.
     beta.succeed(
         "ip vrf exec gravity python3 -m http.server ${toString meshHttpPort} --bind '::' &>/tmp/http.log &"
     )
@@ -106,14 +102,11 @@ in
         timeout=30,
     )
 
-    # ---------- Phase 3: default-VRF direct access fails ----------
-    # fd00:42::/48 is not in alpha's default routing table; strict VRF mode
-    # (net.vrf.strict_mode=1) prevents cross-VRF socket delivery.
-    rc, _ = alpha.execute(
-        "curl -sS --max-time 5 http://[${gravityOf.beta}]:${toString meshHttpPort}/"
-    )
-    assert rc != 0, (
-        "alpha default VRF must NOT reach beta's gravity-scoped HTTP service directly"
+    # ---------- Phase 3: default-VRF direct access through the leaked route ----------
+    route_get = alpha.succeed("ip -6 route get ${gravityOf.beta}")
+    assert "dev gravity" in route_get, route_get
+    alpha.succeed(
+        "curl -sS --max-time 5 http://[${gravityOf.beta}]:${toString meshHttpPort}/ >/dev/null"
     )
 
     # ---------- Phase 4: proxy works from gost host (loopback) ----------

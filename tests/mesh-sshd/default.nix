@@ -1,6 +1,6 @@
 { pkgs, lib, ... }:
 
-# Validates `custom.mesh-network.sshd.enable`.
+# Validates SSH through the main-table mesh route.
 
 let
   inherit (import "${pkgs.path}/nixos/tests/ssh-keys.nix" pkgs)
@@ -50,7 +50,7 @@ let
   };
 in
 {
-  name = "mesh-sshd-vrf-bind";
+  name = "mesh-sshd-direct-l3mdev";
 
   nodes = lib.mapAttrs mkNode nodes;
 
@@ -61,9 +61,10 @@ in
         m.wait_for_unit("strongswan-swanctl.service")
         m.wait_for_unit("gravity-ipsec.service")
         m.wait_for_unit("bird.service")
+
+        accept = m.succeed("sysctl -n net.ipv4.tcp_l3mdev_accept").strip()
+        assert accept == "1", f"{m.name}: tcp_l3mdev_accept={accept}"
         m.wait_for_unit("sshd.service")
-        m.wait_for_unit("mesh-sshd.socket")
-        m.wait_for_unit("mesh-sshd.service")
 
     for src, dst in [(alpha, "fd00:42::2"), (beta, "fd00:42::1")]:
         src.wait_until_succeeds(
@@ -83,52 +84,16 @@ in
         "-i /root/.ssh/id_ecdsa"
     )
 
-    # ---------- Phase 1: socket bound to gravity ----------
-    for m in (alpha, beta):
-        bound = m.succeed(
-            "systemctl show mesh-sshd.socket -p BindToDevice --value"
-        ).strip()
-        assert bound == "gravity", (
-            f"{m.name}: expected mesh-sshd.socket BindToDevice=gravity, got: {bound!r}"
-        )
-        listeners = m.succeed("ss -lntpH")
-        assert "%gravity:22" in listeners, (
-            f"{m.name}: no %gravity-scoped listener on :22; got:\n{listeners}"
-        )
-
-    # ---------- Phase 2: both ssh paths work ----------
     out = alpha.succeed(
         f"ssh {ssh_opts} -p 22 root@192.168.1.2 hostname"
     ).strip()
     assert out == "beta", f"underlay ssh: got {out!r}"
 
+    # No client-side VRF binding or proxy: the main-table route plus
+    # tcp_l3mdev_accept carries the connection and its return traffic.
     out = alpha.succeed(
-        f"ip vrf exec gravity ssh {ssh_opts} -p 22 root@fd00:42::2 hostname"
+        f"ssh {ssh_opts} -p 22 root@fd00:42::2 hostname"
     ).strip()
     assert out == "beta", f"mesh ssh: got {out!r}"
-
-    # ---------- Phase 3: sshd saw the mesh session as 127.0.0.1 ----------
-    beta.succeed(
-        "journalctl -u sshd.service --since '60 sec ago' | "
-        "grep -E 'Accepted publickey for root from 127\\.0\\.0\\.1'"
-    )
-
-    # ---------- Phase 4: stopping mesh-sshd.socket closes only the mesh path ----------
-    beta.succeed("systemctl stop mesh-sshd.socket mesh-sshd.service")
-
-    rc, out = alpha.execute(
-        f"ip vrf exec gravity ssh {ssh_opts} -p 22 root@fd00:42::2 hostname"
-    )
-    assert rc != 0, (
-        f"mesh ssh after stopping mesh-sshd.socket should fail; got rc={rc}, out={out!r}"
-    )
-
-    out = alpha.succeed(
-        f"ssh {ssh_opts} -p 22 root@192.168.1.2 hostname"
-    ).strip()
-    assert out == "beta", (
-        f"underlay ssh after stopping mesh-sshd.socket should still work "
-        f"(host sshd is independent); got {out!r}"
-    )
   '';
 }

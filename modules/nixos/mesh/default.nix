@@ -14,7 +14,6 @@ in
     ./bird.nix
     ./registry.nix
     ./peers.nix
-    ./sshd.nix
     ./caddy.nix
     ./gost.nix
   ];
@@ -30,6 +29,16 @@ in
       (used as `krt_prefsrc` for outbound mesh traffic); additional
       entries can be shared across hosts to implement anycast — babel-rtt
       then directs clients to the lowest-RTT holder.
+    '';
+  };
+
+  options.custom.mesh-network.prefix = lib.mkOption {
+    type = lib.types.singleLineStr;
+    default = "fda1:6cbb:db78::/56";
+    description = ''
+      Aggregate mesh prefix routed through the gravity VRF. A main-table
+      route lets default-VRF TCP clients reach mesh services without
+      per-service socket binding.
     '';
   };
 
@@ -73,21 +82,22 @@ in
       systemd.network.networks.gravity = {
         matchConfig.Name = config.systemd.network.netdevs.gravity.netdevConfig.Name;
         address = cfg.address;
-        routes = map (a: {
-          Destination = a;
-          Type = "local";
-          Table = 100;
-          Protocol = "kernel";
-          Metric = 1;
-        }) cfg.address;
+        routes =
+          map (a: {
+            Destination = a;
+            Type = "local";
+            Table = 100;
+            Protocol = "kernel";
+            Metric = 1;
+          }) cfg.address
+          ++ [
+            {
+              Destination = cfg.prefix;
+              Table = "main";
+            }
+          ];
         linkConfig.RequiredForOnline = "carrier";
         routingPolicyRules = [
-          {
-            Priority = 500;
-            Family = "ipv6";
-            To = "fda1:6cbb:db78::/56";
-            Table = 100;
-          }
           {
             Priority = 2000;
             Family = "both";
@@ -135,10 +145,9 @@ in
         "net.ipv4.conf.*.rp_filter" = 0;
         "net.netfilter.nf_conntrack_max" = lib.mkDefault 1048576;
         # https://www.kernel.org/doc/html/latest/networking/vrf.html#applications
-        # established sockets will be created in the VRF based on the ingress interface
-        # in case ingress traffic comes from inside the VRF targeting VRF external addresses
-        # the connection would silently fail
-        "net.ipv4.tcp_l3mdev_accept" = lib.mkDefault 0;
+        # Allow default-VRF TCP sockets to use the leaked mesh route and accept
+        # return traffic from gravity. UDP and raw sockets remain isolated.
+        "net.ipv4.tcp_l3mdev_accept" = lib.mkDefault 1;
         "net.ipv4.udp_l3mdev_accept" = lib.mkDefault 0;
         "net.ipv4.raw_l3mdev_accept" = lib.mkDefault 0;
         "net.ipv4.icmp_errors_extension_mask" = lib.fromHexString "0x01";
