@@ -30,7 +30,7 @@
       "github.com/caddy-dns/cloudflare@v0.2.1"
       "github.com/caddy-dns/desec@v1.1.0"
     ];
-    hash = "sha256-BRtt5bJKyutS30v9oRrN3y4XvP/YyuYNjze36+8q30w=";
+    hash = "sha256-NsBBmnbBQN1XUfP8QAxvctoewRsyQxe5F+ao9Oh3RUk=";
   };
 
   # Expose a gravity-VRF-scoped :443 socket so mesh-internal vhosts
