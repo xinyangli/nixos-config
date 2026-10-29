@@ -504,6 +504,12 @@
           mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
           mesh-gost-test = pkgs.testers.nixosTest (import ./tests/mesh-gost);
           kanidm-provision-test = pkgs.testers.nixosTest (import ./tests/kanidm-provision);
+          pam-oath-test = pkgs.testers.nixosTest (
+            import ./tests/pam-oath.nix {
+              inherit pkgs;
+              run0SudoShimModule = run0-sudo-shim.nixosModules.default;
+            }
+          );
         };
 
         devShells = {

@@ -19,6 +19,13 @@
             type = lib.types.str;
             default = "/run/secrets/missing-in-test";
           };
+          sopsFile = lib.mkOption {
+            type = lib.types.path;
+          };
+          mode = lib.mkOption {
+            type = lib.types.str;
+            default = "0400";
+          };
           owner = lib.mkOption {
             type = lib.types.str;
             default = "root";

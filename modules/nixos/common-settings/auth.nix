@@ -23,6 +23,9 @@ in
     sshAccess = mkEnableOption "kanidm-managed ssh access to this machine" // {
       default = true;
     };
+    totp.enable = mkEnableOption "TOTP as an alternative to passwords for Polkit authentication" // {
+      default = true;
+    };
     enableHowdy = mkEnableOption "howdy for logging into the machine";
     u2f = {
       enable = mkEnableOption "Use pam-u2f for authentication";
@@ -65,6 +68,43 @@ in
         '';
       };
       security.run0-sudo-shim.enable = true;
+    })
+
+    (mkIf (cfg.enable && cfg.totp.enable) {
+      environment.systemPackages = [ pkgs.oath-toolkit ];
+      security.pam.oath = {
+        usersFile = "/var/lib/oath/users.oath";
+        digits = 6;
+        window = 5;
+      };
+      security.pam.services.polkit-1 = {
+        oathAuth = true;
+        rules.auth.oath.control = lib.mkForce "sufficient";
+      };
+      sops.secrets."oath/users.oath" = {
+        sopsFile = ../../../machines/secrets.yaml;
+        owner = "root";
+        mode = "0600";
+      };
+      systemd.services.oath-usersfile = {
+        wantedBy = [ "sysinit.target" ];
+        after = [ "local-fs.target" "sops-install-secrets.service" ];
+        before = [ "sysinit.target" "polkit-agent-helper.socket" ];
+        unitConfig.DefaultDependencies = "no";
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = pkgs.writeShellScript "oath-usersfile-init" ''
+            set -eu
+            ${pkgs.coreutils}/bin/install -d -o root -g root -m 0700 /var/lib/oath
+            if [ ! -e /var/lib/oath/users.oath ]; then
+              ${pkgs.coreutils}/bin/install -o root -g root -m 0600 \
+                "${config.sops.secrets."oath/users.oath".path}" /var/lib/oath/users.oath
+            fi
+          '';
+        };
+      };
+      systemd.services."polkit-agent-helper@".serviceConfig.ReadWritePaths = [ "/var/lib/oath" ];
     })
 
     (mkIf (cfg.enable && cfg.sshAccess) {

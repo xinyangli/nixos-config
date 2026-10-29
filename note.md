@@ -6,6 +6,17 @@ Demonstrate disk usage by nix-store path.
 
 - new sops key should be added by using `sops updatekeys`
 
+### OATH TOTP seed rotation
+
+After changing `oath.users.oath` in `machines/secrets.yaml` and deploying, each host intentionally keeps its existing writable credential and replay state. As root on each host, reset it only for rotation or recovery:
+
+```sh
+mv /var/lib/oath/users.oath /var/lib/oath/users.oath.previous
+systemctl restart oath-usersfile.service
+```
+
+Verify TOTP authentication before deleting `/var/lib/oath/users.oath.previous`. Never reset the file during normal activation.
+
 ### Overriding cargoHash of buildRustPackage
 
 See [this post](https://discourse.nixos.org/t/is-it-possible-to-override-cargosha256-in-buildrustpackage/4393/25)
