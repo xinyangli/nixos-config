@@ -20,7 +20,7 @@ in
       listen = "127.0.0.1:16321";
       jwt = { };
       database = {
-        url = "postgresql:///${databaseName}?host=/run/postgresql";
+        url = "postgresql://atticd@%2Frun%2Fpostgresql/atticd";
       };
       storage = {
         type = "s3";
