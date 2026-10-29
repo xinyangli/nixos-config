@@ -36,7 +36,7 @@ let
       tproxy_port_protect: true
       so_mark_from_dae: 0
       log_level: warn
-      disable_waiting_network: false
+      disable_waiting_network: true
 
       ##### Interface and kernel options.
       wan_interface: auto
@@ -57,7 +57,7 @@ let
       ##### Connecting options.
 
       
-      dial_mode: ${if config.commonSettings.network.localdns.enable then "domain+" else "domain"}
+      dial_mode: ${if config.commonSettings.network.localdns.enable then "ip" else "domain"}
       allow_insecure: false
       sniffing_timeout: 100ms
       tls_implementation: tls
@@ -114,7 +114,7 @@ let
 
     # See https://github.com/daeuniverse/dae/blob/main/docs/en/configuration/routing.md for full examples.
     routing {
-      # pname(kresd) && dport(53) && l4proto(udp)-> must_direct
+      pname(kresd) && dport(53) && l4proto(udp)-> must_direct
       pname(systemd-resolve) -> must_direct
       pname(caddy) -> must_direct
       pname(sing-box) -> must_direct
@@ -161,7 +161,7 @@ let
     global {
       tproxy_port: 12345
       tproxy_port_protect: true
-      disable_waiting_network: false
+      disable_waiting_network: true
       log_level: warn
       tcp_check_url: 'http://www.apple.com.cn/library/test/success.html'
       tcp_check_http_method: GET
@@ -170,7 +170,7 @@ let
       udp_check_dns: 'dns.alidns.com:53,223.5.5.5,2400:3200::1'
       check_interval: 500s
       check_tolerance: 100ms 
-      dial_mode: ${if config.commonSettings.network.localdns.enable then "domain+" else "domain"}
+      dial_mode: ${if config.commonSettings.network.localdns.enable then "ip" else "domain"}
       allow_insecure: false
       sniffing_timeout: 100ms
       tls_implementation: tls

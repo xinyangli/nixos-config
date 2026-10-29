@@ -24,6 +24,15 @@ in
         type = lib.types.str;
         default = "100.100.100.100";
       };
+      mainlandDNS = mkOption {
+        type = lib.types.str;
+        default = ''
+          policy.add(policy.suffix(policy.TLS_FORWARD({
+            { "223.5.5.5", hostname="dns.alidns.com" },
+            { "223.6.6.6", hostname="dns.alidns.com" },
+          }), chinaDomains))
+        '';
+      };
       fallbackDNS = mkOption {
         type = lib.types.str;
         default = ''
@@ -132,10 +141,7 @@ in
             '';
             mainlandSettings = ''
               chinaDomains = policy.todnames({'10118244.xyz', ${chinaDomains}})
-              policy.add(policy.suffix(policy.TLS_FORWARD({
-                { "223.5.5.5", hostname="dns.alidns.com" },
-                { "223.6.6.6", hostname="dns.alidns.com" },
-              }), chinaDomains))
+              ${cfg.localdns.mainlandDNS}
               ${cfg.localdns.fallbackDNS}
             '';
           in
