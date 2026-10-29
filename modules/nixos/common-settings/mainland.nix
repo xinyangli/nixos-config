@@ -205,14 +205,14 @@ let
     }
     routing {
       ${canvaWarpRoutingRule}
-      domain(full: dns.alidns.com) -> default_group
-      dip(223.5.5.5) -> default_group
-      dip('2400:3200::1') -> default_group
-      domain(full: www.apple.com.cn) -> default_group
-
-      ip('115.168.0.0/14') -> default_group
-      domain(suffix: xiny.li) && dport(8443) -> default_group
-      domain(suffix: coho-tet.ts.net) -> default_group
+      # domain(full: dns.alidns.com) -> default_group
+      # dip(223.5.5.5) -> default_group
+      # dip('2400:3200::1') -> default_group
+      # domain(full: www.apple.com.cn) -> default_group
+      #
+      # ip('115.168.0.0/14') -> default_group
+      # domain(suffix: xiny.li) && dport(8443) -> default_group
+      # domain(suffix: coho-tet.ts.net) -> default_group
       fallback: direct
     }
   '';
