@@ -84,14 +84,6 @@ in
     substituters = [
       "https://nix-community.cachix.org"
     ];
-    extra-substituters = [
-      "https://depot.canva-internal.com/v1/signed-url-mirror/cache.nixos.org/"
-      "https://depot.canva-internal.com/v1/nix-binary-cache/"
-    ];
-    extra-trusted-substituters = [
-      "https://depot.canva-internal.com/v1/signed-url-mirror/cache.nixos.org/"
-      "https://depot.canva-internal.com/v1/nix-binary-cache/"
-    ];
     trusted-public-keys = [
       # Compare to the key published at https://nix-community.org/cache
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
@@ -123,7 +115,6 @@ in
 
     # Enable "Silent boot"
     consoleLogLevel = 3;
-    initrd.verbose = false;
     initrd.availableKernelModules = [ "xe" ];
     initrd.systemd.services.cryptsetup-timeout = {
       # man systemd-cryptsetup@.service

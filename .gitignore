@@ -1,5 +1,7 @@
 .direnv
 .vscode
+.warp-vm/
 result
 result-*
 /config/zellij/*.bak
+config/agents/*

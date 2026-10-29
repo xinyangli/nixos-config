@@ -15,9 +15,7 @@
     swayimg
     vlc
 
-    # TEMP (2026-10-07): disabled until upstream zotero fix (#569006) merges
-    # and Hydra cache is available (FF153 removed AboutTranslations actor).
-    # zotero
+    zotero
 
     spotifast
     coppwr
@@ -25,6 +23,11 @@
 
     nixvim
     neovide
+  ];
+
+  # TEMP: fix https://github.com/NixOS/nixpkgs/issues/568692
+  nixpkgs.config.permittedInsecurePackages = [
+    "firefox-esr-140-bin-unwrapped-140.17.0esr"
   ];
 
   xdg.autostart = {

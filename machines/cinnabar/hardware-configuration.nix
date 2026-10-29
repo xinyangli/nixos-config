@@ -64,7 +64,6 @@ in
     "nvme"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.initrd.systemd.enable = true; # For hibernation
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   boot.kernel.sysctl = {

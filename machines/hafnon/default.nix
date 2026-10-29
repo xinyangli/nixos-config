@@ -44,10 +44,10 @@
       tailscale.enable = false;
       localdns = {
         enable = true;
-        fallbackDNS = ''
-          policy.add(policy.all(policy.FORWARD({
-            "100.112.247.225"
-          })))
+        mainlandDNS = ''
+          policy.add(policy.suffix(policy.FORWARD({
+            "10.10.0.2"
+          }), chinaDomains))
         '';
       };
     };
@@ -116,158 +116,51 @@
       chain prerouting {
         type filter hook prerouting priority mangle; policy accept;
 
-        iifname "ens20" ct mark set 20
-        iifname "ens21" ct mark set 21
+        iifname "ens18" ct mark set 18
+        iifname "ens19" ct mark set 19
       }
 
       chain output {
         type route hook output priority mangle; policy accept;
 
-        ct mark 20 meta mark set 20
-        ct mark 21 meta mark set 21
+        ct mark 18 meta mark set 18
+        ct mark 19 meta mark set 19
       }
     }
   '';
 
-  systemd.network.netdevs = {
-    "20-dummy20" = {
-      netdevConfig = {
-        Name = "dummy20";
-        Kind = "dummy";
-      };
-    };
-    "21-dummy21" = {
-      netdevConfig = {
-        Name = "dummy21";
-        Kind = "dummy";
-      };
-    };
-  };
-
   systemd.network = {
     enable = true;
-    wait-online.anyInterface = false;
+    wait-online.anyInterface = true;
     networks = {
-      "10-ens20" = {
-        matchConfig = {
-          MACAddress = "bc:24:11:8f:df:b5";
-        };
-        networkConfig = {
-          DHCP = "ipv6";
-          IPv6AcceptRA = false;
-          IPv6SendRA = false;
-          DHCPPrefixDelegation = false;
-        };
-        dhcpV6Config = {
-          WithoutRA = "solicit";
-          UseAddress = false;
-          UseDelegatedPrefix = true;
-          PrefixDelegationHint = "::/64";
-        };
-        routes = [
-          {
-            Gateway = "fe80::1";
-            Destination = "::/0";
-            GatewayOnLink = true;
-            Metric = 100;
-          }
-          {
-            Destination = "::/0";
-            Gateway = "fe80::1";
-            GatewayOnLink = true;
-            Table = 120;
-          }
-        ];
-        routingPolicyRules = [
-          {
-            Family = "ipv6";
-            FirewallMark = 20;
-            Table = 120;
-            Priority = 1020;
-          }
-        ];
-      };
-      "10-ens21" = {
-        matchConfig = {
-          MACAddress = "bc:24:11:00:4c:dd";
-        };
-        networkConfig = {
-          DHCP = "ipv6";
-          IPv6AcceptRA = false;
-          IPv6SendRA = false;
-          DHCPPrefixDelegation = false;
-        };
-        dhcpV6Config = {
-          WithoutRA = "solicit";
-          UseAddress = false;
-          UseDelegatedPrefix = true;
-          PrefixDelegationHint = "::/64";
-        };
-        routes = [
-          {
-            Gateway = "fe80::1";
-            Destination = "::/0";
-            GatewayOnLink = true;
-            Metric = 200;
-          }
-          {
-            Destination = "::/0";
-            Gateway = "fe80::1";
-            GatewayOnLink = true;
-            Table = 121;
-          }
-        ];
-        routingPolicyRules = [
-          {
-            Family = "ipv6";
-            FirewallMark = 21;
-            Table = 121;
-            Priority = 1020;
-          }
-        ];
-      };
-      "20-dummy20" = {
-        matchConfig.Name = "dummy20";
-        linkConfig.RequiredForOnline = false;
-        networkConfig = {
-          DHCPPrefixDelegation = true;
-          IPv6SendRA = false;
-        };
-
-        dhcpPrefixDelegationConfig = {
-          UplinkInterface = "ens20";
-          SubnetId = 0;
-          Announce = false;
-          Token = "::1";
-        };
-      };
-
-      "21-dummy21" = {
-        matchConfig.Name = "dummy21";
-        linkConfig.RequiredForOnline = false;
-        networkConfig = {
-          DHCPPrefixDelegation = true;
-          IPv6SendRA = false;
-        };
-
-        dhcpPrefixDelegationConfig = {
-          UplinkInterface = "ens21";
-          SubnetId = 0;
-          Announce = false;
-          Token = "::1";
-        };
-      };
-      "10-lan" = {
+      "10-wan1" = {
         matchConfig = {
           MACAddress = "bc:24:11:e5:4f:f7";
         };
         address = [ "100.112.247.229/27" ];
         gateway = [ "100.112.247.225" ];
-        dns = [ "100.112.247.225" ];
 
         networkConfig = {
           DHCP = "ipv6";
           IPv6AcceptRA = true;
+        };
+        ipv6AcceptRAConfig = {
+          UseDNS = false;
+        };
+      };
+      "10-wan2" = {
+        matchConfig = {
+          MACAddress = "bc:24:11:97:b8:ce";
+        };
+        address = [ "10.10.10.2/16" ];
+        # gateway = [ "10.10.0.3" ];
+        dns = [ "10.10.0.3" ];
+        networkConfig = {
+          DHCP = false;
+          IPv6AcceptRA = true;
+        };
+        ipv6AcceptRAConfig = {
+          UseDNS = false;
         };
       };
     };

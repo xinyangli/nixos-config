@@ -94,7 +94,7 @@
       plugins = [
         "github.com/caddy-dns/desec@v1.1.0"
       ];
-      hash = "sha256-w80Yv8Bznxn1EuI+DGjLSIFhENDfWhLgvhdR0oI36A4=";
+      hash = "sha256-HrLRezw+q5+dRdJS662686n7xsImSxNb3UqlSo61R8E=";
     };
     virtualHosts."http://raspite.u.xiny.li:18080".extraConfig = ''
       bind ${config.custom.mesh-network.caddy.fdRefs."18080"}

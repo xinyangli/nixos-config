@@ -15,7 +15,7 @@ in
     tree
     wget
     tmux
-    inetutils
+    iputils
     jq
     dust # du + rust
     fd

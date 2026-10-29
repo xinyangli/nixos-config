@@ -106,6 +106,8 @@ in
   xdg.configFile."zellij/config.kdl".enable = false;
   xdg.configFile."zellij".source = config.lib.file.mkOutOfStoreSymlink "${configDir}/zellij";
 
+  programs.herdr.enable = true;
+
   # == Coding ==
   programs.git = {
     enable = true;

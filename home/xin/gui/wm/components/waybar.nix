@@ -145,7 +145,7 @@
             default = "";
             spotify = "";
             spotifyd = " 󰀿";
-            Spot = "";
+            spotifast = "";
             Valent = "";
             kdeconnect = "";
             firefox = "󰈹";

@@ -53,7 +53,7 @@
     };
 
     catppuccin = {
-      url = "github:catppuccin/nix/release-25.11";
+      url = "github:catppuccin/nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -83,10 +83,7 @@
     };
 
     vicinae = {
-      # TEMP (2026-10-07): pin to PR #2055 head until merged upstream.
-      # Fixes nix build link failure against numen (GLIBCXX_3.4.36 /
-      # gcc mismatch). Revert to "github:vicinaehq/vicinae" once merged.
-      url = "github:vicinaehq/vicinae/pull/2055/head";
+      url = "github:vicinaehq/vicinae";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
