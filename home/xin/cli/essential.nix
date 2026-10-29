@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (config.my-lib.settings) vaultwardenUrl;
+  inherit (config.my-lib.settings) vaultwardenUrl idpUrl;
 in
 {
   home.packages = with pkgs; [
@@ -36,6 +36,26 @@ in
     ];
   };
   programs.zoxide.enable = true;
+
+  programs.opkssh = {
+    enable = true;
+    settings = {
+      default_provider = "kanidm";
+      providers = [
+        {
+          alias = "kanidm";
+          issuer = "https://${idpUrl}/oauth2/openid/opkssh";
+          client_id = "opkssh";
+          scopes = "openid email profile";
+          redirect_uris = [
+            "http://localhost:3000/login-callback"
+            "http://localhost:10001/login-callback"
+            "http://localhost:11110/login-callback"
+          ];
+        }
+      ];
+    };
+  };
 
   programs.atuin = {
     enable = true;

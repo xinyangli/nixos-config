@@ -33,6 +33,10 @@ in
     (mkIf cfg.enable {
       services.userborn.enable = true;
       users.users.root.hashedPassword = "$y$j9T$oJ8a7zKc3EV9HOf8qYKC6/$ZEq0Kl8rapeN/WKyJ8eXnTGoTpLb2W/LWLcS8QlNPPB";
+      users.groups.systemd-journal.members = [
+        "agent_pam_access@${idpUrl}"
+        "xin@${idpUrl}"
+      ];
       services.kanidm = {
         package = kanidm_pkg;
         client = {
@@ -51,15 +55,42 @@ in
         enable = true;
         persistentAuthentication = true;
         adminIdentities = [ "unix-group:unix_admin@${idpUrl}" ];
+        extraConfig = ''
+          polkit.addRule(function(action, subject) {
+            if (action.id == "org.freedesktop.systemd1.manage-units" &&
+                subject.user == "agent_pam_access@${idpUrl}") {
+              return polkit.Result.YES;
+            }
+          });
+        '';
       };
       security.run0-sudo-shim.enable = true;
     })
 
     (mkIf (cfg.enable && cfg.sshAccess) {
+      services.opkssh = {
+        enable = true;
+        providers = {
+          kanidm = {
+            issuer = "https://${idpUrl}/oauth2/openid/opkssh";
+            clientId = "opkssh";
+            lifetime = "24h";
+          };
+        };
+        authorizations = [
+          {
+            user = "agent_pam_access";
+            principal = "sub:a9b5e8c8-1f96-49ca-911b-b8dcd737da86";
+            issuer = "https://${idpUrl}/oauth2/openid/opkssh";
+          }
+        ];
+      };
+
       services.openssh = mkIf cfg.sshAccess {
         enable = true;
-        authorizedKeysCommand = "/etc/ssh/auth %u";
-        authorizedKeysCommandUser = "kanidm-ssh-runner";
+        # The opkssh module wires itself directly; use a wrapper for Kanidm fallback.
+        authorizedKeysCommand = lib.mkForce "/etc/ssh/auth %u %k %t";
+        authorizedKeysCommandUser = lib.mkForce "root";
         openFirewall = true;
         settings = {
           PasswordAuthentication = false;
@@ -68,11 +99,19 @@ in
         };
       };
 
+      environment.etc."opk/providers".user = lib.mkForce "root";
+      environment.etc."opk/auth_id".user = lib.mkForce "root";
+
       environment.etc."ssh/auth" = {
         mode = "0555";
         text = ''
           #!/bin/sh
-          ${kanidm_pkg}/bin/kanidm_ssh_authorizedkeys $1
+          if ! ${pkgs.util-linux}/bin/runuser -u opksshuser -- \
+            /run/wrappers/bin/opkssh verify "$1" "$2" "$3"
+          then
+            ${pkgs.util-linux}/bin/runuser -u kanidm-ssh-runner -- \
+              ${kanidm_pkg}/bin/kanidm_ssh_authorizedkeys "$1"
+          fi
         '';
       };
       users.groups.kanidm-ssh-runner = { };

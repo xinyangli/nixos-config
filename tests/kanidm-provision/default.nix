@@ -121,6 +121,7 @@ in
 
     with subtest("production oauth2 resource servers exist"):
         for name in [
+            "opkssh",
             "forgejo",
             "gotosocial",
             "owncloud",

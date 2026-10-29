@@ -71,6 +71,7 @@ in
       };
       linux_users = {
         members = [ "xin" ];
+        overwriteMembers = false;
       };
       hedgedoc-users = {
         members = [ "xin" ];
@@ -145,6 +146,24 @@ in
       };
     };
     systems.oauth2 = {
+      opkssh = {
+        displayName = "OpenPubkey SSH";
+        originUrl = [
+          "http://localhost:3000/login-callback"
+          "http://localhost:10001/login-callback"
+          "http://localhost:11110/login-callback"
+        ];
+        originLanding = "http://localhost:3000/login-callback";
+        public = true;
+        enableLocalhostRedirects = true;
+        scopeMaps = {
+          linux_users = [
+            "openid"
+            "email"
+            "profile"
+          ];
+        };
+      };
       forgejo = {
         displayName = "ForgeJo";
         originUrl = "https://${forgejoDomain}/user/oauth2/kanidm/callback";
