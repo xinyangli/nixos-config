@@ -136,6 +136,37 @@
       ...
     }:
     let
+      mkPkgs =
+        system:
+        import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [
+            ranet-ipsec.overlays.default
+            (import ./overlays/add-pkgs.nix)
+          ];
+        };
+
+      testJobs =
+        system:
+        let
+          pkgs = mkPkgs system;
+        in
+        {
+          backup-test = pkgs.testers.nixosTest (import ./tests/backup.nix);
+          ipsec-mesh-test = pkgs.testers.nixosTest (import ./tests/ipsec-mesh);
+          mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
+          mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
+          mesh-gost-test = pkgs.testers.nixosTest (import ./tests/mesh-gost);
+          kanidm-provision-test = pkgs.testers.nixosTest (import ./tests/kanidm-provision);
+          pam-oath-test = pkgs.testers.nixosTest (
+            import ./tests/pam-oath.nix {
+              inherit pkgs;
+              run0SudoShimModule = run0-sudo-shim.nixosModules.default;
+            }
+          );
+        };
+
       editorOverlay = (
         final: prev: {
           inherit (nix-vscode-extensions.extensions.${prev.stdenv.hostPlatform.system}) vscode-marketplace;
@@ -470,19 +501,21 @@
             }) includeHomes
           );
         in
-        nixosConfigurationJobs // homeConfigurationJobs;
+        nixosConfigurationJobs // homeConfigurationJobs // {
+          # NixOS VM tests (also in `checks`). Exposed per system so Hydra
+          # flattens them to jobs like `tests.aarch64-linux.backup-test`.
+          # aarch64-linux runs on agate itself; x86_64-linux on the
+          # remote hydra-builder fleet (hafnon et al.).
+          tests = nixpkgs.lib.genAttrs [
+            "aarch64-linux"
+            "x86_64-linux"
+          ] testJobs;
+        };
     }
     // flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-          overlays = [
-            ranet-ipsec.overlays.default
-            (import ./overlays/add-pkgs.nix)
-          ];
-        };
+        pkgs = mkPkgs system;
 
         mkHomeConfiguration = user: host: {
           name = "${user}-${host}";
@@ -495,22 +528,16 @@
             ++ sharedHmModules;
           };
         };
+
+        python3WithTools = pkgs.python3.withPackages (
+          ps: with ps; [
+            requests
+            grafana-client
+          ]
+        );
       in
       {
-        checks = {
-          backup-test = pkgs.testers.nixosTest (import ./tests/backup.nix);
-          ipsec-mesh-test = pkgs.testers.nixosTest (import ./tests/ipsec-mesh);
-          mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
-          mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
-          mesh-gost-test = pkgs.testers.nixosTest (import ./tests/mesh-gost);
-          kanidm-provision-test = pkgs.testers.nixosTest (import ./tests/kanidm-provision);
-          pam-oath-test = pkgs.testers.nixosTest (
-            import ./tests/pam-oath.nix {
-              inherit pkgs;
-              run0SudoShimModule = run0-sudo-shim.nixosModules.default;
-            }
-          );
-        };
+        checks = testJobs system;
 
         devShells = {
           default = pkgs.mkShell {
@@ -523,7 +550,7 @@
               nil
               nvd
               nh
-              (python3.withPackages (ps: with ps; [ requests ]))
+              python3WithTools
               sbctl
               nixd
             ];

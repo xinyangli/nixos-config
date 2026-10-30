@@ -96,10 +96,16 @@ in
         members = [ "xin" ];
       };
       grafana-editors = {
-        members = [ "xin" ];
+        members = [
+          "xin"
+          "agent_pam_access"
+        ];
       };
       grafana-users = {
-        members = [ "xin" ];
+        members = [
+          "xin"
+          "agent_pam_access"
+        ];
       };
       miniflux-users = {
         members = [ "xin" ];
