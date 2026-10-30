@@ -3,7 +3,6 @@
   sops-nix,
   run0-sudo-shim,
   comin,
-  lib,
   ...
 }:
 {
@@ -32,10 +31,7 @@
     };
     comin.enable = false;
     nix.enable = false;
-    network = {
-      enableProxy = false;
-      tailscale.enable = false;
-    };
+    network.tailscale.enable = false;
   };
 
   programs.fish.enable = true;
@@ -45,29 +41,6 @@
       if (subject.user == "xin@auth.xiny.li") return polkit.Result.YES;
     });
   '';
-
-  services.openssh.hostKeys = [
-    {
-      path = "/var/lib/ssh/ssh_host_ed25519_key";
-      type = "ed25519";
-    }
-  ];
-
-  # opkssh refuses root-owned 0644 policy files; keep them root:opksshuser.
-  environment.etc."opk/auth_id".group = lib.mkForce "opksshuser";
-  environment.etc."opk/providers".group = lib.mkForce "opksshuser";
-  systemd.tmpfiles.rules = [
-    "z /etc/opk/auth_id 0640 root opksshuser - -"
-    "z /etc/opk/providers 0640 root opksshuser - -"
-  ];
-
-  services.opkssh.authorizations = [
-    {
-      user = "xin@auth.xiny.li";
-      principal = "65876f3e-d489-4e3e-af3e-99a541bbb855";
-      issuer = "https://auth.xiny.li/oauth2/openid/opkssh";
-    }
-  ];
 
   microvm = {
     hypervisor = "qemu";
