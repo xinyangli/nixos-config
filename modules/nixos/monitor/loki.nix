@@ -212,6 +212,8 @@ in
             dns desec {
               token {env.DESEC_TOKEN}
             }
+            propagation_delay 1m
+            dns_ttl 1m
           }
           reverse_proxy unix//run/loki/loki.sock:${toString lokiPort}
         '';
