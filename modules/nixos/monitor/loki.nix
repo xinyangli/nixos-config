@@ -285,8 +285,8 @@ in
                 match = "*";
                 host = "thorite.loki.${gravityInternalDomain}";
                 port = 443;
-                tls = "on";
-                tls.ca_file = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+                "tls" = "on";
+                "tls.ca_file" = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
                 labels = "job=systemd-journal";
                 label_keys = "$host,$unit,$coredump_unit";
                 remove_keys = "host,unit,coredump_unit";
