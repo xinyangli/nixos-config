@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -11,65 +10,20 @@ let
 
   # One .socket unit per VRF scope. Within a unit, systemd passes the
   # fds of its sockets in configuration order (systemd.socket(5)); the
-  # order *between* units is unspecified, and Caddy only understands
-  # numeric `bind fd/<N>` (no LISTEN_FDNAMES lookup). The wrapper below
-  # closes that gap: it re-sorts the inherited fds by
-  # FileDescriptorName into the canonical layout before exec'ing caddy,
-  # so fdRefs is deterministic no matter which unit systemd starts
-  # first. ReusePort=true on both units is load-bearing: the kernel
-  # only lets a wildcard and a SO_BINDTODEVICE socket share a port
-  # number when both carry SO_REUSEPORT; without it the second bind
+  # order *between* units is unspecified. The
+  # caddy-systemd-socket-activation plugin resolves `bind sd/<name>/<N>`
+  # through LISTEN_FDNAMES inside Caddy, making the references independent
+  # of cross-unit fd order. ReusePort=true on both units is load-bearing:
+  # the kernel only lets a wildcard and a SO_BINDTODEVICE socket share a
+  # port number when both carry SO_REUSEPORT; without it the second bind
   # fails with EADDRINUSE in either order.
   socketUnits = [ "caddy-mesh.socket" ] ++ lib.optional (cfg.publicPorts != [ ]) "caddy-public.socket";
 
-  caddyWithSortedFds = pkgs.writeShellScript "caddy-with-sorted-fds" ''
-    set -euo pipefail
-    : "''${LISTEN_FDNAMES:=}"
-    names=( ''${LISTEN_FDNAMES//:/ } )
-    # Stash every inherited fd at 1000+i so the canonical layout can be
-    # rebuilt regardless of the order systemd passed them in.
-    for i in "''${!names[@]}"; do
-      eval "exec $((1000+i))<&$((3+i))"
-    done
-    take() {
-      local name=$1 count=$2 n=0 i
-      for i in "''${!names[@]}"; do
-        if [ "$n" -lt "$count" ] && [ "''${names[$i]}" = "$name" ]; then
-          printf '%s\n' "$((1000+i))"
-          n=$((n+1))
-        fi
-      done
-      if [ "$n" -ne "$count" ]; then
-        echo "caddy-with-sorted-fds: expected $count fd(s) named '$name', got $n (LISTEN_FDNAMES=$LISTEN_FDNAMES)" >&2
-        exit 1
-      fi
-    }
-    ${lib.optionalString (cfg.ports != [ ]) ''
-      mapfile -t meshfds < <(take mesh ${toString (builtins.length cfg.ports)})
-    ''}
-    ${lib.optionalString (cfg.publicPorts != [ ]) ''
-      mapfile -t pubfds < <(take public ${toString (builtins.length cfg.publicPorts)})
-    ''}
-    ${lib.concatStrings (
-      lib.imap0 (
-        i: _p: "eval \"exec $((3 + ${toString i}))<&\\$" + "{meshfds[${toString i}]}\"\n"
-      ) cfg.ports
-    )}
-    ${lib.concatStrings (
-      lib.imap0 (
-        i: _p:
-        "eval \"exec $((3 + ${
-          toString (builtins.length cfg.ports)
-        } + ${toString i}))<&\\$" + "{pubfds[${toString i}]}\"\n"
-      ) cfg.publicPorts
-    )}
-    exec ${config.services.caddy.package}/bin/caddy run --config ${config.services.caddy.configFile} --adapter caddyfile
-  '';
 in
 {
   options.custom.mesh-network.caddy = {
     # Opt-in per host. Auto-enabling would leave a listening socket on
-    # every mesh+caddy host whether or not any vhost uses `bind fd/N` —
+    # every mesh+caddy host whether or not any vhost uses `bind sd/mesh/N` —
     # connections to it would hang on accept() with no Caddy site
     # behind them. Hosts that actually serve mesh-internal vhosts
     # enable this explicitly.
@@ -128,15 +82,15 @@ in
       default = lib.listToAttrs (
         lib.imap0 (i: port: {
           name = toString port;
-          value = "fd/${toString (3 + i)}";
+          value = "sd/mesh/${toString i}";
         }) cfg.ports
       );
-      defaultText = lib.literalExpression "{ \"<port>\" = \"fd/<N>\"; ... }";
+      defaultText = lib.literalExpression "{ \"<port>\" = \"sd/mesh/<N>\"; ... }";
       description = ''
-        Resolved `bind` reference per mesh port. Caddy's `bind fd/<N>`
-        only accepts numeric file descriptors (no LISTEN_FDNAMES
-        lookup); this attribute computes the right indices from the
-        order of `ports`, so vhost blocks can stay declarative:
+        Resolved `bind` reference per mesh port. The
+        caddy-systemd-socket-activation plugin resolves the socket unit's
+        FileDescriptorName through LISTEN_FDNAMES; the final index follows
+        the order of `ports` within that unit:
 
         ```
         services.caddy.virtualHosts."mesh.example.org".extraConfig = '''
@@ -153,13 +107,13 @@ in
       default = lib.listToAttrs (
         lib.imap0 (i: port: {
           name = toString port;
-          value = "fd/${toString (3 + builtins.length cfg.ports + i)}";
+          value = "sd/public/${toString i}";
         }) cfg.publicPorts
       );
-      defaultText = lib.literalExpression "{ \"<port>\" = \"fd/<N>\"; ... }";
+      defaultText = lib.literalExpression "{ \"<port>\" = \"sd/public/<N>\"; ... }";
       description = ''
         Resolved `bind` reference per public port — same mechanism as
-        `fdRefs`, placed after the mesh fds in the canonical layout.
+        `fdRefs`, using the public socket unit's FileDescriptorName.
         Use for public vhosts that share a port number with the mesh
         scope; see `publicPorts` for the pitfalls.
       '';
@@ -180,8 +134,8 @@ in
 
     # Gravity-scoped sockets, one unit for all mesh ports. systemd
     # passes a unit's fds in configuration order (systemd.socket(5));
-    # across units the order is unspecified, which is why ExecStart is
-    # wrapped (see caddyWithSortedFds). ReusePort=true is required for
+    # across units the order is unspecified, which is why vhosts use
+    # the plugin's named sd/ references. ReusePort=true is required for
     # the socket to share a port number with caddy-public.socket (or
     # with anything else on that port): the kernel refuses a wildcard
     # and a BindToDevice bind on the same port unless both carry
@@ -210,9 +164,8 @@ in
     };
 
     # Default-VRF sockets for ports that both scopes serve (see
-    # publicPorts). Same fd contract as caddy-mesh.socket; the wrapper
-    # tells the two apart by FileDescriptorName, so unit start order
-    # doesn't matter.
+    # publicPorts). The plugin tells the two scopes apart by
+    # FileDescriptorName, so unit start order doesn't matter.
     systemd.sockets.caddy-public = lib.mkIf (cfg.publicPorts != [ ]) {
       description = "Caddy public sockets (default VRF)";
       wantedBy = [ "multi-user.target" ];
@@ -228,16 +181,10 @@ in
     # Belt-and-suspenders FD passing: declaring Sockets= on the service
     # makes systemd hand the FDs over even when caddy.service starts
     # standalone (boot, restart), not only via socket activation.
-    # ExecStart is wrapped so the inherited fds land at the canonical
-    # positions fdRefs/publicFdRefs promise, independent of the order
-    # systemd happened to pass them in.
     systemd.services.caddy = {
       wants = socketUnits;
       after = socketUnits;
-      serviceConfig = {
-        Sockets = socketUnits;
-        ExecStart = lib.mkForce [ "${caddyWithSortedFds}" ];
-      };
+      serviceConfig.Sockets = socketUnits;
     };
 
     # HTTP/3 needs UDP; the inherited fds are TCP-only. Tell caddy to
