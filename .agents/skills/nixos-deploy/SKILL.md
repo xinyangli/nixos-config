@@ -21,7 +21,7 @@ All machines update themselves via [comin](modules/nixos/common-settings/comin.n
 
 ## Hydra builds every pushed commit
 
-- Agate runs Hydra; jobset `nixos-config-deploy` (project `nixos-config`) builds `hydraJobs` from flake.nix for: agate, raspite, baryte, osmium, hafnon, thorite, biotite, la-00, fra-00, plus home-manager configs (`xin-x86_64-linux`, `xin-x86_64-minimal-cli`, `xin-x86_64-full-cli`).
+- Agate runs Hydra; jobset `nixos-config-deploy` (project `nixos-config`) builds `hydraJobs` from flake.nix for: agate, raspite, baryte, osmium, hafnon, thorite, biotite, la-00, fra-00, plus home-manager configs (`xin-x86_64-linux`, `xin-x86_64-minimal-cli`, `xin-x86_64-full-cli`), plus the NixOS VM tests as `tests.<system>.<name>` for aarch64-linux and x86_64-linux (backup, ipsec-mesh, mesh-sshd, mesh-caddy, mesh-gost, kanidm-provision, pam-oath).
 - Hydra-executor machines (biotite, dolomite, raspite, thorite) only switch after the Hydra build succeeds; pushing a broken commit just fails there, it does not get deployed to them.
 - agate, hafnon, weilite, cinnabar use the `nix` executor (build locally); agate/hafnon avoid depending on Hydra since they provide it.
 
