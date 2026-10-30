@@ -22,6 +22,12 @@
     };
     owncloud-client = import ./pkgs/owncloud-client.nix prev;
 
+    python3 = prev.python3.override {
+      packageOverrides = self: _super: {
+        grafana-client = self.callPackage ./pkgs/grafana-client.nix { };
+      };
+    };
+
     transmission-exporter = prev.callPackage ./pkgs/transmission-exporter.nix { };
     owncloud-shell-resources = callPackage ./pkgs/owncloud-shell-resources.nix { };
     owncloud-nautilus = callPackage ./pkgs/owncloud-nautilus.nix { };
