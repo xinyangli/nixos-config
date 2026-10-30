@@ -296,8 +296,5 @@ in
         level INFO
       '';
     })
-    (mkIf (cfg.fluent-bit.enable && config.custom.mesh-network.ipsec.enable) {
-      systemd.services.fluent-bit.serviceConfig.BindNetworkInterface = "gravity";
-    })
   ];
 }
