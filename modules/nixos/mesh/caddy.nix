@@ -8,14 +8,15 @@ let
   cfg = config.custom.mesh-network.caddy;
   meshCfg = config.custom.mesh-network;
 
-  # One .socket unit per mesh port. systemd owns the bind (with
-  # BindToDevice=gravity), then passes the FD into services.caddy
-  # alongside Caddy's normal listeners. The user opts a vhost onto
-  # the mesh scope by writing `bind fd/${fdName port}` in its site
-  # block; everything else stays on the default-scope listener.
-  socketName = port: "caddy-mesh-${toString port}";
-  fdName = port: "mesh-${toString port}";
-  socketUnits = map (p: "${socketName p}.socket") cfg.ports;
+  # One .socket unit for all mesh ports: systemd guarantees that all
+  # sockets of a single unit are passed in configuration order
+  # (systemd.socket(5)), which is what makes the numeric `bind fd/<N>`
+  # references in fdRefs deterministic. Ordering between separate
+  # socket units is unspecified — one unit per port used to scramble
+  # them. The user opts a vhost onto the mesh scope by writing
+  # `bind fd/<N>` in its site block; everything else stays on the
+  # default-scope listener.
+  socketUnits = [ "caddy-mesh.socket" ];
 in
 {
   options.custom.mesh-network.caddy = {
@@ -33,10 +34,10 @@ in
         443
       ];
       description = ''
-        Ports for which a gravity-scoped socket is created. Each yields
-        one systemd .socket unit named `caddy-mesh-<port>.socket` with
-        FileDescriptorName=`mesh-<port>`; reference in vhost blocks via
-        `bind fd/mesh-<port>`.
+        Ports for which a gravity-scoped socket is created. All ports
+        share one systemd .socket unit (`caddy-mesh.socket`) whose fds
+        are passed to caddy in this order; reference them in vhost
+        blocks via `config.custom.mesh-network.caddy.fdRefs."<port>"`.
       '';
     };
 
@@ -91,32 +92,31 @@ in
       }
     ];
 
-    systemd.sockets = lib.listToAttrs (
-      map (port: {
-        name = socketName port;
-        value = {
-          description = "Caddy mesh socket on port ${toString port} (gravity VRF)";
-          wantedBy = [ "multi-user.target" ];
-          after = [ "systemd-networkd.service" ];
-          # Triggering caddy.service via the socket is the systemd-blessed
-          # path for passing LISTEN_FDS; caddy is already wantedBy
-          # multi-user.target so this doesn't change start ordering, only
-          # the FD-passing contract.
-          socketConfig = {
-            # TCP-only. Pairing a ListenDatagram for HTTP/3 doesn't
-            # compose with Caddy v2's `bind` semantics — Caddy tries to
-            # use every bound address for h1/h2 and a UDP fdgram errors
-            # out. The protocols block in globalConfig below disables
-            # h3 explicitly so caddy doesn't try to spin one up.
-            ListenStream = port;
-            BindToDevice = "gravity";
-            FileDescriptorName = fdName port;
-            Service = "caddy.service";
-            NoDelay = true;
-          };
-        };
-      }) cfg.ports
-    );
+    # Single .socket unit holding every mesh port. systemd passes the
+    # fds of one unit's sockets in the order they are configured
+    # (systemd.socket(5)), so the numeric fdRefs mapping stays valid;
+    # with one unit per port the inter-unit order is unspecified and
+    # the binds got attached to the wrong sockets.
+    systemd.sockets.caddy-mesh = {
+      description = "Caddy mesh sockets (gravity VRF)";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "systemd-networkd.service" ];
+      # Triggering caddy.service via the socket is the systemd-blessed
+      # path for passing LISTEN_FDS; caddy is already wantedBy
+      # multi-user.target so this doesn't change start ordering, only
+      # the FD-passing contract.
+      socketConfig = {
+        # TCP-only. Pairing a ListenDatagram for HTTP/3 doesn't
+        # compose with Caddy v2's `bind` semantics — Caddy tries to
+        # use every bound address for h1/h2 and a UDP fdgram errors
+        # out. The protocols block in globalConfig below disables
+        # h3 explicitly so caddy doesn't try to spin one up.
+        ListenStream = cfg.ports;
+        BindToDevice = "gravity";
+        Service = "caddy.service";
+        NoDelay = true;
+      };
+    };
 
     # Belt-and-suspenders FD passing: declaring Sockets= on the service
     # makes systemd hand the FDs over even when caddy.service starts

@@ -1,10 +1,10 @@
 { pkgs, lib, ... }:
 
-# Validates custom.mesh-network.caddy.enable: a `caddy-mesh-<port>.socket`
-# created by systemd with BindToDevice=gravity, handed to the same caddy
-# process that serves the default-scope vhosts. A vhost opts onto the
-# mesh by writing `bind fd/<N>` in its site block; everything else stays
-# on the default listener.
+# Validates custom.mesh-network.caddy.enable: a single `caddy-mesh.socket`
+# holding every mesh port, created by systemd with BindToDevice=gravity,
+# handed to the same caddy process that serves the default-scope vhosts.
+# A vhost opts onto the mesh by writing `bind fd/<N>` in its site block;
+# everything else stays on the default listener.
 #
 # Two ports kept apart on purpose: :${defaultPort} reaches the default
 # listener (underlay only), :${meshPort} reaches the mesh socket (VRF
@@ -99,7 +99,7 @@ in
         m.wait_for_unit("caddy.service")
         # The .socket unit is what carries BindToDevice=gravity; if it
         # didn't activate, the mesh FD never reached caddy.
-        m.wait_for_unit("caddy-mesh-${toString meshPort}.socket")
+        m.wait_for_unit("caddy-mesh.socket")
 
     for src, dst in [(alpha, "fd00:42::2"), (beta, "fd00:42::1")]:
         src.wait_until_succeeds(
@@ -113,7 +113,7 @@ in
     # what the equivalent mesh-caddy.service attempt was missing).
     for m in (alpha, beta):
         bound = m.succeed(
-            "systemctl show caddy-mesh-${toString meshPort}.socket -p BindToDevice --value"
+            "systemctl show caddy-mesh.socket -p BindToDevice --value"
         ).strip()
         assert bound == "gravity", (
             f"{m.name}: BindToDevice on the .socket is {bound!r}, expected 'gravity'"
