@@ -17,6 +17,7 @@
 
   custom.mesh-network.caddy = {
     enable = true;
-    ports = [ 443 ];
+    # ports are contributed by the vhost modules (loki adds 3102);
+    # keep this list empty so the mesh socket owns exactly one port.
   };
 }
