@@ -120,7 +120,8 @@ in
         authorizations = [
           {
             user = "agent_pam_access";
-            principal = "sub:a9b5e8c8-1f96-49ca-911b-b8dcd737da86";
+            # opkssh matches a bare sub value; a "sub:" prefix is compared literally.
+            principal = "a9b5e8c8-1f96-49ca-911b-b8dcd737da86";
             issuer = "https://${idpUrl}/oauth2/openid/opkssh";
           }
         ];
