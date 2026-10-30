@@ -12,11 +12,12 @@ All machines update themselves via [comin](modules/nixos/common-settings/comin.n
 | Branch | Role | Force-push |
 |---|---|---|
 | `deploy-next` | Build-test only: Hydra builds it, comin never switches machines to it | Allowed |
-| `deploy-test` | Testing: machines pull it as comin's testing branch | Allowed |
-| `deploy` | Prod: comin's main branch on every machine | **Never** |
+| `deploy-test` | **Primary testing branch**: all in-progress changes go here first for live testing | Allowed |
+| `deploy` | Prod: comin's main branch on every machine. Only receives tested, squashed commits | **Never** |
 
 - Comin remotes: `github.com/xinyangli/nixos-config` and `git.xiny.li/xin/nixos-config`; both track `deploy` (main) and `deploy-test` (testing). Nothing tracks `deploy-next` — machines stay on their current generation.
-- Workflow: commit → push to `deploy-next` → confirm the build is green on Hydra (and optionally fast-forward `deploy-test` to exercise it live) → merge into `deploy` → push. Do not rebase/force-push `deploy`; it is shared prod history.
+- Workflow: commit → push to `deploy-next` → confirm Hydra build is green → push/fast-forward `deploy-test` and exercise it live on machines → test → **squash similar/related commits into one commit** → merge that single commit into `deploy` → push. Do not rebase/force-push `deploy`; it is shared prod history. Prod history stays clean: one squashed commit per feature/fix, not a stream of fixups.
+- Never push untested work straight to `deploy`. Untested changes always land on `deploy-test` first.
 
 ## Hydra builds every pushed commit
 
