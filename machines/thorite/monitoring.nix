@@ -454,6 +454,18 @@ in
           "home-xin-x86_64-linux"
           "home-xin-x86_64-minimal-cli"
           "home-xin-x86_64-full-cli"
+        ]
+        ++ lib.concatMap (system: map (t: "tests.${system}.${t}") [
+          "backup-test"
+          "ipsec-mesh-test"
+          "mesh-sshd-test"
+          "mesh-caddy-test"
+          "mesh-gost-test"
+          "kanidm-provision-test"
+          "pam-oath-test"
+        ]) [
+          "aarch64-linux"
+          "x86_64-linux"
         ];
         metricsTarget =
           host:
