@@ -208,6 +208,7 @@ in
 
     services.caddy.virtualHosts.${grafanaUrl}.extraConfig =
       with config.services.grafana.settings.server; ''
+        bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
         reverse_proxy http://${http_addr}:${toString http_port}
       '';
 
