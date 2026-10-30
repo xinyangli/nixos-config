@@ -200,9 +200,14 @@ in
       '';
     })
     (mkIf (cfg.loki.enable && config.custom.mesh-network.caddy.enable) {
-      services.caddy.virtualHosts."https://${config.networking.hostName}.loki.${gravityInternalDomain}".extraConfig =
+      # Dedicated mesh port: sharing 443 with caddy's public wildcard
+      # listener is unreliable (kernel bind rules between wildcard and
+      # SO_BINDTODEVICE sockets are order/history dependent) and every
+      # fluent-bit probe leaves TIME_WAITs that block the shared port.
+      custom.mesh-network.caddy.ports = [ 3102 ];
+      services.caddy.virtualHosts."https://${config.networking.hostName}.loki.${gravityInternalDomain}:3102".extraConfig =
         ''
-          bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+          bind ${config.custom.mesh-network.caddy.fdRefs."3102"}
           tls {
             dns desec {
               token {env.DESEC_TOKEN}
@@ -284,7 +289,7 @@ in
                 name = "loki";
                 match = "*";
                 host = "thorite.loki.${gravityInternalDomain}";
-                port = 443;
+                port = 3102;
                 "tls" = "on";
                 "tls.ca_file" = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
                 labels = "job=systemd-journal";
