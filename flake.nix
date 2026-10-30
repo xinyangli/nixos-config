@@ -71,6 +71,11 @@
       url = "github:nakato/nixos-sbc/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    microvm = {
+      url = "github:microvm-nix/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -126,6 +131,7 @@
       nix-index-database,
       disko,
       comin,
+      microvm,
       nixos-sbc,
       lanzaboote,
       vicinae,
@@ -214,7 +220,13 @@
         ];
         agate = [
           disko.nixosModules.disko
+          microvm.nixosModules.host
           ./machines/agate
+          {
+            _module.args.devboxSpecialArgs = {
+              inherit self sops-nix run0-sudo-shim comin;
+            };
+          }
         ];
         hafnon = [
           disko.nixosModules.disko
