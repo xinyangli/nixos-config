@@ -1,6 +1,7 @@
 .direnv
 .vscode
 .warp-vm/
+.cache/agent-pam-ssh/
 result
 result-*
 /config/zellij/*.bak
