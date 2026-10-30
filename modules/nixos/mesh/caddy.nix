@@ -189,12 +189,19 @@ in
 
     # HTTP/3 needs UDP; the inherited fds are TCP-only. Tell caddy to
     # skip the QUIC listener on these servers so it doesn't fail at
-    # startup with "network 'fd' cannot handle HTTP/3 connections".
-    services.caddy.globalConfig = lib.concatMapStrings (ref: ''
-      servers ${ref} {
-        protocols h1 h2
-      }
-    '') (lib.attrValues cfg.fdRefs ++ lib.attrValues cfg.publicFdRefs);
+    # startup with "network 'sd' cannot handle HTTP/3 connections".
+    services.caddy.globalConfig = lib.concatStrings (
+      (lib.mapAttrsToList (port: ref: ''
+        servers ${ref}:${port} {
+          protocols h1 h2
+        }
+      '') cfg.fdRefs)
+      ++ (lib.mapAttrsToList (port: ref: ''
+        servers ${ref}:${port} {
+          protocols h1 h2
+        }
+      '') cfg.publicFdRefs)
+    );
 
     networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall (cfg.ports ++ cfg.publicPorts);
   };
