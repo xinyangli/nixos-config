@@ -89,8 +89,8 @@ in
       ];
     }
     (mkIf (cfg.enable && config.custom.mesh-network.caddy.enable) {
-      services.caddy.virtualHosts."${config.networking.hostName}.prometheus.${gravityInternalDomain}:3102".extraConfig = ''
-        bind ${config.custom.mesh-network.caddy.fdRefs."3102"}
+      services.caddy.virtualHosts."https://${config.networking.hostName}.prometheus.${gravityInternalDomain}".extraConfig = ''
+        bind ${config.custom.mesh-network.caddy.fdRefs."443"}
         tls {
           dns desec {
             token {env.DESEC_TOKEN}

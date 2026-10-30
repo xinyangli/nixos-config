@@ -28,6 +28,7 @@ in
   systemd.services.ntfy-sh.serviceConfig.RuntimeDirectory = "ntfy-sh";
 
   services.caddy.virtualHosts.${ntfyUrl}.extraConfig = ''
+    bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
     reverse_proxy unix/${config.services.ntfy-sh.settings.listen-unix}
     @httpget {
       protocol http

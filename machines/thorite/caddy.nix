@@ -17,7 +17,9 @@
 
   custom.mesh-network.caddy = {
     enable = true;
-    # ports are contributed by the vhost modules (loki adds 3102);
-    # keep this list empty so the mesh socket owns exactly one port.
+    # 443 is served by both scopes (public grafana/ntfy + mesh
+    # loki/prometheus), so the public side also comes in via
+    # caddy-public.socket; public vhosts must bind publicFdRefs."443".
+    publicPorts = [ 443 ];
   };
 }
