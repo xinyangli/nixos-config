@@ -200,10 +200,14 @@ in
       '';
     })
     (mkIf (cfg.loki.enable && config.custom.mesh-network.caddy.enable) {
-      custom.mesh-network.caddy.ports = [ 3100 ];
-      services.caddy.virtualHosts."http://${config.networking.hostName}.loki.${gravityInternalDomain}:3100".extraConfig =
+      services.caddy.virtualHosts."https://${config.networking.hostName}.loki.${gravityInternalDomain}".extraConfig =
         ''
-          bind ${config.custom.mesh-network.caddy.fdRefs."3100"}
+          bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+          tls {
+            dns desec {
+              token {env.DESEC_TOKEN}
+            }
+          }
           reverse_proxy unix//run/loki/loki.sock:${toString lokiPort}
         '';
     })
@@ -280,7 +284,9 @@ in
                 name = "loki";
                 match = "*";
                 host = "thorite.loki.${gravityInternalDomain}";
-                port = lokiPort;
+                port = 443;
+                tls = "on";
+                tls.ca_file = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
                 labels = "job=systemd-journal";
                 label_keys = "$host,$unit,$coredump_unit";
                 remove_keys = "host,unit,coredump_unit";
