@@ -42,6 +42,14 @@
     });
   '';
 
+  services.opkssh.authorizations = [
+    {
+      user = "xin@auth.xiny.li";
+      principal = "65876f3e-d489-4e3e-af3e-99a541bbb855";
+      issuer = "https://auth.xiny.li/oauth2/openid/opkssh";
+    }
+  ];
+
   microvm = {
     hypervisor = "qemu";
     vcpu = 8;
