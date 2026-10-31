@@ -3,6 +3,8 @@
   sops-nix,
   run0-sudo-shim,
   comin,
+  lib,
+  pkgs,
   ...
 }:
 {
@@ -31,7 +33,10 @@
     };
     comin.enable = false;
     nix.enable = false;
-    network.tailscale.enable = false;
+    network = {
+      enableProxy = false;
+      tailscale.enable = false;
+    };
   };
 
   programs.fish.enable = true;
@@ -41,6 +46,31 @@
       if (subject.user == "xin@auth.xiny.li") return polkit.Result.YES;
     });
   '';
+
+  services.openssh.hostKeys = [
+    {
+      path = "/var/lib/ssh/ssh_host_ed25519_key";
+      type = "ed25519";
+    }
+  ];
+
+  environment.etc."ssh/auth" = lib.mkForce {
+    mode = "0555";
+    user = "root";
+    group = "root";
+    text = ''
+      #!/bin/sh
+      log=/var/log/auth-wrapper.log
+      printf 'attempt user=%s type=%s key_prefix=%.32s\n' "$1" "$3" "$2" >> "$log"
+      if ! ${pkgs.util-linux}/bin/runuser -u opksshuser -- \
+        /run/wrappers/bin/opkssh verify "$1" "$2" "$3" 2>> "$log"
+      then
+        printf '%s\n' 'opkssh verify failed; falling back to Kanidm keys' >> "$log"
+        ${pkgs.util-linux}/bin/runuser -u kanidm-ssh-runner -- \
+          ${pkgs.kanidm_1_11}/bin/kanidm_ssh_authorizedkeys "$1" 2>> "$log"
+      fi
+    '';
+  };
 
   services.opkssh.authorizations = [
     {
