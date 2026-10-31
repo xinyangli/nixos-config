@@ -47,6 +47,11 @@
     });
   '';
 
+  users.users.root.openssh.authorizedKeys.keys = [
+    "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCI3+dS8xgo+FzfvMbH/OkImySmK5kw16sykbKvHdkLziFWUI+Jtk4oC1ZUO0Ej08x5tU0gi6FAgcQL4tU5E1zw="
+  ];
+  services.openssh.settings.PermitRootLogin = lib.mkOverride 10 "prohibit-password";
+
   services.openssh.hostKeys = [
     {
       path = "/var/lib/ssh/ssh_host_ed25519_key";
