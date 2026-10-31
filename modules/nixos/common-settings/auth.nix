@@ -144,6 +144,13 @@ in
       environment.etc."opk/providers".user = lib.mkForce "root";
       environment.etc."opk/auth_id".user = lib.mkForce "root";
 
+      # system.etc.overlay drops the group set by the opkssh module, leaving
+      # these files as root:root and unreadable by authorizedKeysCommandUser.
+      systemd.tmpfiles.rules = lib.mkIf config.system.etc.overlay.enable [
+        "z /etc/opk/auth_id 0640 root ${config.services.opkssh.group} - -"
+        "z /etc/opk/providers 0640 root ${config.services.opkssh.group} - -"
+      ];
+
       environment.etc."ssh/auth" = {
         mode = "0555";
         text = ''
