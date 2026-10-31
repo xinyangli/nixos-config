@@ -3,7 +3,7 @@
 # Validates custom.mesh-network.caddy.enable: a single `caddy-mesh.socket`
 # holding every mesh port, created by systemd with BindToDevice=gravity,
 # handed to the same caddy process that serves the default-scope vhosts.
-# A vhost opts onto the mesh by writing `bind fd/<N>` in its site block;
+# A vhost opts onto the mesh with `bind sd/mesh/<N>` in its site block;
 # everything else stays on the default listener.
 #
 # Two ports kept apart on purpose: :${defaultPort} reaches the default
@@ -60,6 +60,12 @@ let
 
     services.caddy = {
       enable = true;
+      package = pkgs.caddy.withPlugins {
+        plugins = [
+          "github.com/MayCXC/caddy-systemd-socket-activation@v1.0.0"
+        ];
+        hash = "sha256-qLy94+RwUbcTmwOVK7pZRuADCYkHKoOqIfj4gAMsac0=";
+      };
       globalConfig = ''
         auto_https off
         admin off
@@ -69,8 +75,8 @@ let
       '';
       # Same caddy, different scope: this vhost binds the systemd-passed
       # FDs instead of opening its own listener, so it only sees traffic
-      # the gravity-scoped socket accepted. fdRefs resolves to the
-      # `fd/N fdgram/N+1` pair for the configured port.
+      # the gravity-scoped socket accepted. fdRefs resolves to the named
+      # sd/mesh/N listener for the configured port.
       virtualHosts."http://:${toString meshPort}".extraConfig = ''
         bind ${config.custom.mesh-network.caddy.fdRefs.${toString meshPort}}
         respond "${meshPayload}"

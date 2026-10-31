@@ -93,8 +93,9 @@
     package = pkgs.caddy.withPlugins {
       plugins = [
         "github.com/caddy-dns/desec@v1.1.0"
+        "github.com/MayCXC/caddy-systemd-socket-activation@v1.0.0"
       ];
-      hash = "sha256-HrLRezw+q5+dRdJS662686n7xsImSxNb3UqlSo61R8E=";
+      hash = "sha256-EHvPUMcj3hevj9k9aokG0VYIhZtViZVT4b6dua8aLEE=";
     };
     virtualHosts."http://raspite.u.xiny.li:18080".extraConfig = ''
       bind ${config.custom.mesh-network.caddy.fdRefs."18080"}

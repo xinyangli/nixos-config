@@ -29,8 +29,9 @@
     plugins = [
       "github.com/caddy-dns/cloudflare@v0.2.1"
       "github.com/caddy-dns/desec@v1.1.0"
+      "github.com/MayCXC/caddy-systemd-socket-activation@v1.0.0"
     ];
-    hash = "sha256-NsBBmnbBQN1XUfP8QAxvctoewRsyQxe5F+ao9Oh3RUk=";
+    hash = "sha256-QKUu98s4slQOs2N6GZ1P6hOquNnwy9DjghXMBE8SCf4=";
   };
 
   # Expose a gravity-VRF-scoped :443 socket so mesh-internal vhosts
