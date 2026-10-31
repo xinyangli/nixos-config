@@ -95,6 +95,8 @@ in
           dns desec {
             token {env.DESEC_TOKEN}
           }
+          propagation_delay 1m
+          dns_ttl 1m
         }
         reverse_proxy 127.0.0.1:${toString config.services.prometheus.port}
       '';
