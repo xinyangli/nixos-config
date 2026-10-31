@@ -59,15 +59,19 @@
     user = "root";
     group = "root";
     text = ''
-      #!/bin/sh
-      log=/var/log/auth-wrapper.log
-      printf 'attempt user=%s type=%s key_prefix=%.32s\n' "$1" "$3" "$2" >> "$log"
+      #!${pkgs.bash}/bin/bash
+      exec 3>&1
       if ! ${pkgs.util-linux}/bin/runuser -u opksshuser -- \
-        /run/wrappers/bin/opkssh verify "$1" "$2" "$3" 2>> "$log"
+        /run/wrappers/bin/opkssh verify "$1" "$2" "$3" \
+          2> >(${pkgs.util-linux}/bin/logger -t devbox-auth -p auth.info) 1>&3
       then
-        printf '%s\n' 'opkssh verify failed; falling back to Kanidm keys' >> "$log"
+        printf 'user=%s type=%s key_prefix=%.32s\n' "$1" "$3" "$2" \
+          | ${pkgs.util-linux}/bin/logger -t devbox-auth -p auth.info
+        printf '%s\n' 'opkssh verify failed; falling back to Kanidm keys' \
+          | ${pkgs.util-linux}/bin/logger -t devbox-auth -p auth.info
         ${pkgs.util-linux}/bin/runuser -u kanidm-ssh-runner -- \
-          ${pkgs.kanidm_1_11}/bin/kanidm_ssh_authorizedkeys "$1" 2>> "$log"
+          ${pkgs.kanidm_1_11}/bin/kanidm_ssh_authorizedkeys "$1" \
+          2> >(${pkgs.util-linux}/bin/logger -t devbox-auth -p auth.info)
       fi
     '';
   };
