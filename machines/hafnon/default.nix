@@ -53,6 +53,16 @@
     };
     serverComponents.enable = true;
   };
+
+  # Allow the primary user's opkssh certificate for devbox/Remote SSH access.
+  services.opkssh.authorizations = [
+    {
+      user = "xin@${config.my-lib.settings.idpUrl}";
+      principal = "65876f3e-d489-4e3e-af3e-99a541bbb855";
+      issuer = "https://${config.my-lib.settings.idpUrl}/oauth2/openid/opkssh";
+    }
+  ];
+
   custom.prometheus.exporters.metricsPort = 27280;
 
   services.hydra-builder = {

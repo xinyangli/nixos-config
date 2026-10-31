@@ -454,18 +454,6 @@
             ]
             ++ sharedHmModules;
           };
-          "xin-aarch64-full-cli" = home-manager.lib.homeManagerConfiguration {
-            pkgs = import nixpkgs {
-              system = "aarch64-linux";
-            };
-            modules = [
-              ./home/xin/full-cli.nix
-              ./modules/home-manager
-              idmHmModule
-              overlayModule
-            ]
-            ++ sharedHmModules;
-          };
         };
 
       nixosConfigurations = {
@@ -516,7 +504,6 @@
             "xin-x86_64-linux"
             "xin-x86_64-minimal-cli"
             "xin-x86_64-full-cli"
-            "xin-aarch64-full-cli"
           ];
 
           homeConfigurationJobs = builtins.listToAttrs (
