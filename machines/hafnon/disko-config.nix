@@ -80,15 +80,29 @@
                         "noatime"
                       ];
                     };
-                    "/home" = {
-                      mountpoint = "/home";
-                      mountOptions = [
-                        "compress=zstd"
-                        "noatime"
-                      ];
-                    };
                   };
                 };
+              };
+            };
+          };
+        };
+      };
+      home = {
+        type = "disk";
+        device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi2";
+        content = {
+          type = "luks";
+          name = "crypted-home";
+          content = {
+            type = "btrfs";
+            extraArgs = [ "-f" ];
+            subvolumes = {
+              "/home" = {
+                mountpoint = "/home";
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
               };
             };
           };
