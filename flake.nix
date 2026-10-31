@@ -454,6 +454,18 @@
             ]
             ++ sharedHmModules;
           };
+          "xin-x86_64-vibe-coding" = home-manager.lib.homeManagerConfiguration {
+            pkgs = import nixpkgs {
+              system = "x86_64-linux";
+            };
+            modules = [
+              ./home/xin/full-cli.nix
+              ./modules/home-manager
+              idmHmModule
+              overlayModule
+            ]
+            ++ sharedHmModules;
+          };
         };
 
       nixosConfigurations = {
@@ -504,6 +516,7 @@
             "xin-x86_64-linux"
             "xin-x86_64-minimal-cli"
             "xin-x86_64-full-cli"
+            "xin-x86_64-vibe-coding"
           ];
 
           homeConfigurationJobs = builtins.listToAttrs (
