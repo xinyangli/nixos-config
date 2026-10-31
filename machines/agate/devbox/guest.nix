@@ -4,7 +4,6 @@
   run0-sudo-shim,
   comin,
   lib,
-  pkgs,
   ...
 }:
 {
@@ -47,11 +46,6 @@
     });
   '';
 
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCI3+dS8xgo+FzfvMbH/OkImySmK5kw16sykbKvHdkLziFWUI+Jtk4oC1ZUO0Ej08x5tU0gi6FAgcQL4tU5E1zw="
-  ];
-  services.openssh.settings.PermitRootLogin = lib.mkOverride 10 "prohibit-password";
-
   services.openssh.hostKeys = [
     {
       path = "/var/lib/ssh/ssh_host_ed25519_key";
@@ -59,27 +53,13 @@
     }
   ];
 
-  environment.etc."ssh/auth" = lib.mkForce {
-    mode = "0555";
-    user = "root";
-    group = "root";
-    text = ''
-      #!${pkgs.bash}/bin/bash
-      exec 3>&1
-      if ! ${pkgs.util-linux}/bin/runuser -u opksshuser -- \
-        /run/wrappers/bin/opkssh verify "$1" "$2" "$3" \
-          2> >(${pkgs.util-linux}/bin/logger -t devbox-auth -p auth.info) 1>&3
-      then
-        printf 'user=%s type=%s key_prefix=%.32s\n' "$1" "$3" "$2" \
-          | ${pkgs.util-linux}/bin/logger -t devbox-auth -p auth.info
-        printf '%s\n' 'opkssh verify failed; falling back to Kanidm keys' \
-          | ${pkgs.util-linux}/bin/logger -t devbox-auth -p auth.info
-        ${pkgs.util-linux}/bin/runuser -u kanidm-ssh-runner -- \
-          ${pkgs.kanidm_1_11}/bin/kanidm_ssh_authorizedkeys "$1" \
-          2> >(${pkgs.util-linux}/bin/logger -t devbox-auth -p auth.info)
-      fi
-    '';
-  };
+  # opkssh refuses root-owned 0644 policy files; keep them root:opksshuser.
+  environment.etc."opk/auth_id".group = lib.mkForce "opksshuser";
+  environment.etc."opk/providers".group = lib.mkForce "opksshuser";
+  systemd.tmpfiles.rules = [
+    "z /etc/opk/auth_id 0640 root opksshuser - -"
+    "z /etc/opk/providers 0640 root opksshuser - -"
+  ];
 
   services.opkssh.authorizations = [
     {
