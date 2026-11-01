@@ -82,5 +82,30 @@ in
           header_down Access-Control-Max-Age "3600"
       }
     '';
+    services.caddy.virtualHosts."garage.u.xiny.li".extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+      tls {
+        dns desec {
+          token {env.DESEC_TOKEN}
+        }
+        propagation_delay 1m
+        dns_ttl 1m
+      }
+      @options method OPTIONS
+      handle @options {
+          header Access-Control-Allow-Origin "*"
+          header Access-Control-Max-Age "3600"
+          header Access-Control-Expose-Headers "*"
+          header Access-Control-Allow-Headers "*"
+          respond 204
+      }
+
+      reverse_proxy 127.0.0.1:3900 {
+          header_down Access-Control-Allow-Origin "*"
+          header_down Access-Control-Expose-Headers "*"
+          header_down Access-Control-Allow-Headers "*"
+          header_down Access-Control-Max-Age "3600"
+      }
+    '';
   };
 }

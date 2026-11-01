@@ -16,8 +16,11 @@ All machines update themselves via [comin](modules/nixos/common-settings/comin.n
 | `deploy` | Prod: comin's main branch on every machine. Only receives tested, squashed commits | **Never** |
 
 - Comin remotes: `github.com/xinyangli/nixos-config` and `git.xiny.li/xin/nixos-config`; both track `deploy` (main) and `deploy-test` (testing). Nothing tracks `deploy-next` — machines stay on their current generation.
-- Workflow: commit → push to `deploy-next` → confirm Hydra build is green → push/fast-forward `deploy-test` and exercise it live on machines → test → **squash similar/related commits into one commit** → merge that single commit into `deploy` → push. Do not rebase/force-push `deploy`; it is shared prod history. Prod history stays clean: one squashed commit per feature/fix, not a stream of fixups.
+- Workflow: commit → push to `deploy-next` → confirm Hydra build is green → push/fast-forward `deploy-test` and exercise it live on machines → test → **squash similar/related commits into one commit** → present the squashed commit to the user and get explicit approval → merge into `deploy` → push. Do not rebase/force-push `deploy`; it is shared prod history. Prod history stays clean: one squashed commit per feature/fix, not a stream of fixups.
 - Never push untested work straight to `deploy`. Untested changes always land on `deploy-test` first.
+- **Deploy gate**: merging/pushing to `deploy` requires the user's explicit approval. The agent MUST show exactly what will be deployed (squashed commit message + diffstat) and wait for a clear "yes/approve/deploy" before touching `deploy`. Implied consent, prior standing instructions, or "proceed as usual" do NOT count.
+- `deploy` is append-only and its commit chain MUST stay intact: once pushed, a commit is effectively irreversible. Fix mistakes with a revert commit, never with reset/rebase/force-push. The agent MUST NOT rewrite `deploy` history under any circumstance.
+- Keep local and remote branches in sync: local `deploy`, `deploy-next`, and `deploy-test` MUST always point at the same commits as their remote counterparts. Never push a commit to a remote branch while leaving the local branch behind (e.g. pushing some other ref to `origin/deploy` without updating local `deploy`). Push by fast-forwarding the local branch first, then pushing it — and fetch + verify locals match remotes before starting any branch operation.
 
 ## Hydra builds every pushed commit
 

@@ -201,10 +201,10 @@ let
         policy: fixed(0)
       }
 
-      ${canvaWarpSocksGroup}
+      # $${canvaWarpSocksGroup}
     }
     routing {
-      ${canvaWarpRoutingRule}
+      # $${canvaWarpRoutingRule}
       # domain(full: dns.alidns.com) -> default_group
       # dip(223.5.5.5) -> default_group
       # dip('2400:3200::1') -> default_group

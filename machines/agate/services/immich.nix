@@ -238,6 +238,18 @@ in
       reverse_proxy 127.0.0.1:${toString config.services.immich.port}
     '';
 
+    services.caddy.virtualHosts."immich.u.xiny.li".extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.fdRefs."443"}
+      tls {
+        dns desec {
+          token {env.DESEC_TOKEN}
+        }
+        propagation_delay 1m
+        dns_ttl 1m
+      }
+      reverse_proxy 127.0.0.1:${toString config.services.immich.port}
+    '';
+
     services.caddy.virtualHosts."http://agate.10118244.xyz:18080".extraConfig =
       ''
         handle_path /prometheus/immich/metrics {

@@ -270,6 +270,9 @@ in
           "https://immich.xiny.li:8443/api/oauth/mobile-redirect/"
           "https://immich.xiny.li:8443/auth/login"
           "https://immich.xiny.li:8443/user-settings"
+          "https://immich.u.xiny.li/api/oauth/mobile-redirect/"
+          "https://immich.u.xiny.li/auth/login"
+          "https://immich.u.xiny.li/user-settings"
         ];
         originLanding = "https://immich.xiny.li:8443/auth/login?autoLaunch=0";
         scopeMaps = {

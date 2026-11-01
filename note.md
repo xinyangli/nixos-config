@@ -8,6 +8,15 @@ Demonstrate disk usage by nix-store path.
 
 ### OATH TOTP seed rotation
 
+Generate and encrypt a new shared seed, print its Base32 value, and display an authenticator QR code:
+
+```sh
+nix shell nixpkgs#sops nixpkgs#oath-toolkit nixpkgs#qrencode
+./scripts/rotate-oath-secret.sh
+```
+
+The script updates `machines/secrets.yaml` but does not deploy it or reset per-host replay state.
+
 After changing `oath.users.oath` in `machines/secrets.yaml` and deploying, each host intentionally keeps its existing writable credential and replay state. As root on each host, reset it only for rotation or recovery:
 
 ```sh
