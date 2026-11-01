@@ -44,6 +44,7 @@ in
       reverse_proxy ${config.security.acme.certs.${idpUrl}.listenHTTP}
     '';
     virtualHosts."https://${idpUrl}".extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
       reverse_proxy https://127.0.0.1:${toString kanidm_listen_port} {
           header_up Host {upstream_hostport}
           header_down Access-Control-Allow-Origin "*"

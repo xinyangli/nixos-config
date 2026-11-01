@@ -244,6 +244,7 @@ in
 
   services.caddy = {
     virtualHosts.${matrixAuthUrl}.extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
       reverse_proxy 127.0.0.1:${toString port-mas}
     '';
     virtualHosts.${synapseUrl}.extraConfig = ''
@@ -253,6 +254,7 @@ in
       respond /.well-known/matrix/client `{"m.homeserver":{"base_url":"${synapseDelegateUrl}"}}`
     '';
     virtualHosts.${synapseDelegateUrl}.extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
       reverse_proxy /_matrix/* 127.0.0.1:${toString port-synapse}
       reverse_proxy /_synapse/client/* 127.0.0.1:${toString port-synapse}
     '';

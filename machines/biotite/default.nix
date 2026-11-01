@@ -19,6 +19,7 @@
     ./services/vaultwarden.nix
     ./services/kanidm.nix
     ./services/rustical.nix
+    ./services/atuin.nix
   ];
 
   networking.hostName = "biotite";

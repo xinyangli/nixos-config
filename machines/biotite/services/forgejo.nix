@@ -126,6 +126,7 @@ in
 
   services.caddy = {
     virtualHosts."https://${forgejoDomain}".extraConfig = with settings; ''
+      bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
       ${
         if server.PROTOCOL == "http+unix" then
           "reverse_proxy unix/${server.HTTP_ADDR}"

@@ -13,11 +13,17 @@ let
   # order *between* units is unspecified. The
   # caddy-systemd-socket-activation plugin resolves `bind sd/<name>/<N>`
   # through LISTEN_FDNAMES inside Caddy, making the references independent
-  # of cross-unit fd order. ReusePort=true on both units is load-bearing:
-  # the kernel only lets a wildcard and a SO_BINDTODEVICE socket share a
-  # port number when both carry SO_REUSEPORT; without it the second bind
-  # fails with EADDRINUSE in either order.
+  # of cross-unit fd order. Mesh sockets bind each configured mesh address
+  # rather than a wildcard: when publicPorts shares a port, exact-address
+  # lookup selects the mesh socket for mesh traffic and the public wildcard
+  # socket for everything else. ReusePort=true lets those sockets coexist.
   socketUnits = [ "caddy-mesh.socket" ] ++ lib.optional (cfg.publicPorts != [ ]) "caddy-public.socket";
+
+  meshAddresses = map (address: lib.head (lib.splitString "/" address)) meshCfg.address;
+  meshListeners = lib.imap0 (index: listener: listener // { inherit index; }) (
+    lib.concatMap (port: map (address: { inherit address port; }) meshAddresses) cfg.ports
+  );
+  formatAddress = address: if lib.hasInfix ":" address then "[${address}]" else address;
 
 in
 {
@@ -48,12 +54,11 @@ in
       default = [ ];
       description = ''
         Ports that need a default-VRF (all-interfaces) socket passed to
-        caddy alongside the mesh socket — i.e. ports where both the
-        public and the mesh scope serve traffic. The wildcard and the
-        BindToDevice socket share the port number via SO_REUSEPORT
-        (both this unit and caddy's own sockets set it); ingress
-        routing stays correct because listener lookup scores the
-        device-bound socket higher for gravity-ingress packets.
+        Caddy alongside the mesh socket — i.e. ports where both the public
+        and the mesh scope serve traffic. The mesh socket binds each
+        configured mesh address while the public socket binds the wildcard;
+        both use SO_REUSEPORT, and exact-address lookup keeps ingress routing
+        in the intended scope.
 
         Vhosts for these ports must NOT rely on caddy's default bind:
         every https site on a publicPort needs an explicit
@@ -80,17 +85,22 @@ in
       type = lib.types.attrsOf lib.types.str;
       readOnly = true;
       default = lib.listToAttrs (
-        lib.imap0 (i: port: {
+        map (port: {
           name = toString port;
-          value = "sd/mesh/${toString i}";
+          value = lib.concatStringsSep " " (
+            map (listener: "sd/mesh/${toString listener.index}") (
+              lib.filter (listener: listener.port == port) meshListeners
+            )
+          );
         }) cfg.ports
       );
       defaultText = lib.literalExpression "{ \"<port>\" = \"sd/mesh/<N>\"; ... }";
       description = ''
-        Resolved `bind` reference per mesh port. The
+        Resolved `bind` references per mesh port. The
         caddy-systemd-socket-activation plugin resolves the socket unit's
-        FileDescriptorName through LISTEN_FDNAMES; the final index follows
-        the order of `ports` within that unit:
+        FileDescriptorName through LISTEN_FDNAMES. Each entry contains one
+        reference per configured mesh address; indices follow port order,
+        then `custom.mesh-network.address` order.
 
         ```
         services.caddy.virtualHosts."mesh.example.org".extraConfig = '''
@@ -127,19 +137,22 @@ in
         message = "custom.mesh-network.caddy.enable requires custom.mesh-network.ipsec.enable so the gravity VRF exists for BindToDevice= to target.";
       }
       {
+        assertion = meshCfg.address != [ ];
+        message = "custom.mesh-network.caddy.enable requires at least one custom.mesh-network.address for its exact-address listeners";
+      }
+      {
         assertion = config.services.caddy.enable;
         message = "custom.mesh-network.caddy.enable extends services.caddy with VRF-scoped sockets — enable services.caddy too.";
       }
     ];
 
-    # Gravity-scoped sockets, one unit for all mesh ports. systemd
-    # passes a unit's fds in configuration order (systemd.socket(5));
-    # across units the order is unspecified, which is why vhosts use
-    # the plugin's named sd/ references. ReusePort=true is required for
-    # the socket to share a port number with caddy-public.socket (or
-    # with anything else on that port): the kernel refuses a wildcard
-    # and a BindToDevice bind on the same port unless both carry
-    # SO_REUSEPORT, regardless of bind order.
+    # Gravity-scoped sockets, one unit for every mesh port/address pair.
+    # systemd passes a unit's fds in configuration order (systemd.socket(5));
+    # across units the order is unspecified, which is why vhosts use the
+    # plugin's named sd/ references. Exact-address mesh listeners and the
+    # wildcard public listener can share a port through SO_REUSEPORT without
+    # sending mesh traffic to the public server. FreeBind allows socket
+    # activation before networkd assigns the configured addresses.
     systemd.sockets.caddy-mesh = {
       description = "Caddy mesh sockets (gravity VRF)";
       wantedBy = [ "multi-user.target" ];
@@ -154,8 +167,11 @@ in
         # use every bound address for h1/h2 and a UDP fdgram errors
         # out. The protocols block in globalConfig below disables
         # h3 explicitly so caddy doesn't try to spin one up.
-        ListenStream = cfg.ports;
+        ListenStream = map (
+          listener: "${formatAddress listener.address}:${toString listener.port}"
+        ) meshListeners;
         BindToDevice = "gravity";
+        FreeBind = true;
         FileDescriptorName = "mesh";
         ReusePort = true;
         Service = "caddy.service";
@@ -191,11 +207,11 @@ in
     # skip the QUIC listener on these servers so it doesn't fail at
     # startup with "network 'sd' cannot handle HTTP/3 connections".
     services.caddy.globalConfig = lib.concatStrings (
-      (lib.mapAttrsToList (port: ref: ''
-        servers ${ref}:${port} {
+      (map (listener: ''
+        servers sd/mesh/${toString listener.index}:${toString listener.port} {
           protocols h1 h2
         }
-      '') cfg.fdRefs)
+      '') meshListeners)
       ++ (lib.mapAttrsToList (port: ref: ''
         servers ${ref}:${port} {
           protocols h1 h2

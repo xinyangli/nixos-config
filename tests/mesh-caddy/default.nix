@@ -6,15 +6,18 @@
 # A vhost opts onto the mesh with `bind sd/mesh/<N>` in its site block;
 # everything else stays on the default listener.
 #
-# Two ports kept apart on purpose: :${defaultPort} reaches the default
-# listener (underlay only), :${meshPort} reaches the mesh socket (VRF
-# only). Same caddy process, two scopes.
+# Two separate ports keep the original scopes covered; a third shared port
+# verifies that publicPorts and mesh sockets can coexist without cross-scope
+# virtual-host leaks.
 
 let
   defaultPort = 8080;
   meshPort = 8081;
+  sharedPort = 8082;
   meshPayload = "mesh-caddy";
   defaultPayload = "default-caddy";
+  sharedMeshPayload = "shared-mesh-caddy";
+  sharedPublicPayload = "shared-public-caddy";
 
   nodes = {
     alpha = {
@@ -55,7 +58,8 @@ let
 
     custom.mesh-network.caddy = {
       enable = true;
-      ports = [ meshPort ];
+      ports = [ meshPort sharedPort ];
+      publicPorts = [ sharedPort ];
     };
 
     services.caddy = {
@@ -81,11 +85,19 @@ let
         bind ${config.custom.mesh-network.caddy.fdRefs.${toString meshPort}}
         respond "${meshPayload}"
       '';
+      virtualHosts."http://public.example:${toString sharedPort}".extraConfig = ''
+        bind ${config.custom.mesh-network.caddy.publicFdRefs.${toString sharedPort}}
+        respond "${sharedPublicPayload}"
+      '';
+      virtualHosts."http://mesh.example:${toString sharedPort}".extraConfig = ''
+        bind ${config.custom.mesh-network.caddy.fdRefs.${toString sharedPort}}
+        respond "${sharedMeshPayload}"
+      '';
     };
 
     # services.caddy doesn't auto-open the firewall; we need the
     # underlay port reachable so the default-scope vhost is testable.
-    networking.firewall.allowedTCPPorts = [ defaultPort ];
+    networking.firewall.allowedTCPPorts = [ defaultPort sharedPort ];
 
     environment.systemPackages = with pkgs; [ curl ];
   };
@@ -106,6 +118,7 @@ in
         # The .socket unit is what carries BindToDevice=gravity; if it
         # didn't activate, the mesh FD never reached caddy.
         m.wait_for_unit("caddy-mesh.socket")
+        m.wait_for_unit("caddy-public.socket")
 
     for src, dst in [(alpha, "fd00:42::2"), (beta, "fd00:42::1")]:
         src.wait_until_succeeds(
@@ -153,5 +166,30 @@ in
         "ip vrf exec gravity curl -sS --max-time 5 http://[fd00:42::1]:${toString defaultPort}/"
     ).strip()
     assert out == "${defaultPayload}", f"beta over mesh: got {out!r}"
+
+    # ---------- Same port, separate public and mesh sockets ----------
+    out = beta.succeed(
+        "curl -sS --max-time 5 -H 'Host: public.example' http://192.168.1.1:${toString sharedPort}/"
+    ).strip()
+    assert out == "${sharedPublicPayload}", f"public over underlay: got {out!r}"
+
+    out = beta.succeed(
+        "ip vrf exec gravity curl -sS --max-time 5 -H 'Host: mesh.example' http://[fd00:42::1]:${toString sharedPort}/"
+    ).strip()
+    assert out == "${sharedMeshPayload}", f"mesh over gravity: got {out!r}"
+
+    rc, out = beta.execute(
+        "curl -sS --max-time 5 -H 'Host: mesh.example' http://192.168.1.1:${toString sharedPort}/"
+    )
+    assert "${sharedMeshPayload}" not in out, (
+        f"mesh vhost leaked onto the public socket: rc={rc}, out={out!r}"
+    )
+
+    rc, out = beta.execute(
+        "ip vrf exec gravity curl -sS --max-time 5 -H 'Host: public.example' http://[fd00:42::1]:${toString sharedPort}/"
+    )
+    assert "${sharedPublicPayload}" not in out, (
+        f"public vhost leaked onto the mesh socket: rc={rc}, out={out!r}"
+    )
   '';
 }

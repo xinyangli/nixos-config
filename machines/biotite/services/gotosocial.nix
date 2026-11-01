@@ -36,6 +36,7 @@ in
 
   services.caddy = {
     virtualHosts."https://gts.xiny.li".extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
       handle /metrics {
         reverse_proxy http://127.0.0.1:9464
       }
@@ -44,6 +45,7 @@ in
       }
     '';
     virtualHosts."https://xiny.li".extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
       redir /.well-known/host-meta* https://gts.xiny.li{uri} permanent  # host
       redir /.well-known/webfinger* https://gts.xiny.li{uri} permanent  # host
       redir /.well-known/nodeinfo* https://gts.xiny.li{uri} permanent   # host

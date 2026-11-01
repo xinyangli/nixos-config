@@ -55,6 +55,7 @@ in
     enable = true;
     flags = [ "--disable-up-arrow" ];
     settings = {
+      sync_address = "https://atuin.u.xiny.li";
       keymap_mode = "vim-insert";
       style = "compact";
       invert = true;

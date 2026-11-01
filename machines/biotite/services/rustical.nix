@@ -30,6 +30,7 @@ in
   };
 
   services.caddy.virtualHosts.${rusticalUrl}.extraConfig = ''
+    bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
     reverse_proxy ${rusticalListenAddress}
   '';
 }

@@ -38,6 +38,7 @@ in
   services.caddy = {
     enable = true;
     virtualHosts."https://${hedgedocDomain}".extraConfig = ''
+      bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
       reverse_proxy unix/${config.services.hedgedoc.settings.path}
     '';
   };

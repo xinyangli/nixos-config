@@ -32,6 +32,7 @@ in
 
   services.caddy = {
     virtualHosts.${vaultwardenUrl}.extraConfig = with config.services.vaultwarden.config; ''
+      bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
       reverse_proxy ${ROCKET_ADDRESS}:${toString ROCKET_PORT}
     '';
   };

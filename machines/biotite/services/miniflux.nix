@@ -29,6 +29,7 @@ in
   ];
 
   services.caddy.virtualHosts.${minifluxUrl}.extraConfig = ''
+    bind ${config.custom.mesh-network.caddy.publicFdRefs."443"}
     handle {
       reverse_proxy ${config.services.miniflux.config.LISTEN_ADDR}
     }
