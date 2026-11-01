@@ -14,10 +14,13 @@ let
   defaultPort = 8080;
   meshPort = 8081;
   sharedPort = 8082;
+  tlsPort = 8083;
   meshPayload = "mesh-caddy";
   defaultPayload = "default-caddy";
   sharedMeshPayload = "shared-mesh-caddy";
   sharedPublicPayload = "shared-public-caddy";
+  tlsMeshPayload = "tls-mesh-caddy";
+  tlsPublicPayload = "tls-public-caddy";
 
   nodes = {
     alpha = {
@@ -58,8 +61,8 @@ let
 
     custom.mesh-network.caddy = {
       enable = true;
-      ports = [ meshPort sharedPort ];
-      publicPorts = [ sharedPort ];
+      ports = [ meshPort sharedPort tlsPort ];
+      publicPorts = [ sharedPort tlsPort ];
     };
 
     services.caddy = {
@@ -71,7 +74,6 @@ let
         hash = "sha256-qLy94+RwUbcTmwOVK7pZRuADCYkHKoOqIfj4gAMsac0=";
       };
       globalConfig = ''
-        auto_https off
         admin off
       '';
       virtualHosts."http://:${toString defaultPort}".extraConfig = ''
@@ -93,11 +95,21 @@ let
         bind ${config.custom.mesh-network.caddy.fdRefs.${toString sharedPort}}
         respond "${sharedMeshPayload}"
       '';
+      virtualHosts."https://public-tls.example:${toString tlsPort}".extraConfig = ''
+        bind ${config.custom.mesh-network.caddy.publicFdRefs.${toString tlsPort}}
+        tls internal
+        respond "${tlsPublicPayload}"
+      '';
+      virtualHosts."https://mesh-tls.example:${toString tlsPort}".extraConfig = ''
+        bind ${config.custom.mesh-network.caddy.fdRefs.${toString tlsPort}}
+        tls internal
+        respond "${tlsMeshPayload}"
+      '';
     };
 
     # services.caddy doesn't auto-open the firewall; we need the
     # underlay port reachable so the default-scope vhost is testable.
-    networking.firewall.allowedTCPPorts = [ defaultPort sharedPort ];
+    networking.firewall.allowedTCPPorts = [ defaultPort sharedPort tlsPort ];
 
     environment.systemPackages = with pkgs; [ curl ];
   };
@@ -190,6 +202,25 @@ in
     )
     assert "${sharedPublicPayload}" not in out, (
         f"public vhost leaked onto the mesh socket: rc={rc}, out={out!r}"
+    )
+
+    # ---------- TLS must never share accept() with plaintext redirects ----------
+    out = beta.succeed(
+        "curl -ksS --max-time 5 --resolve public-tls.example:${toString tlsPort}:192.168.1.1 https://public-tls.example:${toString tlsPort}/"
+    ).strip()
+    assert out == "${tlsPublicPayload}", f"public TLS: got {out!r}"
+
+    for attempt in range(40):
+        out = beta.succeed(
+            "ip vrf exec gravity curl -ksS --max-time 5 --resolve mesh-tls.example:${toString tlsPort}:[fd00:42::1] https://mesh-tls.example:${toString tlsPort}/"
+        ).strip()
+        assert out == "${tlsMeshPayload}", f"mesh TLS attempt {attempt + 1}: got {out!r}"
+
+    rc, out = beta.execute(
+        "ip vrf exec gravity curl -sS --max-time 5 --resolve mesh-tls.example:${toString tlsPort}:[fd00:42::1] http://mesh-tls.example:${toString tlsPort}/"
+    )
+    assert "${tlsMeshPayload}" not in out, (
+        f"plaintext HTTP reached the TLS application route: rc={rc}, out={out!r}"
     )
   '';
 }

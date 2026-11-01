@@ -206,8 +206,15 @@ in
     # HTTP/3 needs UDP; the inherited fds are TCP-only. Tell caddy to
     # skip the QUIC listener on these servers so it doesn't fail at
     # startup with "network 'sd' cannot handle HTTP/3 connections".
+    # Automatic HTTPS rewrites an HTTPS listener's port to the HTTP port
+    # for its redirect server. The sd plugin resolves both sd/name/N:443
+    # and sd/name/N:80 to the same inherited FD, so the TLS and plaintext
+    # redirect servers otherwise race in accept() on the HTTPS socket.
+    # Callers that need redirects must define them on ordinary HTTP
+    # listeners instead.
     services.caddy.globalConfig = lib.concatStrings (
-      (map (listener: ''
+      [ "auto_https disable_redirects\n" ]
+      ++ (map (listener: ''
         servers sd/mesh/${toString listener.index}:${toString listener.port} {
           protocols h1 h2
         }

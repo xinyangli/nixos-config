@@ -24,6 +24,10 @@ in
       hash = "sha256-EHvPUMcj3hevj9k9aokG0VYIhZtViZVT4b6dua8aLEE=";
     };
 
+    virtualHosts."http://".extraConfig = ''
+      redir https://{host}{uri} permanent
+    '';
+
     virtualHosts."https://${atuinHost}".extraConfig = ''
       bind ${config.custom.mesh-network.caddy.fdRefs."${toString atuinPort}"}
       tls {

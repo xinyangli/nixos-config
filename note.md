@@ -55,7 +55,7 @@ package = pkgs.spotifyd.overrideAttrs (
 - Mesh-only endpoint: `https://atuin.u.xiny.li` on biotite. The `xin` account is provisioned and registration is disabled.
 - Clients use `sync_address = "https://atuin.u.xiny.li"` in `home/xin/cli/essential.nix`.
 - The `atuin` PostgreSQL database is created from `template0` because the existing `template1` has a collation version mismatch. Existing `postgresqlBackup` covers it.
-- Caddy serves the endpoint on port 443 with separate mesh/public systemd sockets.
+- Caddy serves the endpoint on port 443 with separate mesh/public systemd sockets. Socket activation requires `auto_https disable_redirects`; automatic redirect listeners otherwise reuse the TLS FD and intermittently return plaintext during handshakes. Public redirects use an explicit HTTP listener on port 80.
 
 ## Tests
 
