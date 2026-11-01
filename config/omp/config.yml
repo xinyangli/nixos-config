@@ -30,3 +30,8 @@ browser:
   relay: true
 dev:
   autoqaConsent: denied
+ui:
+  toast:
+    delivery: terminal
+    delay_seconds: 1
+
