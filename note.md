@@ -50,7 +50,14 @@ package = pkgs.spotifyd.overrideAttrs (
 );
 ```
 
-### Tests
+## Atuin sync
+
+- Mesh-only endpoint: `https://atuin.u.xiny.li` on biotite. The `xin` account is provisioned and registration is disabled.
+- Clients use `sync_address = "https://atuin.u.xiny.li"` in `home/xin/cli/essential.nix`.
+- The `atuin` PostgreSQL database is created from `template0` because the existing `template1` has a collation version mismatch. Existing `postgresqlBackup` covers it.
+- Caddy serves the endpoint on port 443 with separate mesh/public systemd sockets.
+
+## Tests
 
 Interactive tests: 
 
