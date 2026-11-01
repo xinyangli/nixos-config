@@ -1,0 +1,32 @@
+modelRoles:
+  smol: opencode-go/muse-spark-1.3-contributor
+  task: kimi-code/kimi-for-coding:high
+  slow: kimi-code/k3.1-pro:max
+  vision: google-antigravity/gemini-3.8-flash:medium
+  plan: kimi-code/k3.1-pro:high
+  commit: opencode-go/deepseek-v4.1-flash:high
+  tiny: opencode-go/deepseek-v4.1-flash:low
+  memory: opencode-go/deepseek-v4.1-flash:high
+  advisor: opencode-go/beam-free:medium
+  web: google-antigravity/gemini-3.8-flash:medium
+  speech: local/kokoro
+  dictation: local/parakeet-tdt-0.6b-v3
+  judge: opencode-go/deepseek-v4.1-flash:low
+  image: google-antigravity/gemini-3.1-flash-image
+  default: kimi-code/k3.1-pro
+symbolPreset: nerd
+composer:
+  shape: band
+theme:
+  dark: titanium
+  light: light
+setupVersion: 2
+hideThinkingBlock: true
+task:
+  eager: preferred
+ida:
+  enabled: true
+browser:
+  relay: true
+dev:
+  autoqaConsent: denied

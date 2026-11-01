@@ -1,11 +1,12 @@
 { pkgs, ... }:
 {
-  config = {
-    nixpkgs.config.allowUnfree = true;
-    home.packages = with pkgs.llm-agents; [
-      omp
-      rtk
-      tuicr
-    ];
+  custom-hm.omp = {
+    enable = true;
+    extensions = [ "herdr" ];
   };
+
+  home.packages = with pkgs.llm-agents; [
+    rtk
+    tuicr
+  ];
 }
