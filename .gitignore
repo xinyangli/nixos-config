@@ -6,3 +6,4 @@ result
 result-*
 /config/zellij/*.bak
 config/agents/*
+**/__pycache__/**
