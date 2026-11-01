@@ -24,6 +24,8 @@ in
     rust-parallel
     tealdeer
     git-absorb
+
+    nixvim
   ];
 
   services.ssh-agent =

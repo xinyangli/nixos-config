@@ -60,6 +60,10 @@ in
       style = "compact";
       invert = true;
     };
+    daemon = {
+      enable = true;
+      logLevel = "warn";
+    };
   };
   programs.rbw = {
     enable = true;
@@ -152,6 +156,25 @@ in
     '';
     functions = {
       gitignore = "curl -sL https://www.gitignore.io/api/'$argv'";
+    };
+  };
+
+  # Basic theme support
+  catppuccin = {
+    enable = true;
+    # Explicitly pin autoEnable to current behaviour (all ports on) and
+    # silence the upstream deprecation warning.
+    autoEnable = true;
+    accent = "peach";
+    flavor = "mocha";
+    gtk.icon.enable = true;
+    firefox.enable = false;
+    fcitx5 = {
+      # See https://github.com/nix-community/home-manager/issues/5982#issuecomment-2822054196
+      # catppuccin/nix directly bind to conf/classiui.conf, which cause the problem if
+      # any fcitx5 settings is set in home-manager
+      apply = false;
+      enableRounded = true;
     };
   };
 }
