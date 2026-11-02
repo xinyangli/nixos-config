@@ -94,7 +94,14 @@ in
   };
 
   networking.useNetworkd = true;
-  networking.resolvconf.enable = true;
+  networking.resolvconf = {
+    enable = true;
+    # nsncd is non-caching. Avoid restart bursts when iwd updates DNS
+    # configuration several times while reconnecting after resume.
+    extraConfig = ''
+      libc_restart=
+    '';
+  };
   services.resolved.enable = false;
   custom.mesh-network = {
     ipsec = {
