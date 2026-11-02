@@ -70,7 +70,7 @@ in
     "vm.swappiness" = 1;
   };
   zramSwap = {
-    enable = true;
+    enable = false;
     memoryPercent = 50;
     memoryMax = 8589934592;
   };

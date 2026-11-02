@@ -169,6 +169,10 @@ in
     HibernateOnACPower = false;
   };
 
+  systemd.services.nscd.serviceConfig = {
+    RestartSec = 1;
+  };
+
   documentation = {
     nixos.enable = false;
     man.enable = false;
