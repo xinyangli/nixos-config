@@ -65,6 +65,7 @@ in
       enable = true;
       enableHowdy = true;
       u2f.enable = true;
+      totp.enable = false;
     };
     nix = {
       signing.enable = true;
