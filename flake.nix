@@ -67,6 +67,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Home Manager module for comin, only available on this sibling branch.
+    # TODO: merge into the garnix-executor branch to collapse the two inputs.
+    comin-hm = {
+      url = "github:xinyangli/comin/home-manager-support";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
     nixos-sbc = {
       url = "github:nakato/nixos-sbc/main";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -131,6 +139,7 @@
       nix-index-database,
       disko,
       comin,
+      comin-hm,
       microvm,
       nixos-sbc,
       lanzaboote,
@@ -200,9 +209,11 @@
       deploymentModule = {
         deployment.targetUser = "xin";
       };
+      cominHmModule = import ./modules/home-manager/comin.nix { comin = comin-hm; };
       sharedHmModules = [
         mylibModule
         self.homeManagerModules.default
+        cominHmModule
         sops-nix.homeManagerModules.sops
         nix-index-database.homeModules.nix-index
         catppuccin.homeModules.catppuccin
@@ -427,6 +438,7 @@
               ./modules/home-manager
               idmHmModule
               overlayModule
+              { commonSettings.comin = { enable = true; configuration = "xin-x86_64-linux"; }; }
             ]
             ++ sharedHmModules;
           };
@@ -463,6 +475,7 @@
               ./modules/home-manager
               idmHmModule
               overlayModule
+              { commonSettings.comin = { enable = true; configuration = "xin-x86_64-vibe-coding"; }; }
             ]
             ++ sharedHmModules;
           };

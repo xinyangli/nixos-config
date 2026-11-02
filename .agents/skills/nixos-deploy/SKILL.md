@@ -7,6 +7,8 @@ description: Test and deploy NixOS config changes on comin-managed machines. Use
 
 All machines update themselves via [comin](modules/nixos/common-settings/comin.nix) pulling from this repo. There is no manual `nixos-rebuild` step — deployment = pushing git branches.
 
+Two standalone Home Manager configurations also self-update: `xin-x86_64-linux` and `xin-x86_64-vibe-coding` run comin as a systemd **user** service ([modules/home-manager/comin.nix](modules/home-manager/comin.nix), input `comin-hm` from the comin `home-manager-support` branch), tracking the same `deploy`/`deploy-test` branches. The first remote is a **local directory** checkout (`commonSettings.comin.url`, default `~/repo/personal/nixos-config`) so local commits activate immediately; the github/forgejo mirrors after it ensure upstream updates also trigger activation (comin picks the first remote whose head changed). Builds run locally as the user. State: `~/.local/share/comin`; the service only runs while the user has an active session unless lingering is enabled.
+
 ## Branch flow
 
 | Branch | Role | Force-push |
