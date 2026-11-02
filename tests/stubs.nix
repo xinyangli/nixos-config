@@ -22,6 +22,10 @@
           sopsFile = lib.mkOption {
             type = lib.types.path;
           };
+          content = lib.mkOption {
+            type = lib.types.str;
+            default = "";
+          };
           mode = lib.mkOption {
             type = lib.types.str;
             default = "0400";
@@ -43,9 +47,10 @@
           default = { };
           type = lib.types.attrsOf mkSecretSubmodule;
         };
+        # Production modules interpolate placeholders into config strings.
         placeholder = lib.mkOption {
           default = { };
-          type = lib.types.attrsOf mkSecretSubmodule;
+          type = lib.types.attrsOf lib.types.str;
         };
       };
     };

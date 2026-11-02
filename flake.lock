@@ -197,6 +197,22 @@
         "type": "github"
       }
     },
+    "dnsmasq-china-list": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793318906,
+        "narHash": "sha256-OASQKxmWx6Hwi398wedEt1ceqsM+Pv7b0fGms+twnlo=",
+        "owner": "felixonmars",
+        "repo": "dnsmasq-china-list",
+        "rev": "a8942d3ac6ebd8dcfc582d4e97fbb443a2176cb2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "felixonmars",
+        "repo": "dnsmasq-china-list",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -940,6 +956,7 @@
         "comin": "comin",
         "comin-hm": "comin-hm",
         "disko": "disko",
+        "dnsmasq-china-list": "dnsmasq-china-list",
         "flake-utils": "flake-utils",
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",

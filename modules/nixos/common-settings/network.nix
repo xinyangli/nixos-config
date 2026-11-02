@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  chinaDomainsText,
   ...
 }:
 let
@@ -120,7 +121,7 @@ in
                 (builtins.filter (s: s != [ ] && s != ""))
                 (lib.strings.concatMapStrings (x: "'${x}',"))
               ];
-            chinaDomains = listToLuaTable (builtins.readFile ./china-domains.txt);
+            chinaDomains = listToLuaTable chinaDomainsText;
             globalSettings = ''
               log_level("info")
               modules = { 'hints > iterate', 'stats', 'predict' }

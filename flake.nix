@@ -119,6 +119,11 @@
       url = "git+https://github.com/xinyangli/miniflux-tts";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    dnsmasq-china-list = {
+      url = "github:felixonmars/dnsmasq-china-list";
+      flake = false;
+    };
   };
 
   outputs =
@@ -148,9 +153,36 @@
       ranet-ipsec,
       llm-agents,
       miniflux-tts,
+      dnsmasq-china-list,
       ...
     }:
     let
+      # Convert dnsmasq-china-list (server=/domain/ip) to one domain per line for knot-resolver
+      chinaDomainsText =
+        let
+          extractDomains =
+            content:
+            nixpkgs.lib.pipe content [
+              (nixpkgs.lib.splitString "\n")
+              (map (line: builtins.match "server=/([^/]+)/.*" (nixpkgs.lib.strings.trim line)))
+              (nixpkgs.lib.filter (m: m != null))
+              (map (m: builtins.elemAt m 0))
+            ];
+          listFiles = [
+            "accelerated-domains.china.conf"
+            "apple.china.conf"
+            "google.china.conf"
+          ];
+        in
+        nixpkgs.lib.concatStringsSep "\n" (
+          nixpkgs.lib.concatMap (f: extractDomains (builtins.readFile "${dnsmasq-china-list}/${f}")) listFiles
+          ++ [
+            "test.steampowered.com"
+            "steamserver.net"
+            "api.steampowered.com"
+          ]
+        );
+
       mkPkgs =
         system:
         import nixpkgs {
@@ -173,6 +205,9 @@
           mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
           mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
           mesh-gost-test = pkgs.testers.nixosTest (import ./tests/mesh-gost);
+          kresd-localdns-test = pkgs.testers.nixosTest (
+            import ./tests/kresd-localdns.nix { inherit chinaDomainsText; }
+          );
           kanidm-provision-test = pkgs.testers.nixosTest (import ./tests/kanidm-provision);
           pam-oath-test = pkgs.testers.nixosTest (
             import ./tests/pam-oath.nix {
@@ -333,6 +368,11 @@
           ./modules/nixos
           mylibModule
           overlayModule
+          {
+            _module.args = {
+              inherit chinaDomainsText;
+            };
+          }
         ];
       };
       homeManagerModules.default = import ./modules/home-manager;
