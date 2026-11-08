@@ -42,7 +42,9 @@ in
         type = types.listOf types.str;
         default = [ ];
       };
-      iptfs = mkEnableOption "iptfs";
+      iptfs = mkEnableOption "iptfs" // {
+        default = true;
+      };
     };
     config = mkOption {
       type = types.nullOr types.path;
@@ -127,6 +129,12 @@ in
           config.environment.etc."gravity/registry.json".source
         ];
       };
+    systemd.timers.gravity-reload = {
+      timerConfig = {
+        OnCalendar = "*:0/15";
+      };
+      wantedBy = [ "timers.target" ];
+    };
     networking.firewall.interfaces = lib.genAttrs cfg.ipsec.interfaces (_: {
       allowedUDPPorts = [ cfg.ipsec.port ];
     });

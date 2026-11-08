@@ -75,6 +75,16 @@
             addressFamily = "ip4";
             address = "agate_home.xiny.li";
           }
+          {
+            serialNumber = "1";
+            addressFamily = "ip6";
+            address = "wan.agate._ddns.xiny.li";
+          }
+          {
+            serialNumber = "2";
+            addressFamily = "ip6";
+            address = "wan2.agate._ddns.xiny.li";
+          }
         ];
       };
       raspite = {

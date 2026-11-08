@@ -118,6 +118,10 @@ let
       pname(systemd-resolve) -> must_direct
       pname(caddy) -> must_direct
       pname(sing-box) -> must_direct
+      # ipsec
+      l4proto(udp) && dport(63001) -> must_direct
+      l4proto(udp) && dport(27001) -> must_direct # hafnon
+
       domain(regex: '_acme_challenge\..*') -> must_direct
       # Disable h3 because it usually consumes too much cpu/mem resources.
       l4proto(udp) && dport(443) -> block
@@ -209,7 +213,11 @@ let
       # dip(223.5.5.5) -> default_group
       # dip('2400:3200::1') -> default_group
       # domain(full: www.apple.com.cn) -> default_group
-      #
+
+      # ipsec
+      l4proto(udp) && dport(63001) -> must_direct
+      l4proto(udp) && dport(27001) -> must_direct # hafnon
+
       # ip('115.168.0.0/14') -> default_group
       # domain(suffix: xiny.li) && dport(8443) -> default_group
       # domain(suffix: coho-tet.ts.net) -> default_group
