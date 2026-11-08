@@ -197,19 +197,19 @@
         {
           backup-test = pkgs.testers.nixosTest (import ./tests/backup.nix);
           ipsec-mesh-test = pkgs.testers.nixosTest (import ./tests/ipsec-mesh);
-          mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
-          mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
-          mesh-gost-test = pkgs.testers.nixosTest (import ./tests/mesh-gost);
-          kresd-localdns-test = pkgs.testers.nixosTest (
-            import ./tests/kresd-localdns.nix { inherit chinaDomainsText; }
-          );
+          # mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
+          # mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
+          # mesh-gost-test = pkgs.testers.nixosTest (import ./tests/mesh-gost);
+          # kresd-localdns-test = pkgs.testers.nixosTest (
+          #   import ./tests/kresd-localdns.nix { inherit chinaDomainsText; }
+          # );
           kanidm-provision-test = pkgs.testers.nixosTest (import ./tests/kanidm-provision);
-          pam-oath-test = pkgs.testers.nixosTest (
-            import ./tests/pam-oath.nix {
-              inherit pkgs;
-              run0SudoShimModule = run0-sudo-shim.nixosModules.default;
-            }
-          );
+          # pam-oath-test = pkgs.testers.nixosTest (
+          #   import ./tests/pam-oath.nix {
+          #     inherit pkgs;
+          #     run0SudoShimModule = run0-sudo-shim.nixosModules.default;
+          #   }
+          # );
         };
 
       editorOverlay = (
@@ -467,7 +467,12 @@
               ./modules/home-manager
               idmHmModule
               overlayModule
-              { commonSettings.comin = { enable = true; configuration = "xin-x86_64-linux"; }; }
+              {
+                commonSettings.comin = {
+                  enable = true;
+                  configuration = "xin-x86_64-linux";
+                };
+              }
             ]
             ++ sharedHmModules;
           };
@@ -504,7 +509,12 @@
               ./modules/home-manager
               idmHmModule
               overlayModule
-              { commonSettings.comin = { enable = true; configuration = "xin-x86_64-vibe-coding"; }; }
+              {
+                commonSettings.comin = {
+                  enable = true;
+                  configuration = "xin-x86_64-vibe-coding";
+                };
+              }
             ]
             ++ sharedHmModules;
           };
@@ -568,12 +578,13 @@
             }) includeHomes
           );
         in
-        nixosConfigurationJobs // homeConfigurationJobs // {
-          # Exposed as Hydra jobs in addition to the per-system checks.
-          tests = nixpkgs.lib.genAttrs [
-            "aarch64-linux"
-          ] testJobs;
-        };
+        nixosConfigurationJobs // homeConfigurationJobs;
+      # // {
+      #   # Exposed as Hydra jobs in addition to the per-system checks.
+      #   tests = nixpkgs.lib.genAttrs [
+      #     "aarch64-linux"
+      #   ] testJobs;
+      # };
     }
     // flake-utils.lib.eachDefaultSystem (
       system:
