@@ -1,4 +1,21 @@
 { config, pkgs, ... }:
+let
+  attic = "${pkgs.attic-client}/bin/attic";
+  atticPush = pkgs.writeShellScript "hydra-attic-push" ''
+    set -euo pipefail
+
+    if ! ${pkgs.jq}/bin/jq -e '
+      .buildStatus == 0 and (.job | startswith("tests.") | not)
+    ' "$HYDRA_JSON" > /dev/null; then
+      exit 0
+    fi
+
+    export XDG_CONFIG_HOME=/var/lib/hydra/queue-runner/attic
+    ${attic} login attic "https://pek-0.cache.xiny.li:8443/" "$HYDRA_ATTIC_TOKEN"
+    ${pkgs.jq}/bin/jq -r '.outputs[].path' "$HYDRA_JSON" |
+      ${attic} push --stdin general
+  '';
+in
 {
   sops.secrets = {
     "hydra/attic_token" = { };
@@ -15,6 +32,9 @@
     minimumDiskFree = 20;
     extraConfig = ''
       allow_import_from_derivation = true
+      <runcommand>
+        command = ${atticPush}
+      </runcommand>
     '';
   };
 
@@ -32,26 +52,7 @@
     reverse_proxy 127.0.0.1:3000
   '';
 
-  systemd.services.attic-watch-store = {
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" ];
-    requires = [ "network-online.target" ];
-    description = "Upload all store content to binary cache";
-    environment = {
-      # attic login write to $XDG_CONFIG_HOME/attic/config.toml
-      XDG_CONFIG_HOME = "/var/lib/attic-watch-store";
-    };
-    serviceConfig = {
-      DynamicUser = true;
-      EnvironmentFile = config.sops.templates."hydra/env".path;
-      StateDirectory = "attic-watch-store";
-      WorkingDirectory = "%S/attic-watch-store";
-      ExecStartPre = pkgs.writeShellScript "attic-watch-store-start-pre" ''
-        ${pkgs.attic-client}/bin/attic login attic "https://pek-0.cache.xiny.li:8443/" "''$HYDRA_ATTIC_TOKEN"
-      '';
-      ExecStart = "${pkgs.attic-client}/bin/attic watch-store general";
-      Restart = "on-failure";
-      RestartSec = "10s";
-    };
+  systemd.services.hydra-notify = {
+    serviceConfig.EnvironmentFile = config.sops.templates."hydra/env".path;
   };
 }
