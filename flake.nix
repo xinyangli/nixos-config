@@ -547,8 +547,8 @@
         let
           includeHosts = [
             "agate"
-            "raspite"
-            "baryte"
+            # "raspite"
+            # "baryte"
             "osmium"
             "hafnon"
             "thorite"
