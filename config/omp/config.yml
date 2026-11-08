@@ -28,10 +28,10 @@ ida:
   enabled: true
 browser:
   relay: true
+  headless: false
 dev:
   autoqaConsent: denied
 ui:
   toast:
     delivery: terminal
     delay_seconds: 1
-

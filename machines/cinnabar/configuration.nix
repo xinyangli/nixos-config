@@ -165,7 +165,7 @@ in
 
   systemd.sleep.settings.Sleep = {
     SuspendEstimationSec = "5m";
-    HibernateDelaySec = "10m";
+    HibernateDelaySec = "4h";
     HibernateOnACPower = false;
   };
 
