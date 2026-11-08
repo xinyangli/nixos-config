@@ -23,6 +23,15 @@ in
   sops.templates."hydra/env".content = ''
     HYDRA_ATTIC_TOKEN=${config.sops.placeholder."hydra/attic_token"}
   '';
+  sops.templates."hydra/github-auth.conf" = {
+    group = "hydra";
+    mode = "0440";
+    content = ''
+      <github_authorization>
+        xinyangli = token ${config.sops.placeholder."nix/github_public_token"}
+      </github_authorization>
+    '';
+  };
   services.hydra = {
     enable = true;
     hydraURL = "https://hydra.u.xiny.li/";
@@ -32,6 +41,7 @@ in
     minimumDiskFree = 20;
     extraConfig = ''
       allow_import_from_derivation = true
+      Include ${config.sops.templates."hydra/github-auth.conf".path}
       <runcommand>
         command = ${atticPush}
       </runcommand>

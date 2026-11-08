@@ -1,0 +1,25 @@
+{
+  "enabled": 1,
+  "hidden": false,
+  "description": "GitHub pull request jobset generator",
+  "nixexprinput": "nixexpr",
+  "nixexprpath": ".hydra/jobsets.nix",
+  "checkinterval": 300,
+  "schedulingshares": 100,
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 1,
+  "type": 0,
+  "inputs": {
+    "nixexpr": {
+      "type": "git",
+      "value": "https://github.com/xinyangli/nixos-config deploy-next",
+      "emailresponsible": false
+    },
+    "pulls": {
+      "type": "githubpulls",
+      "value": "xinyangli nixos-config",
+      "emailresponsible": false
+    }
+  }
+}
