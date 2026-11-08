@@ -37,7 +37,8 @@ in
     queueRunnerAddr = "http://${config.services.hydra.queueRunner.grpc.address}:${toString config.services.hydra.queueRunner.grpc.port}";
     authorizationFile = builderToken;
     settings = {
-      maxJobs = 16;
+      maxJobs = 4;
+      buildCores = 16;
       systems = [ "aarch64-linux" ];
       supportedFeatures = [
         "kvm"

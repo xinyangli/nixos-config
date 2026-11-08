@@ -70,7 +70,8 @@
     queueRunnerAddr = "http://[fda1:6cbb:db78::7]:50051";
     authorizationFile = config.sops.secrets."hydra/builder_token".path;
     settings = {
-      maxJobs = 3;
+      maxJobs = 2;
+      buildCores = 4;
       systems = [ "x86_64-linux" ];
       supportedFeatures = [
         "nixos-test"
