@@ -100,10 +100,7 @@ in
   services.userborn.enable = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  services.scx = {
-    enable = true;
-    # scheduler = "scx_lavd";
-  };
+  services.scx-loader.enable = true;
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
   boot.kernelModules = [ "acpi_call" ];
   boot.extraModulePackages = [
