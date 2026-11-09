@@ -69,20 +69,6 @@ in
           address_family = ep.addressFamily;
           address = ep.address;
           port = cfg.ipsec.port;
-          updown = pkgs.writeShellScript "updown" ''
-            set -eu
-            IP=${pkgs.iproute2}/bin/ip
-            LINK=gn$(printf '%08x\n' "$PLUTO_IF_ID_OUT")
-            case "$PLUTO_VERB" in
-              up-client)
-                $IP link add "$LINK" type xfrm if_id "$PLUTO_IF_ID_OUT"
-                $IP link set "$LINK" master gravity multicast on mtu 1400 up
-                ;;
-              down-client)
-                $IP link del "$LINK" || true
-                ;;
-            esac
-          '';
         }) cfg.ipsec.endpoints;
       }
       // lib.optionalAttrs cfg.ipsec.iptfs {
@@ -91,7 +77,7 @@ in
     );
     systemd.services.gravity-ipsec =
       let
-        command = "ranet -c /etc/ranet/config.json -r /var/lib/gravity/registry.json -k ${config.sops.secrets.ipsec.path}";
+        command = "ranet --vici=/run/strongswan/charon.vici -c /etc/ranet/config.json -r /var/lib/gravity/registry.json -k ${config.sops.secrets.ipsec.path}";
       in
       {
         path = [
@@ -112,9 +98,9 @@ in
         wants = [
           "network-online.target"
           "strongswan-swanctl.service"
-          # The updown script enslaves xfrm interfaces under the gravity
-          # VRF. Block ranet (and therefore charon's IKE initiation)
-          # until the kernel device exists, otherwise updown races
+          # charon-kernel enslaves XFRM interfaces under the gravity VRF.
+          # Block ranet (and therefore charon's IKE initiation) until the
+          # kernel device exists, otherwise interface setup races
           # systemd-networkd.
           "sys-subsystem-net-devices-gravity.device"
         ];
@@ -139,6 +125,11 @@ in
       allowedUDPPorts = [ cfg.ipsec.port ];
     });
 
+    services.charon-kernel = {
+      enable = true;
+      interfaceNamePrefix = "gn";
+    };
+
     services.strongswan-swanctl = {
       enable = true;
       strongswan.extraConfig =
@@ -155,13 +146,21 @@ in
             port_nat_t = ${toString cfg.ipsec.port}
             retransmit_timeout = 30
             retransmit_base = 1
+            load_modular = yes
             plugins {
+              include ${config.services.strongswan-swanctl.package}/share/strongswan/templates/config/plugins/*.conf
               socket-default {
                 set_source = yes
                 set_sourceif = yes
               }
               dhcp {
                 load = no
+              }
+              kernel-netlink {
+                load = no
+              }
+              kernel-rust {
+                load = yes
               }
             }
           }

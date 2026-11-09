@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, strongswan-kernel-rust, ... }:
 
 let
   nodes = {
@@ -9,6 +9,7 @@ let
 
   mkNode = hostname: spec: _: {
     imports = [
+      strongswan-kernel-rust.nixosModules.default
       (import ./common.nix {
         inherit hostname;
         underlayAddr = spec.underlay;

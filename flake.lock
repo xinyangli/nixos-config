@@ -954,6 +954,7 @@
         "rust-overlay": "rust-overlay",
         "simple-nixos-mailserver": "simple-nixos-mailserver",
         "sops-nix": "sops-nix",
+        "strongswan-kernel-rust": "strongswan-kernel-rust",
         "vicinae": "vicinae"
       }
     },
@@ -1076,6 +1077,26 @@
         "owner": "nixos",
         "ref": "release-26.05",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "strongswan-kernel-rust": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794084031,
+        "narHash": "sha256-qtTsVztyXi3XnJa6F2IK9o+xWiXiBhG9XrZzvbruvJg=",
+        "owner": "NickCao",
+        "repo": "strongswan-kernel-rust",
+        "rev": "b56e64cafe6a70cfa550d97d8eda08c019ebc05f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NickCao",
+        "repo": "strongswan-kernel-rust",
         "type": "github"
       }
     },

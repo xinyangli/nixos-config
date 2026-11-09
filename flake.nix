@@ -107,6 +107,11 @@
       inputs.flake-utils.follows = "flake-utils";
     };
 
+    strongswan-kernel-rust = {
+      url = "github:NickCao/strongswan-kernel-rust";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
     };
@@ -146,6 +151,7 @@
       vicinae,
       chinese-fonts-overlay,
       ranet-ipsec,
+      strongswan-kernel-rust,
       llm-agents,
       miniflux-tts,
       dnsmasq-china-list,
@@ -196,7 +202,9 @@
         in
         {
           backup-test = pkgs.testers.nixosTest (import ./tests/backup.nix);
-          ipsec-mesh-test = pkgs.testers.nixosTest (import ./tests/ipsec-mesh);
+          ipsec-mesh-test = pkgs.testers.nixosTest (
+            args: import ./tests/ipsec-mesh (args // { inherit strongswan-kernel-rust; })
+          );
           # mesh-sshd-test = pkgs.testers.nixosTest (import ./tests/mesh-sshd);
           # mesh-caddy-test = pkgs.testers.nixosTest (import ./tests/mesh-caddy);
           # mesh-gost-test = pkgs.testers.nixosTest (import ./tests/mesh-gost);
@@ -355,6 +363,7 @@
       nixosModules.default = {
         imports = [
           ./modules/nixos
+          strongswan-kernel-rust.nixosModules.default
           mylibModule
           overlayModule
           {

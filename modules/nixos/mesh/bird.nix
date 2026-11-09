@@ -41,9 +41,9 @@ in
   config = mkIf cfg.bird.enable {
     services.bird = {
       enable = true;
-      # gn* matches the xfrm interface names produced by the updown script
-      # in ipsec.nix (gn<8-hex of PLUTO_IF_ID_OUT>); both must change
-      # together if the naming scheme moves.
+      # gn* matches the XFRM interface names created by charon-kernel
+      # (gn<8-hex XFRM interface ID>); both must change together if the
+      # naming scheme moves.
       config = ''
         log syslog all;
         router id ${hostnameToRouterID config.networking.hostName};
