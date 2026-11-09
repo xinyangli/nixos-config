@@ -39,6 +39,7 @@ in
     settings = {
       maxJobs = 6;
       buildCores = 8;
+      storeAvailThreshold = 5.0;
       systems = [ "aarch64-linux" ];
       supportedFeatures = [
         "kvm"

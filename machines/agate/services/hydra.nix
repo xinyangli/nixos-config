@@ -37,8 +37,8 @@ in
     hydraURL = "https://hydra.u.xiny.li/";
     notificationSender = "hydra@localhost";
     useSubstitutes = true;
-    minimumDiskFreeEvaluator = 20;
-    minimumDiskFree = 20;
+    minimumDiskFreeEvaluator = 5;
+    minimumDiskFree = 5;
     extraConfig = ''
       allow_import_from_derivation = true
       Include ${config.sops.templates."hydra/github-auth.conf".path}
