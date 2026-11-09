@@ -5,8 +5,5 @@
     extensions = [ "herdr" ];
   };
 
-  home.packages = with pkgs.llm-agents; [
-    rtk
-    tuicr
-  ];
+  home.packages = with pkgs.llm-agents; [ ];
 }
