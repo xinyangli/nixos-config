@@ -558,7 +558,7 @@
             "agate"
             # "raspite"
             # "baryte"
-            "osmium"
+            # "osmium"
             "hafnon"
             "thorite"
             "biotite"
