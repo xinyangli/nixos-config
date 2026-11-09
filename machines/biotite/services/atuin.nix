@@ -21,7 +21,7 @@ in
         "github.com/caddy-dns/desec@v1.1.0"
         "github.com/MayCXC/caddy-systemd-socket-activation@v1.0.0"
       ];
-      hash = "sha256-EHvPUMcj3hevj9k9aokG0VYIhZtViZVT4b6dua8aLEE=";
+      hash = "sha256-AOvvws5dh2zPoXw3bPeb3FS7BZdZ4LFu4BOO8hBlDxc=";
     };
 
     virtualHosts."http://".extraConfig = ''

@@ -31,7 +31,7 @@
       "github.com/caddy-dns/desec@v1.1.0"
       "github.com/MayCXC/caddy-systemd-socket-activation@v1.0.0"
     ];
-    hash = "sha256-QKUu98s4slQOs2N6GZ1P6hOquNnwy9DjghXMBE8SCf4=";
+    hash = "sha256-/0lwr46EP2k/RNB1rg1al0J5tiiK9d0OJqar20uXzzE=";
   };
 
   # Expose a gravity-VRF-scoped :443 socket so mesh-internal vhosts

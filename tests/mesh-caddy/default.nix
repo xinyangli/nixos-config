@@ -71,7 +71,7 @@ let
         plugins = [
           "github.com/MayCXC/caddy-systemd-socket-activation@v1.0.0"
         ];
-        hash = "sha256-qLy94+RwUbcTmwOVK7pZRuADCYkHKoOqIfj4gAMsac0=";
+        hash = "sha256-P+4GUKvVrLwFMEFXOvzvVbTKt6QuJPqGt3Ve8Hsd9mY=";
       };
       globalConfig = ''
         admin off
