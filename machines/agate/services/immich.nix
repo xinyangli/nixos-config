@@ -78,6 +78,7 @@ let
       name = "mountpoint-s3-${version}-vendor";
       hash = "sha256-SSSXqgJ3OERCVw81iXqXRRpVXgdwhlefHhI/qvQyl4g=";
     };
+    buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.libgit2 ];
     doCheck = false;
   });
 
@@ -250,12 +251,11 @@ in
       reverse_proxy 127.0.0.1:${toString config.services.immich.port}
     '';
 
-    services.caddy.virtualHosts."http://agate.10118244.xyz:18080".extraConfig =
-      ''
-        handle_path /prometheus/immich/metrics {
-          rewrite * /metrics
-          reverse_proxy http://127.0.0.1:8082
-        }
-      '';
+    services.caddy.virtualHosts."http://agate.10118244.xyz:18080".extraConfig = ''
+      handle_path /prometheus/immich/metrics {
+        rewrite * /metrics
+        reverse_proxy http://127.0.0.1:8082
+      }
+    '';
   };
 }
