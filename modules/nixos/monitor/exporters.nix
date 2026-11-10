@@ -24,8 +24,7 @@ in
         "time"
         "systemd"
       ];
-      listenAddress = cfg.node.listenAddress;
-      openFirewall = true;
+      listenAddress = "127.0.0.1";
       port = 9100;
     };
 
@@ -134,6 +133,10 @@ in
         handle_path /prometheus/comin/metrics {
           rewrite * /metrics
           reverse_proxy http://127.0.0.1:4243
+        }
+        handle_path /prometheus/node/metrics {
+          rewrite * /metrics
+          reverse_proxy http://127.0.0.1:9100
         }
       '';
     networking.firewall.allowedTCPPorts = [ cfg.metricsPort ];

@@ -57,18 +57,13 @@ in
     })
   ];
 
-  services.caddy.virtualHosts."pek-0.rsshub.xiny.li:8443".extraConfig = ''
+  services.caddy.virtualHosts."rsshub.u.xiny.li".extraConfig = ''
+    bind ${config.custom.mesh-network.caddy.fdRefs."443"}
     tls {
-      dns cloudflare {env.CF_API_TOKEN}
+      dns desec {
+        token {env.DESEC_TOKEN}
+      }
     }
-
-    @allowed {
-      remote_ip 45.142.178.32
-    }
-
-    route {
-        reverse_proxy @allowed 127.0.0.1:1200
-        respond "Access Denied" 403
-    }
+    reverse_proxy 127.0.0.1:1200
   '';
 }

@@ -45,10 +45,6 @@ in
         enable = mkEnableOption "prometheus exporter on all supported and enable guarded services";
         node = {
           enable = mkEnableOption "node exporter";
-          listenAddress = mkOption {
-            type = types.str;
-            default = "";
-          };
         };
         blackbox = {
           enable = mkEnableOption "blackbox exporter";

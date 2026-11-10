@@ -84,12 +84,14 @@
   system.stateVersion = "26.05";
   time.timeZone = "Asia/Shanghai";
 
+  custom.prometheus.exporters = {
+    enable = true;
+    node.enable = true;
+  };
+
   # custom.prometheus.exporters = {
   #   enable = true;
   #   blackbox = {
-  #     enable = true;
-  #   };
-  #   node = {
   #     enable = true;
   #   };
   # };

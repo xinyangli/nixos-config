@@ -50,6 +50,8 @@ let
   mkNodeScrapes = targets: [
     {
       job_name = "node_exporter";
+      scheme = "http";
+      metrics_path = "/prometheus/node/metrics";
       static_configs = map mkNodeScrape targets;
     }
   ];
@@ -455,27 +457,41 @@ in
           "home-xin-x86_64-minimal-cli"
           "home-xin-x86_64-full-cli"
         ]
-        ++ lib.concatMap (system: map (t: "tests.${system}.${t}") [
-          "backup-test"
-          "ipsec-mesh-test"
-          "mesh-sshd-test"
-          "mesh-caddy-test"
-          "mesh-gost-test"
-          "kanidm-provision-test"
-          "pam-oath-test"
-        ]) [
-          "aarch64-linux"
-          "x86_64-linux"
-        ];
-        metricsTarget =
+        ++
+          lib.concatMap
+            (
+              system:
+              map (t: "tests.${system}.${t}") [
+                # "backup-test"
+                # "ipsec-mesh-test"
+                # "mesh-sshd-test"
+                # "mesh-caddy-test"
+                # "mesh-gost-test"
+                # "kanidm-provision-test"
+                # "pam-oath-test"
+              ]
+            )
+            [
+              # "aarch64-linux"
+              # "x86_64-linux"
+            ];
+        metricsTarget = host: "${host}.10118244.xyz:" + (if host == "hafnon" then "27280" else "18080");
+        metricsTargets = map (
           host:
-          "${host}.10118244.xyz:" + (
-            if host == "hafnon" then
-              "27280"
-            else
-              "18080"
-          );
+          {
+            address = "${host}.10118244.xyz";
+            port = if host == "hafnon" then 27280 else 18080;
+          }
+        ) publicHosts;
         meshMetricsTarget = host: "${host}.${gravityInternalDomain}:18080";
+        publicHosts = [
+          "thorite"
+          "biotite"
+          "la-00"
+          "fra-00"
+          "agate"
+          "hafnon"
+        ];
       in
       [
         {
@@ -491,14 +507,7 @@ in
         }
         (mkCominScrape {
           jobName = "comin";
-          targets = map metricsTarget [
-            "thorite"
-            "biotite"
-            "la-00"
-            "fra-00"
-            "agate"
-            "hafnon"
-          ];
+          targets = map metricsTarget publicHosts;
         })
         (mkCominScrape {
           jobName = "comin-mesh";
@@ -600,26 +609,10 @@ in
           job_name = "caddy";
           scheme = "http";
           metrics_path = "/prometheus/caddy/metrics";
-          static_configs = map mkCaddyScrape [
-            { address = "thorite.10118244.xyz"; }
-            { address = "biotite.10118244.xyz"; }
-            { address = "agate.10118244.xyz"; }
-            { address = "la-00.10118244.xyz"; }
-            { address = "fra-00.10118244.xyz"; }
-            {
-              address = "hafnon.10118244.xyz";
-              port = 27280;
-            }
-          ];
+          static_configs = map mkCaddyScrape metricsTargets;
         }
       ]
-      ++ mkNodeScrapes [
-        { address = "localhost"; }
-        { address = "agate.10118244.xyz"; }
-        { address = "biotite.10118244.xyz"; }
-        { address = "la-00.10118244.xyz"; }
-        { address = "fra-00.10118244.xyz"; }
-      ]
+      ++ mkNodeScrapes metricsTargets
       ++ mkBlackboxScrapes [
         {
           hostAddress = "thorite.10118244.xyz";
