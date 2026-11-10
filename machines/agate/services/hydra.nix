@@ -10,10 +10,24 @@ let
       exit 0
     fi
 
+    buildDescription="$(${pkgs.jq}/bin/jq -r '"build \(.id): \(.project)/\(.jobset)/\(.job)"' "$HYDRA_JSON")"
+
     export XDG_CONFIG_HOME=/var/lib/hydra/queue-runner/attic
-    ${attic} login attic "https://pek-0.cache.xiny.li:8443/" "$HYDRA_ATTIC_TOKEN"
-    ${pkgs.jq}/bin/jq -r '.outputs[].path' "$HYDRA_JSON" |
-      ${attic} push --stdin general
+    loginOutput="$(${attic} login attic "https://pek-0.cache.xiny.li:8443/" "$HYDRA_ATTIC_TOKEN" 2>&1)" || {
+      status=$?
+      printf 'Attic login failed for %s (exit %d):\n%s\n' \
+        "$buildDescription" "$status" "$loginOutput" >&2
+      exit "$status"
+    }
+    pushOutput="$(
+      ${pkgs.jq}/bin/jq -r '.outputs[].path' "$HYDRA_JSON" 2>&1 |
+        ${attic} push --stdin general 2>&1
+    )" || {
+      status=$?
+      printf 'Attic push failed for %s (exit %d):\n%s\n' \
+        "$buildDescription" "$status" "$pushOutput" >&2
+      exit "$status"
+    }
   '';
 in
 {
